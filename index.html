@@ -36,6 +36,29 @@
       header{
         padding: 10px 4px 16px;
       }
+      .topbar{
+        display:flex;
+        align-items:flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .lang{
+        display:flex;
+        align-items:center;
+        gap: 8px;
+        justify-content:flex-end;
+      }
+      .lang label{
+        margin:0;
+        font-size: 12px;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+      .lang select{
+        width:auto;
+        padding: 10px 10px;
+        font-size: 14px;
+      }
       h1{
         font-size: 20px;
         margin: 0 0 6px 0;
@@ -183,8 +206,22 @@
   <body>
     <div class="wrap">
       <header>
-        <h1>Kite session → WhatsApp <span class="pill">MVP</span></h1>
-        <p class="sub">Share your session in ~20 seconds. No login, no saving, no backend.</p>
+        <div class="topbar">
+          <div>
+            <h1><span data-i18n="title">Kite session → WhatsApp</span> <span class="pill">MVP</span></h1>
+            <p class="sub" data-i18n="subtitle">Share your session in ~20 seconds. No login, no saving, no backend.</p>
+          </div>
+          <div class="lang">
+            <label for="langSelect" data-i18n="language">Language</label>
+            <select id="langSelect" aria-label="Language">
+              <option value="en">🇬🇧 EN</option>
+              <option value="it">🇮🇹 IT</option>
+              <option value="de">🇩🇪 DE</option>
+              <option value="es">🇪🇸 ES</option>
+              <option value="fr">🇫🇷 FR</option>
+            </select>
+          </div>
+        </div>
       </header>
 
       <div class="card">
@@ -192,103 +229,104 @@
           <form id="kiteForm" autocomplete="on" novalidate>
             <div class="row two">
               <div>
-                <label for="weight">Weight (kg) <span class="req">(required)</span></label>
-                <input id="weight" name="weight" type="text" inputmode="numeric" placeholder="e.g. 74" required />
+                <label for="weight"><span data-i18n="label_weight">Weight (kg)</span> <span class="req" data-i18n="required">(required)</span></label>
+                <input id="weight" name="weight" type="text" inputmode="numeric" placeholder="e.g. 74" data-i18n-placeholder="ph_weight" required />
               </div>
               <div>
-                <label for="board">Board type <span class="req">(required)</span></label>
+                <label for="board"><span data-i18n="label_board">Board type</span> <span class="req" data-i18n="required">(required)</span></label>
                 <select id="board" name="board" required>
-                  <option value="">Select board type</option>
-                  <option value="twintip">Twintip</option>
-                  <option value="surfboard">Surfboard</option>
-                  <option value="foil">Foil</option>
+                  <option value="" data-i18n="opt_board_prompt">Select board type</option>
+                  <option value="twintip" data-i18n="opt_board_twintip">Twintip</option>
+                  <option value="surfboard" data-i18n="opt_board_surfboard">Surfboard</option>
+                  <option value="foil" data-i18n="opt_board_foil">Foil</option>
                 </select>
               </div>
             </div>
 
             <div class="row">
               <div>
-                <label for="gender">Gender <span class="hint">(optional)</span></label>
-                <input id="gender" name="gender" type="text" inputmode="text" placeholder="e.g. M / F / NB" />
+                <label for="gender"><span data-i18n="label_gender">Gender</span> <span class="hint" data-i18n="optional">(optional)</span></label>
+                <input id="gender" name="gender" type="text" inputmode="text" placeholder="e.g. M / F / NB" data-i18n-placeholder="ph_gender" />
               </div>
             </div>
 
             <div class="row">
               <div>
-                <label for="kite">Kite size (m²) <span class="req">(required)</span></label>
-                <input id="kite" name="kite" type="text" inputmode="decimal" placeholder="e.g. 9" required />
+                <label for="kite"><span data-i18n="label_kite_size">Kite size (m²)</span> <span class="req" data-i18n="required">(required)</span></label>
+                <input id="kite" name="kite" type="text" inputmode="decimal" placeholder="e.g. 9" data-i18n-placeholder="ph_kite_size" required />
               </div>
             </div>
 
             <div class="row two">
               <div>
-                <label for="brand">Kite brand <span class="hint">(optional)</span></label>
-                <input id="brand" name="brand" type="text" inputmode="text" placeholder="e.g. Duotone, Cabrinha..." />
+                <label for="brand"><span data-i18n="label_brand">Kite brand</span> <span class="hint" data-i18n="optional">(optional)</span></label>
+                <input id="brand" name="brand" type="text" inputmode="text" placeholder="e.g. Duotone, Cabrinha..." data-i18n-placeholder="ph_brand" />
               </div>
               <div>
-                <label for="model">Kite model <span class="hint">(optional)</span></label>
-                <input id="model" name="model" type="text" inputmode="text" placeholder="e.g. Evo, Switchblade..." />
-              </div>
-            </div>
-
-            <div class="row">
-              <div>
-                <label for="wind">Estimated wind (optional)</label>
-                <input id="wind" name="wind" type="text" inputmode="numeric" placeholder="Leave empty if unknown" />
+                <label for="model"><span data-i18n="label_model">Kite model</span> <span class="hint" data-i18n="optional">(optional)</span></label>
+                <input id="model" name="model" type="text" inputmode="text" placeholder="e.g. Evo, Switchblade..." data-i18n-placeholder="ph_model" />
               </div>
             </div>
 
             <div class="row">
               <div>
-                <label for="location">Location <span class="hint">(optional)</span></label>
-                <input id="location" name="location" type="text" inputmode="text" placeholder="e.g. Punta Trettu" />
+                <label for="wind" data-i18n="label_wind">Estimated wind (optional)</label>
+                <input id="wind" name="wind" type="text" inputmode="numeric" placeholder="Leave empty if unknown" data-i18n-placeholder="ph_wind" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="location"><span data-i18n="label_location">Location</span> <span class="hint" data-i18n="optional">(optional)</span></label>
+                <input id="location" name="location" type="text" inputmode="text" placeholder="e.g. Punta Trettu" data-i18n-placeholder="ph_location" />
               </div>
             </div>
 
             <div class="row two">
               <div>
-                <label for="water">Water conditions <span class="hint">(optional)</span></label>
+                <label for="water"><span data-i18n="label_water">Water conditions</span> <span class="hint" data-i18n="optional">(optional)</span></label>
                 <select id="water" name="water">
-                  <option value="">Water conditions (optional)</option>
-                  <option value="flat">Flat</option>
-                  <option value="choppy">Choppy</option>
-                  <option value="waves">Waves</option>
+                  <option value="" data-i18n="opt_water_prompt">Water conditions (optional)</option>
+                  <option value="flat" data-i18n="opt_water_flat">Flat</option>
+                  <option value="choppy" data-i18n="opt_water_choppy">Choppy</option>
+                  <option value="waves" data-i18n="opt_water_waves">Waves</option>
                 </select>
               </div>
               <div>
-                <label for="result">Session result <span class="hint">(optional)</span></label>
+                <label for="result"><span data-i18n="label_result">Session result</span> <span class="hint" data-i18n="optional">(optional)</span></label>
                 <select id="result" name="result">
-                  <option value="">Session result (optional)</option>
-                  <option value="perfect">Perfect</option>
-                  <option value="too_much">Too much</option>
-                  <option value="too_little">Too little</option>
+                  <option value="" data-i18n="opt_result_prompt">Session result (optional)</option>
+                  <option value="perfect" data-i18n="opt_result_perfect">Perfect</option>
+                  <option value="too_much" data-i18n="opt_result_too_much">Too much</option>
+                  <option value="too_little" data-i18n="opt_result_too_little">Too little</option>
                 </select>
               </div>
             </div>
 
             <div class="row">
               <div>
-                <label for="note">Notes <span class="hint">(optional)</span></label>
-                <textarea id="note" name="note" placeholder="Anything useful (spot, gusts, setup, etc.)"></textarea>
-                <div class="hint">If needed, add screenshots manually in WhatsApp after sending.</div>
+                <label for="note"><span data-i18n="label_notes">Notes</span> <span class="hint" data-i18n="optional">(optional)</span></label>
+                <textarea id="note" name="note" placeholder="Anything useful (spot, gusts, setup, etc.)" data-i18n-placeholder="ph_notes"></textarea>
+                <div class="hint" data-i18n="hint_screenshot">If needed, add screenshots manually in WhatsApp after sending.</div>
               </div>
             </div>
 
             <div class="actions">
-              <button type="submit" class="primary" id="sendBtn">Send via WhatsApp</button>
-              <button type="button" class="secondary" id="resetBtn">Reset</button>
+              <button type="submit" class="primary" id="sendBtn" data-i18n="btn_send">Send via WhatsApp</button>
+              <button type="button" class="secondary" id="resetBtn" data-i18n="btn_reset">Reset</button>
             </div>
 
             <div class="preview" aria-live="polite">
-              <h2>Message preview</h2>
-              <pre id="previewText">Fill the required fields to generate the message…</pre>
+              <h2 data-i18n="preview_title">Message preview</h2>
+              <pre id="previewText" data-i18n="preview_empty">Fill the required fields to generate the message…</pre>
             </div>
           </form>
         </div>
       </div>
 
       <footer>
-        Set the operator number in <code>WHATSAPP_NUMBER</code> (international format, digits only; e.g. 393331112233).
+        <span data-i18n="footer_prefix">Set the operator number in</span> <code>WHATSAPP_NUMBER</code>
+        <span data-i18n="footer_suffix">(international format, digits only; e.g. 393331112233).</span>
       </footer>
     </div>
 
@@ -296,12 +334,346 @@
       // CONFIG: numero destinatario in formato internazionale, solo cifre (no +, no spazi)
       const WHATSAPP_NUMBER = "393345280521";
 
+      const translations = {
+        en: {
+          htmlLang: "en",
+          pageTitle: "Kite session → WhatsApp",
+          title: "Kite session → WhatsApp",
+          subtitle: "Share your session in ~20 seconds. No login, no saving, no backend.",
+          language: "Language",
+          required: "(required)",
+          optional: "(optional)",
+          label_weight: "Weight (kg)",
+          ph_weight: "e.g. 74",
+          label_board: "Board type",
+          opt_board_prompt: "Select board type",
+          opt_board_twintip: "Twintip",
+          opt_board_surfboard: "Surfboard",
+          opt_board_foil: "Foil",
+          label_gender: "Gender",
+          ph_gender: "e.g. M / F / NB",
+          label_kite_size: "Kite size (m²)",
+          ph_kite_size: "e.g. 9",
+          label_brand: "Kite brand",
+          ph_brand: "e.g. Duotone, Cabrinha...",
+          label_model: "Kite model",
+          ph_model: "e.g. Evo, Switchblade...",
+          label_wind: "Estimated wind (optional)",
+          ph_wind: "Leave empty if unknown",
+          label_location: "Location",
+          ph_location: "e.g. Punta Trettu",
+          label_water: "Water conditions",
+          opt_water_prompt: "Water conditions (optional)",
+          opt_water_flat: "Flat",
+          opt_water_choppy: "Choppy",
+          opt_water_waves: "Waves",
+          label_result: "Session result",
+          opt_result_prompt: "Session result (optional)",
+          opt_result_perfect: "Perfect",
+          opt_result_too_much: "Too much",
+          opt_result_too_little: "Too little",
+          label_notes: "Notes",
+          ph_notes: "Anything useful (spot, gusts, setup, etc.)",
+          hint_screenshot: "If needed, add screenshots manually in WhatsApp after sending.",
+          btn_send: "Send via WhatsApp",
+          btn_reset: "Reset",
+          preview_title: "Message preview",
+          preview_empty: "Fill the required fields to generate the message…",
+          footer_prefix: "Set the operator number in",
+          footer_suffix: "(international format, digits only; e.g. 393331112233).",
+          msg_weight: "Weight (kg)",
+          msg_board: "Board",
+          msg_gender: "Gender",
+          msg_kite: "Kite (m²)",
+          msg_brand: "Brand",
+          msg_model: "Model",
+          msg_wind: "Estimated wind",
+          msg_location: "Location",
+          msg_water: "Water",
+          msg_result: "Result",
+          msg_notes: "Notes",
+        },
+        it: {
+          htmlLang: "it",
+          pageTitle: "Sessione kite → WhatsApp",
+          title: "Sessione kite → WhatsApp",
+          subtitle: "Condividi la sessione in ~20 secondi. Niente login, niente salvataggi, niente backend.",
+          language: "Lingua",
+          required: "(obbligatorio)",
+          optional: "(opzionale)",
+          label_weight: "Peso (kg)",
+          ph_weight: "es. 74",
+          label_board: "Tipo tavola",
+          opt_board_prompt: "Seleziona tipo tavola",
+          opt_board_twintip: "Twintip",
+          opt_board_surfboard: "Surfboard",
+          opt_board_foil: "Foil",
+          label_gender: "Gender",
+          ph_gender: "es. M / F / NB",
+          label_kite_size: "Misura kite (m²)",
+          ph_kite_size: "es. 9",
+          label_brand: "Marca kite",
+          ph_brand: "es. Duotone, Cabrinha...",
+          label_model: "Modello kite",
+          ph_model: "es. Evo, Switchblade...",
+          label_wind: "Vento stimato (opzionale)",
+          ph_wind: "Lascia vuoto se non lo sai",
+          label_location: "Location",
+          ph_location: "es. Punta Trettu",
+          label_water: "Condizione acqua",
+          opt_water_prompt: "Condizione acqua (opzionale)",
+          opt_water_flat: "Piatta",
+          opt_water_choppy: "Chop",
+          opt_water_waves: "Onde",
+          label_result: "Esito sessione",
+          opt_result_prompt: "Esito sessione (opzionale)",
+          opt_result_perfect: "Perfetta",
+          opt_result_too_much: "Troppo",
+          opt_result_too_little: "Troppo poco",
+          label_notes: "Note",
+          ph_notes: "Info utili (spot, raffiche, setup, ecc.)",
+          hint_screenshot: "Se serve, aggiungi screenshot manualmente su WhatsApp dopo l’invio.",
+          btn_send: "Invia su WhatsApp",
+          btn_reset: "Reset",
+          preview_title: "Anteprima messaggio",
+          preview_empty: "Compila i campi obbligatori per generare il messaggio…",
+          footer_prefix: "Imposta il numero operatore in",
+          footer_suffix: "(formato internazionale, solo cifre; es. 393331112233).",
+          msg_weight: "Peso (kg)",
+          msg_board: "Tavola",
+          msg_gender: "Gender",
+          msg_kite: "Kite (m²)",
+          msg_brand: "Marca",
+          msg_model: "Modello",
+          msg_wind: "Vento stimato",
+          msg_location: "Location",
+          msg_water: "Acqua",
+          msg_result: "Esito",
+          msg_notes: "Note",
+        },
+        de: {
+          htmlLang: "de",
+          pageTitle: "Kite-Session → WhatsApp",
+          title: "Kite-Session → WhatsApp",
+          subtitle: "Teile deine Session in ~20 Sekunden. Kein Login, kein Speichern, kein Backend.",
+          language: "Sprache",
+          required: "(erforderlich)",
+          optional: "(optional)",
+          label_weight: "Gewicht (kg)",
+          ph_weight: "z.B. 74",
+          label_board: "Board-Typ",
+          opt_board_prompt: "Board-Typ wählen",
+          opt_board_twintip: "Twintip",
+          opt_board_surfboard: "Surfboard",
+          opt_board_foil: "Foil",
+          label_gender: "Gender",
+          ph_gender: "z.B. M / F / NB",
+          label_kite_size: "Kite-Größe (m²)",
+          ph_kite_size: "z.B. 9",
+          label_brand: "Kite-Marke",
+          ph_brand: "z.B. Duotone, Cabrinha...",
+          label_model: "Kite-Modell",
+          ph_model: "z.B. Evo, Switchblade...",
+          label_wind: "Geschätzter Wind (optional)",
+          ph_wind: "Leer lassen, wenn unbekannt",
+          label_location: "Spot",
+          ph_location: "z.B. Punta Trettu",
+          label_water: "Wasserbedingungen",
+          opt_water_prompt: "Wasserbedingungen (optional)",
+          opt_water_flat: "Flach",
+          opt_water_choppy: "Kabbelig",
+          opt_water_waves: "Wellen",
+          label_result: "Session-Ergebnis",
+          opt_result_prompt: "Session-Ergebnis (optional)",
+          opt_result_perfect: "Perfekt",
+          opt_result_too_much: "Zu viel",
+          opt_result_too_little: "Zu wenig",
+          label_notes: "Notizen",
+          ph_notes: "Nützliche Infos (Spot, Böen, Setup, usw.)",
+          hint_screenshot: "Falls nötig, Screenshots nach dem Senden manuell in WhatsApp hinzufügen.",
+          btn_send: "Über WhatsApp senden",
+          btn_reset: "Zurücksetzen",
+          preview_title: "Vorschau",
+          preview_empty: "Fülle die Pflichtfelder aus, um die Nachricht zu erzeugen…",
+          footer_prefix: "Operator-Nummer in",
+          footer_suffix: "(internationales Format, nur Ziffern; z.B. 393331112233).",
+          msg_weight: "Gewicht (kg)",
+          msg_board: "Board",
+          msg_gender: "Gender",
+          msg_kite: "Kite (m²)",
+          msg_brand: "Marke",
+          msg_model: "Modell",
+          msg_wind: "Geschätzter Wind",
+          msg_location: "Spot",
+          msg_water: "Wasser",
+          msg_result: "Ergebnis",
+          msg_notes: "Notizen",
+        },
+        es: {
+          htmlLang: "es",
+          pageTitle: "Sesión de kite → WhatsApp",
+          title: "Sesión de kite → WhatsApp",
+          subtitle: "Comparte tu sesión en ~20 segundos. Sin login, sin guardar, sin backend.",
+          language: "Idioma",
+          required: "(obligatorio)",
+          optional: "(opcional)",
+          label_weight: "Peso (kg)",
+          ph_weight: "p. ej. 74",
+          label_board: "Tipo de tabla",
+          opt_board_prompt: "Selecciona tipo de tabla",
+          opt_board_twintip: "Twintip",
+          opt_board_surfboard: "Surfboard",
+          opt_board_foil: "Foil",
+          label_gender: "Gender",
+          ph_gender: "p. ej. M / F / NB",
+          label_kite_size: "Tamaño de kite (m²)",
+          ph_kite_size: "p. ej. 9",
+          label_brand: "Marca de kite",
+          ph_brand: "p. ej. Duotone, Cabrinha...",
+          label_model: "Modelo de kite",
+          ph_model: "p. ej. Evo, Switchblade...",
+          label_wind: "Viento estimado (opcional)",
+          ph_wind: "Déjalo vacío si no lo sabes",
+          label_location: "Lugar",
+          ph_location: "p. ej. Punta Trettu",
+          label_water: "Condiciones del agua",
+          opt_water_prompt: "Condiciones del agua (opcional)",
+          opt_water_flat: "Plana",
+          opt_water_choppy: "Picada",
+          opt_water_waves: "Olas",
+          label_result: "Resultado de la sesión",
+          opt_result_prompt: "Resultado de la sesión (opcional)",
+          opt_result_perfect: "Perfecta",
+          opt_result_too_much: "Demasiado",
+          opt_result_too_little: "Demasiado poco",
+          label_notes: "Notas",
+          ph_notes: "Info útil (lugar, rachas, setup, etc.)",
+          hint_screenshot: "Si hace falta, añade capturas manualmente en WhatsApp después de enviar.",
+          btn_send: "Enviar por WhatsApp",
+          btn_reset: "Reiniciar",
+          preview_title: "Vista previa",
+          preview_empty: "Rellena los campos obligatorios para generar el mensaje…",
+          footer_prefix: "Configura el número del operador en",
+          footer_suffix: "(formato internacional, solo dígitos; p. ej. 393331112233).",
+          msg_weight: "Peso (kg)",
+          msg_board: "Tabla",
+          msg_gender: "Gender",
+          msg_kite: "Kite (m²)",
+          msg_brand: "Marca",
+          msg_model: "Modelo",
+          msg_wind: "Viento estimado",
+          msg_location: "Lugar",
+          msg_water: "Agua",
+          msg_result: "Resultado",
+          msg_notes: "Notas",
+        },
+        fr: {
+          htmlLang: "fr",
+          pageTitle: "Session kite → WhatsApp",
+          title: "Session kite → WhatsApp",
+          subtitle: "Partage ta session en ~20 secondes. Pas de login, pas de sauvegarde, pas de backend.",
+          language: "Langue",
+          required: "(obligatoire)",
+          optional: "(optionnel)",
+          label_weight: "Poids (kg)",
+          ph_weight: "ex. 74",
+          label_board: "Type de planche",
+          opt_board_prompt: "Choisir le type de planche",
+          opt_board_twintip: "Twintip",
+          opt_board_surfboard: "Surfboard",
+          opt_board_foil: "Foil",
+          label_gender: "Gender",
+          ph_gender: "ex. M / F / NB",
+          label_kite_size: "Taille du kite (m²)",
+          ph_kite_size: "ex. 9",
+          label_brand: "Marque du kite",
+          ph_brand: "ex. Duotone, Cabrinha...",
+          label_model: "Modèle du kite",
+          ph_model: "ex. Evo, Switchblade...",
+          label_wind: "Vent estimé (optionnel)",
+          ph_wind: "Laisser vide si inconnu",
+          label_location: "Spot",
+          ph_location: "ex. Punta Trettu",
+          label_water: "État de l’eau",
+          opt_water_prompt: "État de l’eau (optionnel)",
+          opt_water_flat: "Plat",
+          opt_water_choppy: "Clapot",
+          opt_water_waves: "Vagues",
+          label_result: "Résultat session",
+          opt_result_prompt: "Résultat session (optionnel)",
+          opt_result_perfect: "Parfaite",
+          opt_result_too_much: "Trop",
+          opt_result_too_little: "Pas assez",
+          label_notes: "Notes",
+          ph_notes: "Infos utiles (spot, rafales, réglages, etc.)",
+          hint_screenshot: "Si besoin, ajoute des captures manuellement dans WhatsApp après l’envoi.",
+          btn_send: "Envoyer via WhatsApp",
+          btn_reset: "Réinitialiser",
+          preview_title: "Aperçu",
+          preview_empty: "Remplis les champs obligatoires pour générer le message…",
+          footer_prefix: "Renseigne le numéro opérateur dans",
+          footer_suffix: "(format international, chiffres uniquement ; ex. 393331112233).",
+          msg_weight: "Poids (kg)",
+          msg_board: "Planche",
+          msg_gender: "Gender",
+          msg_kite: "Kite (m²)",
+          msg_brand: "Marque",
+          msg_model: "Modèle",
+          msg_wind: "Vent estimé",
+          msg_location: "Spot",
+          msg_water: "Eau",
+          msg_result: "Résultat",
+          msg_notes: "Notes",
+        },
+      };
+
+      let currentLang = "en";
+
+      function t(key){
+        const pack = translations[currentLang] || translations.en;
+        return pack[key] ?? translations.en[key] ?? "";
+      }
+
+      function applyTranslations(lang){
+        if (!translations[lang]) lang = "en";
+        currentLang = lang;
+        try { localStorage.setItem("rdk_lang", lang); } catch (_) {}
+
+        document.documentElement.lang = t("htmlLang") || "en";
+        document.title = t("pageTitle") || "Kite session → WhatsApp";
+
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          const key = el.getAttribute("data-i18n");
+          el.textContent = t(key);
+        });
+
+        document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+          const key = el.getAttribute("data-i18n-placeholder");
+          el.setAttribute("placeholder", t(key));
+        });
+      }
+
       const form = document.getElementById("kiteForm");
       const preview = document.getElementById("previewText");
       const resetBtn = document.getElementById("resetBtn");
+      const langSelect = document.getElementById("langSelect");
+
+      (function initLanguage(){
+        let saved = "en";
+        try { saved = localStorage.getItem("rdk_lang") || "en"; } catch (_) {}
+        if (langSelect && translations[saved]) langSelect.value = saved;
+        applyTranslations(langSelect?.value || "en");
+      })();
 
       function val(id){
         return String(document.getElementById(id).value || "").trim();
+      }
+
+      function selectedText(id){
+        const el = document.getElementById(id);
+        if (!el || !("selectedIndex" in el)) return "";
+        const opt = el.options[el.selectedIndex];
+        return String(opt?.textContent || "").trim();
       }
 
       function buildMessage(){
@@ -318,24 +690,24 @@
         const note = val("note");
 
         const lines = [];
-        if (weight) lines.push(`⚖️ Weight (kg): ${weight}`);
-        if (board) lines.push(`🪵 Board: ${board}`);
-        if (gender) lines.push(`👤 Gender: ${gender}`);
-        if (kite) lines.push(`🪁 Kite (m²): ${kite}`);
-        if (brand) lines.push(`🏷️ Brand: ${brand}`);
-        if (model) lines.push(`🪁 Model: ${model}`);
-        if (wind) lines.push(`🌬️ Estimated wind: ${wind}`);
-        if (location) lines.push(`📍 Location: ${location}`);
-        if (water) lines.push(`🌊 Water: ${water}`);
-        if (result) lines.push(`✅ Result: ${result}`);
-        if (note) lines.push(`Notes: ${note}`);
+        if (weight) lines.push(`⚖️ ${t("msg_weight")}: ${weight}`);
+        if (board) lines.push(`🪵 ${t("msg_board")}: ${selectedText("board") || board}`);
+        if (gender) lines.push(`👤 ${t("msg_gender")}: ${gender}`);
+        if (kite) lines.push(`🪁 ${t("msg_kite")}: ${kite}`);
+        if (brand) lines.push(`🏷️ ${t("msg_brand")}: ${brand}`);
+        if (model) lines.push(`🪁 ${t("msg_model")}: ${model}`);
+        if (wind) lines.push(`🌬️ ${t("msg_wind")}: ${wind}`);
+        if (location) lines.push(`📍 ${t("msg_location")}: ${location}`);
+        if (water) lines.push(`🌊 ${t("msg_water")}: ${selectedText("water") || water}`);
+        if (result) lines.push(`✅ ${t("msg_result")}: ${selectedText("result") || result}`);
+        if (note) lines.push(`${t("msg_notes")}: ${note}`);
 
         return lines.join("\n");
       }
 
       function refreshPreview(){
         const msg = buildMessage();
-        preview.textContent = msg || "Fill the required fields to generate the message…";
+        preview.textContent = msg || t("preview_empty");
       }
 
       function openWhatsAppWithMessage(message){
@@ -353,6 +725,13 @@
         });
       });
 
+      if (langSelect){
+        langSelect.addEventListener("change", () => {
+          applyTranslations(langSelect.value);
+          refreshPreview();
+        });
+      }
+
       form.addEventListener("submit", (e) => {
         e.preventDefault();
         if (!form.reportValidity()) return;
@@ -362,7 +741,7 @@
 
       resetBtn.addEventListener("click", () => {
         form.reset();
-        preview.textContent = "Fill the required fields to generate the message…";
+        preview.textContent = t("preview_empty");
       });
     </script>
   </body>
