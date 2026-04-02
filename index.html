@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>Kite Session → WhatsApp</title>
+    <style>
+      :root{
+        --bg:#0b1220;
+        --card:#0f1b32;
+        --muted:#9fb2d6;
+        --text:#e9f0ff;
+        --border:#1d2b4a;
+        --accent:#34d399;
+        --accent2:#60a5fa;
+        --danger:#fb7185;
+        --shadow: 0 10px 30px rgba(0,0,0,.35);
+        --radius: 14px;
+      }
+      *{ box-sizing:border-box; }
+      body{
+        margin:0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+        background: radial-gradient(1200px 600px at 15% 0%, rgba(96,165,250,.12), transparent 60%),
+                    radial-gradient(900px 500px at 85% 10%, rgba(52,211,153,.10), transparent 55%),
+                    var(--bg);
+        color:var(--text);
+        line-height:1.4;
+      }
+      .wrap{
+        max-width: 720px;
+        padding: 20px 16px 44px;
+        margin: 0 auto;
+      }
+      header{
+        padding: 10px 4px 16px;
+      }
+      h1{
+        font-size: 20px;
+        margin: 0 0 6px 0;
+        letter-spacing:.2px;
+      }
+      p.sub{
+        margin:0;
+        color:var(--muted);
+        font-size: 13px;
+      }
+      .card{
+        background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow:hidden;
+      }
+      .card-inner{
+        padding: 14px;
+      }
+      form{
+        display:grid;
+        gap: 12px;
+      }
+      .row{
+        display:grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      @media (min-width: 640px){
+        .row.two{ grid-template-columns: 1fr 1fr; }
+      }
+      label{
+        display:block;
+        font-size: 12px;
+        color: var(--muted);
+        margin: 0 0 6px 2px;
+      }
+      input, select, textarea{
+        width:100%;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(9,14,26,.55);
+        color: var(--text);
+        padding: 12px 12px;
+        outline: none;
+        font-size: 15px;
+      }
+      textarea{
+        min-height: 88px;
+        resize: vertical;
+      }
+      input::placeholder, textarea::placeholder{ color: rgba(159,178,214,.7); }
+      input:focus, textarea:focus, select:focus{
+        border-color: rgba(96,165,250,.75);
+        box-shadow: 0 0 0 3px rgba(96,165,250,.15);
+      }
+      .hint{
+        margin: 6px 2px 0;
+        font-size: 12px;
+        color: rgba(159,178,214,.85);
+      }
+      .req{
+        color: rgba(233,240,255,.9);
+        font-weight: 600;
+      }
+      .error{
+        display:none;
+        margin: 10px 0 0;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(251,113,133,.35);
+        background: rgba(251,113,133,.10);
+        color: rgba(255,235,240,.95);
+        font-size: 13px;
+      }
+      .actions{
+        display:flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items:center;
+        margin-top: 6px;
+      }
+      button{
+        cursor:pointer;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 15px;
+        font-weight: 700;
+      }
+      button.primary{
+        background: linear-gradient(90deg, var(--accent2), var(--accent));
+        color: #06111f;
+        flex: 1 1 220px;
+      }
+      button.secondary{
+        background: rgba(255,255,255,.06);
+        color: var(--text);
+        border: 1px solid var(--border);
+        flex: 0 0 auto;
+      }
+      .preview{
+        margin-top: 14px;
+        border-top: 1px solid var(--border);
+        padding-top: 12px;
+      }
+      .preview h2{
+        font-size: 13px;
+        margin: 0 0 8px;
+        color: var(--muted);
+        font-weight: 700;
+        letter-spacing:.2px;
+      }
+      pre{
+        margin:0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        background: rgba(9,14,26,.45);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px;
+        font-size: 14px;
+        line-height: 1.35;
+      }
+      footer{
+        margin-top: 12px;
+        color: rgba(159,178,214,.8);
+        font-size: 12px;
+        padding: 0 4px;
+      }
+      code{ color: rgba(233,240,255,.95); }
+      .pill{
+        display:inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.04);
+        color: rgba(233,240,255,.9);
+        font-size: 12px;
+        margin-left: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <h1>Kite session → WhatsApp <span class="pill">MVP</span></h1>
+        <p class="sub">Ci metti 20 secondi 👍 Compila e invia su WhatsApp all’operatore. Nessun salvataggio, nessun backend.</p>
+      </header>
+
+      <div class="card">
+        <div class="card-inner">
+          <form id="kiteForm" autocomplete="on" novalidate>
+            <div class="row">
+              <div>
+                <label for="location">Location <span class="req">(obbligatorio)</span></label>
+                <input id="location" name="location" type="text" inputmode="text" placeholder="Es. Lo Stagnone (Marsala)" required />
+              </div>
+            </div>
+
+            <div class="row two">
+              <div>
+                <label for="wind">Vento (knots) <span class="req">(obbligatorio)</span></label>
+                <input id="wind" name="wind" type="text" inputmode="numeric" placeholder="Es. 18" required />
+              </div>
+              <div>
+                <label for="kite">Kite size (m²) <span class="req">(obbligatorio)</span></label>
+                <input id="kite" name="kite" type="text" inputmode="decimal" placeholder="Es. 9" required />
+              </div>
+            </div>
+
+            <div class="row two">
+              <div>
+                <label for="weight">Peso (kg) <span class="req">(obbligatorio)</span></label>
+                <input id="weight" name="weight" type="text" inputmode="numeric" placeholder="Es. 74" required />
+              </div>
+              <div>
+                <label for="gender">Gender <span class="hint">(opzionale)</span></label>
+                <input id="gender" name="gender" type="text" inputmode="text" placeholder="Es. M / F / NB" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="note">Note <span class="hint">(opzionale)</span></label>
+                <textarea id="note" name="note" placeholder="Es. acqua piatta, twin-tip, raffiche fino a 22kt…"></textarea>
+                <div class="hint">Screenshot: non caricare qui. Se serve, allegalo manualmente su WhatsApp dopo l’invio.</div>
+              </div>
+            </div>
+
+            <div id="errorBox" class="error" role="alert"></div>
+
+            <div class="actions">
+              <button type="submit" class="primary" id="sendBtn">Invia su WhatsApp</button>
+              <button type="button" class="secondary" id="resetBtn">Reset</button>
+            </div>
+
+            <div class="preview" aria-live="polite">
+              <h2>Anteprima messaggio</h2>
+              <pre id="previewText">Compila i campi per vedere l’anteprima…</pre>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <footer>
+        Config: imposta il numero WhatsApp in <code>WHATSAPP_NUMBER</code> (formato internazionale, solo cifre; es. 393331112233).
+      </footer>
+    </div>
+
+    <script>
+      // CONFIG: numero destinatario in formato internazionale, solo cifre (no +, no spazi)
+      const WHATSAPP_NUMBER = "39XXXXXXXXXX"; // TODO: sostituire con numero reale operatore (solo cifre)
+
+      const form = document.getElementById("kiteForm");
+      const errorBox = document.getElementById("errorBox");
+      const preview = document.getElementById("previewText");
+      const resetBtn = document.getElementById("resetBtn");
+
+      function val(id){
+        return String(document.getElementById(id).value || "").trim();
+      }
+
+      function buildMessage(){
+        const location = val("location");
+        const wind = val("wind");
+        const kite = val("kite");
+        const weight = val("weight");
+        const gender = val("gender");
+        const note = val("note");
+
+        // FORMATO ESATTO richiesto (con newline reali; verranno URL-encoded)
+        let msg =
+`📍 Location: ${location}
+🌬️ Vento (knots): ${wind}
+🪁 Kite (m²): ${kite}
+⚖️ Peso (kg): ${weight}
+👤 Gender: ${gender}`;
+
+        if (note){
+          msg += `\n\nNote: ${note}`;
+        }
+        return msg;
+      }
+
+      function validateRequired(){
+        const missing = [];
+        if (!val("location")) missing.push("Location");
+        if (!val("wind")) missing.push("Vento (knots)");
+        if (!val("kite")) missing.push("Kite size (m²)");
+        if (!val("weight")) missing.push("Peso (kg)");
+        return missing;
+      }
+
+      function setError(message){
+        if (!message){
+          errorBox.style.display = "none";
+          errorBox.textContent = "";
+          return;
+        }
+        errorBox.textContent = message;
+        errorBox.style.display = "block";
+      }
+
+      function refreshPreview(){
+        const missing = validateRequired();
+        if (missing.length){
+          preview.textContent = "Compila i campi obbligatori per vedere l’anteprima completa…";
+          return;
+        }
+        preview.textContent = buildMessage();
+      }
+
+      function openWhatsAppWithMessage(message){
+        // wa.me richiede: https://wa.me/<NUMERO>?text=<URL_ENCODED>
+        // encodeURIComponent converte newline in %0A (requisito)
+        const encoded = encodeURIComponent(message);
+        const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`;
+        window.open(url, "_blank", "noopener,noreferrer");
+      }
+
+      // Live preview
+      ["location","wind","kite","weight","gender","note"].forEach((id) => {
+        document.getElementById(id).addEventListener("input", () => {
+          setError("");
+          refreshPreview();
+        });
+      });
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const missing = validateRequired();
+        if (missing.length){
+          setError(`Compila i campi obbligatori: ${missing.join(", ")}.`);
+          return;
+        }
+        const msg = buildMessage();
+        preview.textContent = msg;
+        openWhatsAppWithMessage(msg);
+      });
+
+      resetBtn.addEventListener("click", () => {
+        form.reset();
+        setError("");
+        preview.textContent = "Compila i campi per vedere l’anteprima…";
+      });
+    </script>
+  </body>
+</html>
