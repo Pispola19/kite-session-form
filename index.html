@@ -192,19 +192,19 @@
           <form id="kiteForm" autocomplete="on" novalidate>
             <div class="row">
               <div>
-                <label for="location">Location <span class="req">(obbligatorio)</span></label>
-                <input id="location" name="location" type="text" inputmode="text" placeholder="Es. Lo Stagnone (Marsala)" required />
+                <label for="location">Location <span class="hint">(opzionale)</span></label>
+                <input id="location" name="location" type="text" inputmode="text" placeholder="Es. Punta Trettu" />
               </div>
             </div>
 
             <div class="row two">
               <div>
-                <label for="wind">Vento (knots) <span class="req">(obbligatorio)</span></label>
-                <input id="wind" name="wind" type="text" inputmode="numeric" placeholder="Es. 18" required />
+                <label for="wind">Vento (knots) <span class="hint">(opzionale)</span></label>
+                <input id="wind" name="wind" type="text" inputmode="numeric" placeholder="Es. 22" />
               </div>
               <div>
-                <label for="kite">Kite size (m²) <span class="req">(obbligatorio)</span></label>
-                <input id="kite" name="kite" type="text" inputmode="decimal" placeholder="Es. 9" required />
+                <label for="kite">Kite size (m²) <span class="hint">(opzionale)</span></label>
+                <input id="kite" name="kite" type="text" inputmode="decimal" placeholder="Es. 8" />
               </div>
             </div>
 
@@ -221,8 +221,8 @@
 
             <div class="row two">
               <div>
-                <label for="weight">Peso (kg) <span class="req">(obbligatorio)</span></label>
-                <input id="weight" name="weight" type="text" inputmode="numeric" placeholder="Es. 74" required />
+                <label for="weight">Peso (kg) <span class="hint">(opzionale)</span></label>
+                <input id="weight" name="weight" type="text" inputmode="numeric" placeholder="Es. 51" />
               </div>
               <div>
                 <label for="gender">Gender <span class="hint">(opzionale)</span></label>
@@ -271,8 +271,6 @@
               </div>
             </div>
 
-            <div id="errorBox" class="error" role="alert"></div>
-
             <div class="actions">
               <button type="submit" class="primary" id="sendBtn">Invia su WhatsApp</button>
               <button type="button" class="secondary" id="resetBtn">Reset</button>
@@ -280,7 +278,7 @@
 
             <div class="preview" aria-live="polite">
               <h2>Anteprima messaggio</h2>
-              <pre id="previewText">Compila i campi per vedere l’anteprima…</pre>
+              <pre id="previewText">Inserisci anche un solo campo per generare il messaggio…</pre>
             </div>
           </form>
         </div>
@@ -296,7 +294,6 @@
       const WHATSAPP_NUMBER = "393345280521";
 
       const form = document.getElementById("kiteForm");
-      const errorBox = document.getElementById("errorBox");
       const preview = document.getElementById("previewText");
       const resetBtn = document.getElementById("resetBtn");
 
@@ -317,66 +314,25 @@
         const water = val("water");
         const note = val("note");
 
-        // FORMATO ESATTO richiesto (con newline reali; verranno URL-encoded)
-        let msg =
-`📍 Location: ${location}
-🌬️ Vento (knots): ${wind}
-🪁 Kite (m²): ${kite}
-⚖️ Peso (kg): ${weight}
-👤 Gender: ${gender}`;
+        const lines = [];
+        if (location) lines.push(`📍 Location: ${location}`);
+        if (wind) lines.push(`🌬️ Vento (knots): ${wind}`);
+        if (kite) lines.push(`🪁 Kite (m²): ${kite}`);
+        if (weight) lines.push(`⚖️ Peso (kg): ${weight}`);
+        if (gender) lines.push(`👤 Gender: ${gender}`);
+        if (brand) lines.push(`🏷️ Marca: ${brand}`);
+        if (model) lines.push(`🪁 Modello: ${model}`);
+        if (board) lines.push(`🪵 Tavola: ${board}`);
+        if (level) lines.push(`🎯 Livello: ${level}`);
+        if (water) lines.push(`🌊 Condizione: ${water}`);
+        if (note) lines.push(`Note: ${note}`);
 
-        if (brand){
-          msg += `\n🏷️ Marca: ${brand}`;
-        }
-
-        if (model){
-          msg += `\n🪁 Modello: ${model}`;
-        }
-
-        if (board){
-          msg += `\n🪵 Tavola: ${board}`;
-        }
-
-        if (level){
-          msg += `\n🎯 Livello: ${level}`;
-        }
-
-        if (water){
-          msg += `\n🌊 Condizione: ${water}`;
-        }
-
-        if (note){
-          msg += `\n\nNote: ${note}`;
-        }
-        return msg;
-      }
-
-      function validateRequired(){
-        const missing = [];
-        if (!val("location")) missing.push("Location");
-        if (!val("wind")) missing.push("Vento (knots)");
-        if (!val("kite")) missing.push("Kite size (m²)");
-        if (!val("weight")) missing.push("Peso (kg)");
-        return missing;
-      }
-
-      function setError(message){
-        if (!message){
-          errorBox.style.display = "none";
-          errorBox.textContent = "";
-          return;
-        }
-        errorBox.textContent = message;
-        errorBox.style.display = "block";
+        return lines.join("\n");
       }
 
       function refreshPreview(){
-        const missing = validateRequired();
-        if (missing.length){
-          preview.textContent = "Compila i campi obbligatori per vedere l’anteprima completa…";
-          return;
-        }
-        preview.textContent = buildMessage();
+        const msg = buildMessage();
+        preview.textContent = msg || "Inserisci anche un solo campo per generare il messaggio…";
       }
 
       function openWhatsAppWithMessage(message){
@@ -390,27 +346,19 @@
       // Live preview
       ["location","wind","kite","brand","model","weight","gender","board","level","water","note"].forEach((id) => {
         document.getElementById(id).addEventListener("input", () => {
-          setError("");
           refreshPreview();
         });
       });
 
       form.addEventListener("submit", (e) => {
         e.preventDefault();
-        const missing = validateRequired();
-        if (missing.length){
-          setError(`Compila i campi obbligatori: ${missing.join(", ")}.`);
-          return;
-        }
         const msg = buildMessage();
-        preview.textContent = msg;
         openWhatsAppWithMessage(msg);
       });
 
       resetBtn.addEventListener("click", () => {
         form.reset();
-        setError("");
-        preview.textContent = "Compila i campi per vedere l’anteprima…";
+        preview.textContent = "Inserisci anche un solo campo per generare il messaggio…";
       });
     </script>
   </body>
