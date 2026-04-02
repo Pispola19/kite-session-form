@@ -2,6 +2,77 @@
 
 Questo file documenta il comportamento del layer di ingest **passivo**: estrazione senza interpretazione.
 
+**Uso interno:** sicurezza ingest e protezione dataset.
+
+---
+
+## Filtro di accettazione messaggi WhatsApp (pre-ingest)
+
+**Obiettivo:** accettare **solo** messaggi generati dal sistema ufficiale (form RDK + blocco tecnico). WhatsApp è solo canale di trasporto; il **gate** è il filtro di ingest.
+
+**Principio:** un messaggio è **valido solo se** soddisfa **tutte** le condizioni sotto. In caso contrario → **ignorato completamente** (nessuna correzione, nessun recupero, nessun parsing del corpo).
+
+### 1. Presenza blocco tecnico
+
+Il messaggio deve contenere un blocco finale conforme al formato prodotto dal form (nessuna riga vuota extra tra delimitatori e righe chiave):
+
+```text
+---
+ID: <10 caratteri>
+TS: <timestamp>
+SRC: rdk_v1
+---
+```
+
+*(Il testo libero dell’utente precede il primo `---` del blocco.)*
+
+### 2. Validazione `ID`
+
+- lunghezza **esattamente** `10`
+- charset: **`[a-z0-9]`** (solo minuscolo e cifre)
+
+Se non valido → **SCARTA**
+
+### 3. Validazione `SRC`
+
+- valore **esattamente** `rdk_v1` (nessuna variante, case-sensitive come da emissione)
+
+Se diverso → **SCARTA**
+
+### 4. Struttura completa
+
+Il blocco deve includere **tutte** le righe:
+
+- `ID: ...`
+- `TS: ...`
+- `SRC: ...`
+
+Se manca anche una → **SCARTA**
+
+*(Opzionale implementativo: rifiutare più di un blocco tecnico valido nello stesso testo, per evitare concatenazioni ambigue.)*
+
+### 5. Deduplicazione
+
+- se **`ID` già presente** nello store ingest (stesso invio / copia duplicata) → **SCARTA**
+
+### Comportamento
+
+| Esito        | Azione                          |
+|-------------|----------------------------------|
+| Non valido  | Ignorato; nessuna elaborazione   |
+| Valido      | Procede allo STEP 5 (parse minimo) |
+
+### Vincoli del filtro
+
+- **NON** interpretare il contenuto libero prima del blocco
+- **NON** correggere formato o normalizzare `ID` / `TS`
+- **NON** accettare varianti di `SRC` o del layout del blocco
+
+### Risultato atteso
+
+- Ingest sicuro e dataset protetto da input esterni non firmati dal canale ufficiale
+- Base per automazione futura senza contaminazione
+
 ---
 
 ## STEP 5 — PARSE MINIMO (NO LOGICA)
