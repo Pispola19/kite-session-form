@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="it">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -184,57 +184,21 @@
     <div class="wrap">
       <header>
         <h1>Kite session → WhatsApp <span class="pill">MVP</span></h1>
-        <p class="sub">Ci metti 20 secondi 👍 Compila e invia su WhatsApp all’operatore. Nessun salvataggio, nessun backend.</p>
+        <p class="sub">Share your session in ~20 seconds. No login, no saving, no backend.</p>
       </header>
 
       <div class="card">
         <div class="card-inner">
           <form id="kiteForm" autocomplete="on" novalidate>
-            <div class="row">
-              <div>
-                <label for="location">Location <span class="hint">(opzionale)</span></label>
-                <input id="location" name="location" type="text" inputmode="text" placeholder="Es. Punta Trettu" />
-              </div>
-            </div>
-
             <div class="row two">
               <div>
-                <label for="wind">Vento (knots) <span class="hint">(opzionale)</span></label>
-                <input id="wind" name="wind" type="text" inputmode="numeric" placeholder="Es. 22" />
+                <label for="weight">Weight (kg) <span class="req">(required)</span></label>
+                <input id="weight" name="weight" type="text" inputmode="numeric" placeholder="e.g. 74" required />
               </div>
               <div>
-                <label for="kite">Kite size (m²) <span class="hint">(opzionale)</span></label>
-                <input id="kite" name="kite" type="text" inputmode="decimal" placeholder="Es. 8" />
-              </div>
-            </div>
-
-            <div class="row two">
-              <div>
-                <label for="brand">Marca kite <span class="hint">(opzionale)</span></label>
-                <input id="brand" name="brand" type="text" inputmode="text" placeholder="Marca kite (opzionale) es. Duotone, Cabrinha..." />
-              </div>
-              <div>
-                <label for="model">Modello kite <span class="hint">(opzionale)</span></label>
-                <input id="model" name="model" type="text" inputmode="text" placeholder="Modello kite (opzionale) es. Evo, Switchblade..." />
-              </div>
-            </div>
-
-            <div class="row two">
-              <div>
-                <label for="weight">Peso (kg) <span class="hint">(opzionale)</span></label>
-                <input id="weight" name="weight" type="text" inputmode="numeric" placeholder="Es. 51" />
-              </div>
-              <div>
-                <label for="gender">Gender <span class="hint">(opzionale)</span></label>
-                <input id="gender" name="gender" type="text" inputmode="text" placeholder="Es. M / F / NB" />
-              </div>
-            </div>
-
-            <div class="row">
-              <div>
-                <label for="board">Tipo tavola <span class="hint">(opzionale)</span></label>
-                <select id="board" name="board">
-                  <option value="">Tipo tavola (opzionale)</option>
+                <label for="board">Board type <span class="req">(required)</span></label>
+                <select id="board" name="board" required>
+                  <option value="">Select board type</option>
                   <option value="twintip">Twintip</option>
                   <option value="surfboard">Surfboard</option>
                   <option value="foil">Foil</option>
@@ -242,50 +206,89 @@
               </div>
             </div>
 
+            <div class="row">
+              <div>
+                <label for="gender">Gender <span class="hint">(optional)</span></label>
+                <input id="gender" name="gender" type="text" inputmode="text" placeholder="e.g. M / F / NB" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="kite">Kite size (m²) <span class="req">(required)</span></label>
+                <input id="kite" name="kite" type="text" inputmode="decimal" placeholder="e.g. 9" required />
+              </div>
+            </div>
+
             <div class="row two">
               <div>
-                <label for="level">Livello <span class="hint">(opzionale)</span></label>
-                <select id="level" name="level">
-                  <option value="">Livello (opzionale)</option>
-                  <option value="beginner">Beginner</option>
-                  <option value="intermediate">Intermediate</option>
-                  <option value="advanced">Advanced</option>
-                </select>
+                <label for="brand">Kite brand <span class="hint">(optional)</span></label>
+                <input id="brand" name="brand" type="text" inputmode="text" placeholder="e.g. Duotone, Cabrinha..." />
               </div>
               <div>
-                <label for="water">Condizione acqua <span class="hint">(opzionale)</span></label>
+                <label for="model">Kite model <span class="hint">(optional)</span></label>
+                <input id="model" name="model" type="text" inputmode="text" placeholder="e.g. Evo, Switchblade..." />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="wind">Estimated wind (optional)</label>
+                <input id="wind" name="wind" type="text" inputmode="numeric" placeholder="Leave empty if unknown" />
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="location">Location <span class="hint">(optional)</span></label>
+                <input id="location" name="location" type="text" inputmode="text" placeholder="e.g. Punta Trettu" />
+              </div>
+            </div>
+
+            <div class="row two">
+              <div>
+                <label for="water">Water conditions <span class="hint">(optional)</span></label>
                 <select id="water" name="water">
-                  <option value="">Condizione acqua (opzionale)</option>
+                  <option value="">Water conditions (optional)</option>
                   <option value="flat">Flat</option>
                   <option value="choppy">Choppy</option>
                   <option value="waves">Waves</option>
+                </select>
+              </div>
+              <div>
+                <label for="result">Session result <span class="hint">(optional)</span></label>
+                <select id="result" name="result">
+                  <option value="">Session result (optional)</option>
+                  <option value="perfect">Perfect</option>
+                  <option value="too_much">Too much</option>
+                  <option value="too_little">Too little</option>
                 </select>
               </div>
             </div>
 
             <div class="row">
               <div>
-                <label for="note">Note <span class="hint">(opzionale)</span></label>
-                <textarea id="note" name="note" placeholder="Es. acqua piatta, twin-tip, raffiche fino a 22kt…"></textarea>
-                <div class="hint">Screenshot: non caricare qui. Se serve, allegalo manualmente su WhatsApp dopo l’invio.</div>
+                <label for="note">Notes <span class="hint">(optional)</span></label>
+                <textarea id="note" name="note" placeholder="Anything useful (spot, gusts, setup, etc.)"></textarea>
+                <div class="hint">If needed, add screenshots manually in WhatsApp after sending.</div>
               </div>
             </div>
 
             <div class="actions">
-              <button type="submit" class="primary" id="sendBtn">Invia su WhatsApp</button>
+              <button type="submit" class="primary" id="sendBtn">Send via WhatsApp</button>
               <button type="button" class="secondary" id="resetBtn">Reset</button>
             </div>
 
             <div class="preview" aria-live="polite">
-              <h2>Anteprima messaggio</h2>
-              <pre id="previewText">Inserisci anche un solo campo per generare il messaggio…</pre>
+              <h2>Message preview</h2>
+              <pre id="previewText">Fill the required fields to generate the message…</pre>
             </div>
           </form>
         </div>
       </div>
 
       <footer>
-        Config: imposta il numero WhatsApp in <code>WHATSAPP_NUMBER</code> (formato internazionale, solo cifre; es. 393331112233).
+        Set the operator number in <code>WHATSAPP_NUMBER</code> (international format, digits only; e.g. 393331112233).
       </footer>
     </div>
 
@@ -302,37 +305,37 @@
       }
 
       function buildMessage(){
-        const location = val("location");
-        const wind = val("wind");
+        const weight = val("weight");
+        const board = val("board");
+        const gender = val("gender");
         const kite = val("kite");
         const brand = val("brand");
         const model = val("model");
-        const weight = val("weight");
-        const gender = val("gender");
-        const board = val("board");
-        const level = val("level");
+        const wind = val("wind");
+        const location = val("location");
         const water = val("water");
+        const result = val("result");
         const note = val("note");
 
         const lines = [];
-        if (location) lines.push(`📍 Location: ${location}`);
-        if (wind) lines.push(`🌬️ Vento (knots): ${wind}`);
-        if (kite) lines.push(`🪁 Kite (m²): ${kite}`);
-        if (weight) lines.push(`⚖️ Peso (kg): ${weight}`);
+        if (weight) lines.push(`⚖️ Weight (kg): ${weight}`);
+        if (board) lines.push(`🪵 Board: ${board}`);
         if (gender) lines.push(`👤 Gender: ${gender}`);
-        if (brand) lines.push(`🏷️ Marca: ${brand}`);
-        if (model) lines.push(`🪁 Modello: ${model}`);
-        if (board) lines.push(`🪵 Tavola: ${board}`);
-        if (level) lines.push(`🎯 Livello: ${level}`);
-        if (water) lines.push(`🌊 Condizione: ${water}`);
-        if (note) lines.push(`Note: ${note}`);
+        if (kite) lines.push(`🪁 Kite (m²): ${kite}`);
+        if (brand) lines.push(`🏷️ Brand: ${brand}`);
+        if (model) lines.push(`🪁 Model: ${model}`);
+        if (wind) lines.push(`🌬️ Estimated wind: ${wind}`);
+        if (location) lines.push(`📍 Location: ${location}`);
+        if (water) lines.push(`🌊 Water: ${water}`);
+        if (result) lines.push(`✅ Result: ${result}`);
+        if (note) lines.push(`Notes: ${note}`);
 
         return lines.join("\n");
       }
 
       function refreshPreview(){
         const msg = buildMessage();
-        preview.textContent = msg || "Inserisci anche un solo campo per generare il messaggio…";
+        preview.textContent = msg || "Fill the required fields to generate the message…";
       }
 
       function openWhatsAppWithMessage(message){
@@ -344,7 +347,7 @@
       }
 
       // Live preview
-      ["location","wind","kite","brand","model","weight","gender","board","level","water","note"].forEach((id) => {
+      ["weight","board","gender","kite","brand","model","wind","location","water","result","note"].forEach((id) => {
         document.getElementById(id).addEventListener("input", () => {
           refreshPreview();
         });
@@ -352,13 +355,14 @@
 
       form.addEventListener("submit", (e) => {
         e.preventDefault();
+        if (!form.reportValidity()) return;
         const msg = buildMessage();
         openWhatsAppWithMessage(msg);
       });
 
       resetBtn.addEventListener("click", () => {
         form.reset();
-        preview.textContent = "Inserisci anche un solo campo per generare il messaggio…";
+        preview.textContent = "Fill the required fields to generate the message…";
       });
     </script>
   </body>
