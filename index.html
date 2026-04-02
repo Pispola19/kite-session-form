@@ -700,7 +700,7 @@
       }
 
       function randomRdkId(){
-        const len = 8 + Math.floor(Math.random() * 3);
+        const len = 10;
         const alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
         const chars = [];
         if (window.crypto && window.crypto.getRandomValues){
@@ -722,7 +722,7 @@
       function appendTechnicalBlock(body){
         const id = randomRdkId();
         const ts = rdkTimestampIso();
-        return `${body}\n\n---\n\nID: ${id}\nTS: ${ts}\nSRC: rdk_v1\n\n---`;
+        return `${body}\n---\nID: ${id}\nTS: ${ts}\nSRC: rdk_v1\n---`;
       }
 
       function buildMessage(){
