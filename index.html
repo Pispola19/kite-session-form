@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="it">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -48,16 +48,34 @@
         gap: 8px;
         justify-content:flex-end;
       }
-      .lang label{
-        margin:0;
-        font-size: 12px;
-        color: var(--muted);
-        white-space: nowrap;
+      .lang .flags{
+        display:flex;
+        gap: 6px;
+        padding: 6px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: rgba(255,255,255,.03);
       }
-      .lang select{
-        width:auto;
-        padding: 10px 10px;
-        font-size: 14px;
+      .flag-btn{
+        cursor:pointer;
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--text);
+        border-radius: 999px;
+        padding: 6px 8px;
+        font-size: 16px;
+        line-height: 1;
+      }
+      .flag-btn[aria-pressed="true"]{
+        border-color: rgba(96,165,250,.55);
+        background: rgba(96,165,250,.12);
+      }
+      .row.thirty-seventy{
+        grid-template-columns: 3fr 7fr;
+        align-items:end;
+      }
+      @media (max-width: 420px){
+        .row.thirty-seventy{ grid-template-columns: 1fr; }
       }
       h1{
         font-size: 20px;
@@ -212,14 +230,13 @@
             <p class="sub" data-i18n="subtitle">Share your session in ~20 seconds. No login, no saving, no backend.</p>
           </div>
           <div class="lang">
-            <label for="langSelect" data-i18n="language">Language</label>
-            <select id="langSelect" aria-label="Language">
-              <option value="en">🇬🇧 EN</option>
-              <option value="it">🇮🇹 IT</option>
-              <option value="de">🇩🇪 DE</option>
-              <option value="es">🇪🇸 ES</option>
-              <option value="fr">🇫🇷 FR</option>
-            </select>
+            <div class="flags" role="group" aria-label="Language">
+              <button type="button" class="flag-btn" data-lang="it" aria-pressed="false" title="Italiano">🇮🇹</button>
+              <button type="button" class="flag-btn" data-lang="en" aria-pressed="false" title="English">🇬🇧</button>
+              <button type="button" class="flag-btn" data-lang="de" aria-pressed="false" title="Deutsch">🇩🇪</button>
+              <button type="button" class="flag-btn" data-lang="es" aria-pressed="false" title="Español">🇪🇸</button>
+              <button type="button" class="flag-btn" data-lang="fr" aria-pressed="false" title="Français">🇫🇷</button>
+            </div>
           </div>
         </div>
       </header>
@@ -243,17 +260,14 @@
               </div>
             </div>
 
-            <div class="row">
+            <div class="row thirty-seventy">
               <div>
                 <label for="gender"><span data-i18n="label_gender">Gender</span> <span class="hint" data-i18n="optional">(optional)</span></label>
-                <input id="gender" name="gender" type="text" inputmode="text" placeholder="e.g. M / F / NB" data-i18n-placeholder="ph_gender" />
+                <input id="gender" name="gender" type="text" inputmode="text" placeholder="e.g. M / F" data-i18n-placeholder="ph_gender" />
               </div>
-            </div>
-
-            <div class="row">
               <div>
                 <label for="kite"><span data-i18n="label_kite_size">Kite size (m²)</span> <span class="req" data-i18n="required">(required)</span></label>
-                <input id="kite" name="kite" type="text" inputmode="decimal" placeholder="e.g. 9" data-i18n-placeholder="ph_kite_size" required />
+                <input id="kite" name="kite" type="text" inputmode="numeric" placeholder="e.g. 9" data-i18n-placeholder="ph_kite_size" required />
               </div>
             </div>
 
@@ -340,7 +354,6 @@
           pageTitle: "Kite session → WhatsApp",
           title: "Kite session → WhatsApp",
           subtitle: "Share your session in ~20 seconds. No login, no saving, no backend.",
-          language: "Language",
           required: "(required)",
           optional: "(optional)",
           label_weight: "Weight (kg)",
@@ -351,7 +364,7 @@
           opt_board_surfboard: "Surfboard",
           opt_board_foil: "Foil",
           label_gender: "Gender",
-          ph_gender: "e.g. M / F / NB",
+          ph_gender: "e.g. M / F",
           label_kite_size: "Kite size (m²)",
           ph_kite_size: "e.g. 9",
           label_brand: "Kite brand",
@@ -397,8 +410,7 @@
           htmlLang: "it",
           pageTitle: "Sessione kite → WhatsApp",
           title: "Sessione kite → WhatsApp",
-          subtitle: "Condividi la sessione in ~20 secondi. Niente login, niente salvataggi, niente backend.",
-          language: "Lingua",
+          subtitle: "Condividi la sessione in ~20 secondi. Nessun login, nessun salvataggio, nessun backend.",
           required: "(obbligatorio)",
           optional: "(opzionale)",
           label_weight: "Peso (kg)",
@@ -408,8 +420,8 @@
           opt_board_twintip: "Twintip",
           opt_board_surfboard: "Surfboard",
           opt_board_foil: "Foil",
-          label_gender: "Gender",
-          ph_gender: "es. M / F / NB",
+          label_gender: "Genere",
+          ph_gender: "es. M / F",
           label_kite_size: "Misura kite (m²)",
           ph_kite_size: "es. 9",
           label_brand: "Marca kite",
@@ -418,20 +430,20 @@
           ph_model: "es. Evo, Switchblade...",
           label_wind: "Vento stimato (opzionale)",
           ph_wind: "Lascia vuoto se non lo sai",
-          label_location: "Location",
+          label_location: "Spot",
           ph_location: "es. Punta Trettu",
-          label_water: "Condizione acqua",
-          opt_water_prompt: "Condizione acqua (opzionale)",
+          label_water: "Condizioni acqua",
+          opt_water_prompt: "Condizioni acqua (opzionale)",
           opt_water_flat: "Piatta",
           opt_water_choppy: "Chop",
           opt_water_waves: "Onde",
-          label_result: "Esito sessione",
-          opt_result_prompt: "Esito sessione (opzionale)",
+          label_result: "Risultato sessione",
+          opt_result_prompt: "Risultato sessione (opzionale)",
           opt_result_perfect: "Perfetta",
-          opt_result_too_much: "Troppo",
-          opt_result_too_little: "Troppo poco",
+          opt_result_too_much: "Troppo vento",
+          opt_result_too_little: "Poco vento",
           label_notes: "Note",
-          ph_notes: "Info utili (spot, raffiche, setup, ecc.)",
+          ph_notes: "Info utili (raffiche, setup, condizioni...)",
           hint_screenshot: "Se serve, aggiungi screenshot manualmente su WhatsApp dopo l’invio.",
           btn_send: "Invia su WhatsApp",
           btn_reset: "Reset",
@@ -440,15 +452,15 @@
           footer_prefix: "Imposta il numero operatore in",
           footer_suffix: "(formato internazionale, solo cifre; es. 393331112233).",
           msg_weight: "Peso (kg)",
-          msg_board: "Tavola",
-          msg_gender: "Gender",
+          msg_board: "Tipo tavola",
+          msg_gender: "Genere",
           msg_kite: "Kite (m²)",
           msg_brand: "Marca",
           msg_model: "Modello",
           msg_wind: "Vento stimato",
-          msg_location: "Location",
-          msg_water: "Acqua",
-          msg_result: "Esito",
+          msg_location: "Spot",
+          msg_water: "Condizioni acqua",
+          msg_result: "Risultato sessione",
           msg_notes: "Note",
         },
         de: {
@@ -627,7 +639,7 @@
         },
       };
 
-      let currentLang = "en";
+      let currentLang = "it";
 
       function t(key){
         const pack = translations[currentLang] || translations.en;
@@ -656,13 +668,12 @@
       const form = document.getElementById("kiteForm");
       const preview = document.getElementById("previewText");
       const resetBtn = document.getElementById("resetBtn");
-      const langSelect = document.getElementById("langSelect");
+      const flagButtons = Array.from(document.querySelectorAll(".flag-btn[data-lang]"));
 
       (function initLanguage(){
-        let saved = "en";
-        try { saved = localStorage.getItem("rdk_lang") || "en"; } catch (_) {}
-        if (langSelect && translations[saved]) langSelect.value = saved;
-        applyTranslations(langSelect?.value || "en");
+        let saved = "it";
+        try { saved = localStorage.getItem("rdk_lang") || "it"; } catch (_) {}
+        applyTranslations(translations[saved] ? saved : "it");
       })();
 
       function val(id){
@@ -725,12 +736,23 @@
         });
       });
 
-      if (langSelect){
-        langSelect.addEventListener("change", () => {
-          applyTranslations(langSelect.value);
-          refreshPreview();
+      function syncFlagUI(){
+        flagButtons.forEach((btn) => {
+          const lang = btn.getAttribute("data-lang");
+          btn.setAttribute("aria-pressed", lang === currentLang ? "true" : "false");
         });
       }
+
+      flagButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const lang = btn.getAttribute("data-lang");
+          applyTranslations(lang);
+          syncFlagUI();
+          refreshPreview();
+        });
+      });
+
+      syncFlagUI();
 
       form.addEventListener("submit", (e) => {
         e.preventDefault();
