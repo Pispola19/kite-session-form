@@ -231,6 +231,27 @@
               </div>
             </div>
 
+            <div class="row two">
+              <div>
+                <label for="level">Livello <span class="hint">(opzionale)</span></label>
+                <select id="level" name="level">
+                  <option value="">Livello (opzionale)</option>
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                </select>
+              </div>
+              <div>
+                <label for="water">Condizione acqua <span class="hint">(opzionale)</span></label>
+                <select id="water" name="water">
+                  <option value="">Condizione acqua (opzionale)</option>
+                  <option value="flat">Flat</option>
+                  <option value="choppy">Choppy</option>
+                  <option value="waves">Waves</option>
+                </select>
+              </div>
+            </div>
+
             <div class="row">
               <div>
                 <label for="note">Note <span class="hint">(opzionale)</span></label>
@@ -279,6 +300,8 @@
         const weight = val("weight");
         const gender = val("gender");
         const board = val("board");
+        const level = val("level");
+        const water = val("water");
         const note = val("note");
 
         // FORMATO ESATTO richiesto (con newline reali; verranno URL-encoded)
@@ -291,6 +314,14 @@
 
         if (board){
           msg += `\n🪵 Tavola: ${board}`;
+        }
+
+        if (level){
+          msg += `\n🎯 Livello: ${level}`;
+        }
+
+        if (water){
+          msg += `\n🌊 Condizione: ${water}`;
         }
 
         if (note){
@@ -336,7 +367,7 @@
       }
 
       // Live preview
-      ["location","wind","kite","weight","gender","board","note"].forEach((id) => {
+      ["location","wind","kite","weight","gender","board","level","water","note"].forEach((id) => {
         document.getElementById(id).addEventListener("input", () => {
           setError("");
           refreshPreview();
