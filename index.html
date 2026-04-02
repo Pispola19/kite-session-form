@@ -349,6 +349,7 @@
     <script>
       // CONFIG: numero destinatario in formato internazionale, solo cifre (no +, no spazi)
       const WHATSAPP_NUMBER = "393345280521";
+      const ENABLE_SIGNATURE = false;
 
       const translations = {
         en: {
@@ -719,10 +720,42 @@
         return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
       }
 
-      function appendTechnicalBlock(body){
+      async function generateSignature(text){
+        const key = "RDK_SECRET_PLACEHOLDER";
+        const enc = new TextEncoder();
+        const cryptoKey = await crypto.subtle.importKey(
+          "raw",
+          enc.encode(key),
+          { name: "HMAC", hash: "SHA-256" },
+          false,
+          ["sign"]
+        );
+
+        const signature = await crypto.subtle.sign(
+          "HMAC",
+          cryptoKey,
+          enc.encode(text)
+        );
+
+        return Array.from(new Uint8Array(signature))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("")
+          .slice(0, 10);
+      }
+
+      async function appendTechnicalBlock(body){
         const id = randomRdkId();
         const ts = rdkTimestampIso();
-        return `${body}\n---\nID: ${id}\nTS: ${ts}\nSRC: rdk_v1\n---`;
+
+        let block = `${body}\n---\nID: ${id}\nTS: ${ts}\nSRC: rdk_v1`;
+
+        if (ENABLE_SIGNATURE){
+          const sig = await generateSignature(block);
+          block += `\nSIG: ${sig}`;
+        }
+
+        block += `\n---`;
+        return block;
       }
 
       function buildMessage(){
@@ -792,10 +825,10 @@
 
       syncFlagUI();
 
-      form.addEventListener("submit", (e) => {
+      form.addEventListener("submit", async (e) => {
         e.preventDefault();
         if (!form.reportValidity()) return;
-        const msg = appendTechnicalBlock(buildMessage());
+        const msg = await appendTechnicalBlock(buildMessage());
         openWhatsAppWithMessage(msg);
       });
 
