@@ -221,6 +221,18 @@
 
             <div class="row">
               <div>
+                <label for="board">Tipo tavola <span class="hint">(opzionale)</span></label>
+                <select id="board" name="board">
+                  <option value="">Tipo tavola (opzionale)</option>
+                  <option value="twintip">Twintip</option>
+                  <option value="surfboard">Surfboard</option>
+                  <option value="foil">Foil</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
                 <label for="note">Note <span class="hint">(opzionale)</span></label>
                 <textarea id="note" name="note" placeholder="Es. acqua piatta, twin-tip, raffiche fino a 22kt…"></textarea>
                 <div class="hint">Screenshot: non caricare qui. Se serve, allegalo manualmente su WhatsApp dopo l’invio.</div>
@@ -266,6 +278,7 @@
         const kite = val("kite");
         const weight = val("weight");
         const gender = val("gender");
+        const board = val("board");
         const note = val("note");
 
         // FORMATO ESATTO richiesto (con newline reali; verranno URL-encoded)
@@ -275,6 +288,10 @@
 🪁 Kite (m²): ${kite}
 ⚖️ Peso (kg): ${weight}
 👤 Gender: ${gender}`;
+
+        if (board){
+          msg += `\n🪵 Tavola: ${board}`;
+        }
 
         if (note){
           msg += `\n\nNote: ${note}`;
@@ -319,7 +336,7 @@
       }
 
       // Live preview
-      ["location","wind","kite","weight","gender","note"].forEach((id) => {
+      ["location","wind","kite","weight","gender","board","note"].forEach((id) => {
         document.getElementById(id).addEventListener("input", () => {
           setError("");
           refreshPreview();
