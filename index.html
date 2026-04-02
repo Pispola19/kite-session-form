@@ -260,10 +260,24 @@
               </div>
             </div>
 
+            <div id="boardSizeRow" class="row" hidden>
+              <div>
+                <label for="boardSize"><span data-i18n="label_board_size">Board size</span> <span class="hint" data-i18n="optional">(optional)</span></label>
+                <select id="boardSize" name="boardSize">
+                  <option value="" data-i18n="opt_board_size_prompt">Board size (optional)</option>
+                </select>
+              </div>
+            </div>
+
             <div class="row thirty-seventy">
               <div>
-                <label for="gender"><span data-i18n="label_gender">Gender</span> <span class="hint" data-i18n="optional">(optional)</span></label>
-                <input id="gender" name="gender" type="text" inputmode="text" placeholder="e.g. M / F" data-i18n-placeholder="ph_gender" />
+                <label for="level"><span data-i18n="label_level">Level</span> <span class="req" data-i18n="required">(required)</span></label>
+                <select id="level" name="level" required>
+                  <option value="" data-i18n="opt_level_prompt">Select level</option>
+                  <option value="beginner" data-i18n="opt_level_beginner">Beginner</option>
+                  <option value="independent" data-i18n="opt_level_independent">Independent</option>
+                  <option value="advanced" data-i18n="opt_level_advanced">Advanced</option>
+                </select>
               </div>
               <div>
                 <label for="kite"><span data-i18n="label_kite_size">Kite size (m²)</span> <span class="req" data-i18n="required">(required)</span></label>
@@ -351,6 +365,12 @@
       const WHATSAPP_NUMBER = "393345280521";
       const ENABLE_SIGNATURE = false;
 
+      const BOARD_SIZE_BY_TYPE = {
+        twintip: ["135x40", "138x41", "140x42", "142x42", "145x43", "150x44", "155x45", "160x45"],
+        surfboard: ["5'4", "5'6", "5'8", "6'0", "6'2"],
+        foil: ["120", "130", "140", "150"],
+      };
+
       const translations = {
         en: {
           htmlLang: "en",
@@ -366,8 +386,13 @@
           opt_board_twintip: "Twintip",
           opt_board_surfboard: "Surfboard",
           opt_board_foil: "Foil",
-          label_gender: "Gender",
-          ph_gender: "e.g. M / F",
+          label_board_size: "Board size",
+          opt_board_size_prompt: "Board size (optional)",
+          label_level: "Level",
+          opt_level_prompt: "Select level",
+          opt_level_beginner: "Beginner",
+          opt_level_independent: "Independent",
+          opt_level_advanced: "Advanced",
           label_kite_size: "Kite size (m²)",
           ph_kite_size: "e.g. 9",
           label_brand: "Kite brand",
@@ -401,7 +426,8 @@
           footer_suffix: "(international format, digits only; e.g. 393331112233).",
           msg_weight: "Weight (kg)",
           msg_board: "Board",
-          msg_gender: "Gender",
+          msg_board_size: "Board size",
+          msg_level: "Level",
           msg_kite: "Kite (m²)",
           msg_brand: "Brand",
           msg_model: "Model",
@@ -425,8 +451,13 @@
           opt_board_twintip: "Twintip",
           opt_board_surfboard: "Surfboard",
           opt_board_foil: "Foil",
-          label_gender: "Genere",
-          ph_gender: "es. M / F",
+          label_board_size: "Misura tavola",
+          opt_board_size_prompt: "Misura tavola (opzionale)",
+          label_level: "Livello",
+          opt_level_prompt: "Seleziona livello",
+          opt_level_beginner: "Beginner",
+          opt_level_independent: "Independent",
+          opt_level_advanced: "Advanced",
           label_kite_size: "Misura kite (m²)",
           ph_kite_size: "es. 9",
           label_brand: "Marca kite",
@@ -460,7 +491,8 @@
           footer_suffix: "(formato internazionale, solo cifre; es. 393331112233).",
           msg_weight: "Peso (kg)",
           msg_board: "Tipo tavola",
-          msg_gender: "Genere",
+          msg_board_size: "Misura tavola",
+          msg_level: "Livello",
           msg_kite: "Kite (m²)",
           msg_brand: "Marca",
           msg_model: "Modello",
@@ -485,8 +517,13 @@
           opt_board_twintip: "Twintip",
           opt_board_surfboard: "Surfboard",
           opt_board_foil: "Foil",
-          label_gender: "Gender",
-          ph_gender: "z.B. M / F / NB",
+          label_board_size: "Board-Größe",
+          opt_board_size_prompt: "Board-Größe (optional)",
+          label_level: "Level",
+          opt_level_prompt: "Level wählen",
+          opt_level_beginner: "Beginner",
+          opt_level_independent: "Independent",
+          opt_level_advanced: "Advanced",
           label_kite_size: "Kite-Größe (m²)",
           ph_kite_size: "z.B. 9",
           label_brand: "Kite-Marke",
@@ -520,7 +557,8 @@
           footer_suffix: "(internationales Format, nur Ziffern; z.B. 393331112233).",
           msg_weight: "Gewicht (kg)",
           msg_board: "Board",
-          msg_gender: "Gender",
+          msg_board_size: "Board size",
+          msg_level: "Level",
           msg_kite: "Kite (m²)",
           msg_brand: "Marke",
           msg_model: "Modell",
@@ -545,8 +583,13 @@
           opt_board_twintip: "Twintip",
           opt_board_surfboard: "Surfboard",
           opt_board_foil: "Foil",
-          label_gender: "Gender",
-          ph_gender: "p. ej. M / F / NB",
+          label_board_size: "Tamaño tabla",
+          opt_board_size_prompt: "Tamaño tabla (opcional)",
+          label_level: "Nivel",
+          opt_level_prompt: "Selecciona nivel",
+          opt_level_beginner: "Beginner",
+          opt_level_independent: "Independent",
+          opt_level_advanced: "Advanced",
           label_kite_size: "Tamaño de kite (m²)",
           ph_kite_size: "p. ej. 9",
           label_brand: "Marca de kite",
@@ -580,7 +623,8 @@
           footer_suffix: "(formato internacional, solo dígitos; p. ej. 393331112233).",
           msg_weight: "Peso (kg)",
           msg_board: "Tabla",
-          msg_gender: "Gender",
+          msg_board_size: "Board size",
+          msg_level: "Level",
           msg_kite: "Kite (m²)",
           msg_brand: "Marca",
           msg_model: "Modelo",
@@ -605,8 +649,13 @@
           opt_board_twintip: "Twintip",
           opt_board_surfboard: "Surfboard",
           opt_board_foil: "Foil",
-          label_gender: "Gender",
-          ph_gender: "ex. M / F / NB",
+          label_board_size: "Taille planche",
+          opt_board_size_prompt: "Taille planche (optionnel)",
+          label_level: "Niveau",
+          opt_level_prompt: "Choisir le niveau",
+          opt_level_beginner: "Beginner",
+          opt_level_independent: "Independent",
+          opt_level_advanced: "Advanced",
           label_kite_size: "Taille du kite (m²)",
           ph_kite_size: "ex. 9",
           label_brand: "Marque du kite",
@@ -640,7 +689,8 @@
           footer_suffix: "(format international, chiffres uniquement ; ex. 393331112233).",
           msg_weight: "Poids (kg)",
           msg_board: "Planche",
-          msg_gender: "Gender",
+          msg_board_size: "Board size",
+          msg_level: "Level",
           msg_kite: "Kite (m²)",
           msg_brand: "Marque",
           msg_model: "Modèle",
@@ -687,7 +737,41 @@
         let saved = "it";
         try { saved = localStorage.getItem("rdk_lang") || "it"; } catch (_) {}
         applyTranslations(translations[saved] ? saved : "it");
+        syncBoardSizeOptions();
       })();
+
+      function syncBoardSizeOptions(){
+        const boardVal = String(document.getElementById("board")?.value || "").trim();
+        const row = document.getElementById("boardSizeRow");
+        const sel = document.getElementById("boardSize");
+        if (!row || !sel) return;
+
+        const sizes = boardVal ? BOARD_SIZE_BY_TYPE[boardVal] : null;
+        if (!sizes){
+          row.hidden = true;
+          sel.innerHTML = "";
+          const o0 = document.createElement("option");
+          o0.value = "";
+          o0.textContent = t("opt_board_size_prompt");
+          sel.appendChild(o0);
+          return;
+        }
+
+        row.hidden = false;
+        const prev = sel.value;
+        sel.innerHTML = "";
+        const o0 = document.createElement("option");
+        o0.value = "";
+        o0.textContent = t("opt_board_size_prompt");
+        sel.appendChild(o0);
+        sizes.forEach((s) => {
+          const o = document.createElement("option");
+          o.value = s;
+          o.textContent = s;
+          sel.appendChild(o);
+        });
+        if (sizes.includes(prev)) sel.value = prev;
+      }
 
       function val(id){
         return String(document.getElementById(id).value || "").trim();
@@ -761,7 +845,8 @@
       function buildMessage(){
         const weight = val("weight");
         const board = val("board");
-        const gender = val("gender");
+        const boardSize = val("boardSize");
+        const level = val("level");
         const kite = val("kite");
         const brand = val("brand");
         const model = val("model");
@@ -774,7 +859,8 @@
         const lines = [];
         if (weight) lines.push(`⚖️ ${t("msg_weight")}: ${weight}`);
         if (board) lines.push(`🪵 ${t("msg_board")}: ${selectedText("board") || board}`);
-        if (gender) lines.push(`👤 ${t("msg_gender")}: ${gender}`);
+        if (boardSize) lines.push(`🪵 ${t("msg_board_size")}: ${boardSize}`);
+        if (level) lines.push(`🎯 ${t("msg_level")}: ${selectedText("level") || level}`);
         if (kite) lines.push(`🪁 ${t("msg_kite")}: ${kite}`);
         if (brand) lines.push(`🏷️ ${t("msg_brand")}: ${brand}`);
         if (model) lines.push(`🪁 ${t("msg_model")}: ${model}`);
@@ -800,12 +886,18 @@
         window.open(url, "_blank", "noopener,noreferrer");
       }
 
-      // Live preview
-      ["weight","board","gender","kite","brand","model","wind","location","water","result","note"].forEach((id) => {
-        document.getElementById(id).addEventListener("input", () => {
-          refreshPreview();
-        });
+      function bindFieldPreview(id){
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener("input", refreshPreview);
+        el.addEventListener("change", refreshPreview);
+      }
+
+      document.getElementById("board").addEventListener("change", () => {
+        syncBoardSizeOptions();
       });
+
+      ["weight","board","boardSize","level","kite","brand","model","wind","location","water","result","note"].forEach(bindFieldPreview);
 
       function syncFlagUI(){
         flagButtons.forEach((btn) => {
@@ -818,6 +910,7 @@
         btn.addEventListener("click", () => {
           const lang = btn.getAttribute("data-lang");
           applyTranslations(lang);
+          syncBoardSizeOptions();
           syncFlagUI();
           refreshPreview();
         });
@@ -834,6 +927,7 @@
 
       resetBtn.addEventListener("click", () => {
         form.reset();
+        syncBoardSizeOptions();
         preview.textContent = t("preview_empty");
       });
     </script>
