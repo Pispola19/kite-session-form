@@ -699,6 +699,32 @@
         return String(opt?.textContent || "").trim();
       }
 
+      function randomRdkId(){
+        const len = 8 + Math.floor(Math.random() * 3);
+        const alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
+        const chars = [];
+        if (window.crypto && window.crypto.getRandomValues){
+          const buf = new Uint8Array(len);
+          window.crypto.getRandomValues(buf);
+          for (let i = 0; i < len; i++) chars.push(alphabet[buf[i] % alphabet.length]);
+        } else {
+          for (let i = 0; i < len; i++) chars.push(alphabet[Math.floor(Math.random() * alphabet.length)]);
+        }
+        return chars.join("");
+      }
+
+      function rdkTimestampIso(){
+        const d = new Date();
+        const p = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+      }
+
+      function appendTechnicalBlock(body){
+        const id = randomRdkId();
+        const ts = rdkTimestampIso();
+        return `${body}\n\n---\n\nID: ${id}\nTS: ${ts}\nSRC: rdk_v1\n\n---`;
+      }
+
       function buildMessage(){
         const weight = val("weight");
         const board = val("board");
@@ -769,7 +795,7 @@
       form.addEventListener("submit", (e) => {
         e.preventDefault();
         if (!form.reportValidity()) return;
-        const msg = buildMessage();
+        const msg = appendTechnicalBlock(buildMessage());
         openWhatsAppWithMessage(msg);
       });
 
