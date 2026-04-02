@@ -210,6 +210,17 @@
 
             <div class="row two">
               <div>
+                <label for="brand">Marca kite <span class="hint">(opzionale)</span></label>
+                <input id="brand" name="brand" type="text" inputmode="text" placeholder="Marca kite (opzionale) es. Duotone, Cabrinha..." />
+              </div>
+              <div>
+                <label for="model">Modello kite <span class="hint">(opzionale)</span></label>
+                <input id="model" name="model" type="text" inputmode="text" placeholder="Modello kite (opzionale) es. Evo, Switchblade..." />
+              </div>
+            </div>
+
+            <div class="row two">
+              <div>
                 <label for="weight">Peso (kg) <span class="req">(obbligatorio)</span></label>
                 <input id="weight" name="weight" type="text" inputmode="numeric" placeholder="Es. 74" required />
               </div>
@@ -297,6 +308,8 @@
         const location = val("location");
         const wind = val("wind");
         const kite = val("kite");
+        const brand = val("brand");
+        const model = val("model");
         const weight = val("weight");
         const gender = val("gender");
         const board = val("board");
@@ -311,6 +324,14 @@
 🪁 Kite (m²): ${kite}
 ⚖️ Peso (kg): ${weight}
 👤 Gender: ${gender}`;
+
+        if (brand){
+          msg += `\n🏷️ Marca: ${brand}`;
+        }
+
+        if (model){
+          msg += `\n🪁 Modello: ${model}`;
+        }
 
         if (board){
           msg += `\n🪵 Tavola: ${board}`;
@@ -367,7 +388,7 @@
       }
 
       // Live preview
-      ["location","wind","kite","weight","gender","board","level","water","note"].forEach((id) => {
+      ["location","wind","kite","brand","model","weight","gender","board","level","water","note"].forEach((id) => {
         document.getElementById(id).addEventListener("input", () => {
           setError("");
           refreshPreview();
