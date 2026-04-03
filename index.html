@@ -334,6 +334,17 @@
         align-items:center;
         margin-top: 6px;
       }
+      .thank-you-note{
+        margin: 14px 2px 4px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(52,211,153,.28);
+        background: rgba(52,211,153,.08);
+        color: rgba(233,240,255,.95);
+        font-size: 14px;
+        line-height: 1.45;
+        white-space: pre-line;
+      }
       button{
         cursor:pointer;
         border: none;
@@ -530,6 +541,8 @@
               <button type="submit" class="primary" id="sendBtn" data-i18n="btn_send">Send via WhatsApp</button>
               <button type="button" class="secondary" id="resetBtn" data-i18n="btn_reset">Reset</button>
             </div>
+            <p class="thank-you-note" data-i18n="thank_you_note" id="thankYouNote">Thanks 🙏
+You’re helping improve kitesurfing for everyone.</p>
 
             <div class="preview" aria-live="polite">
               <h2 data-i18n="preview_title">Message preview</h2>
@@ -550,6 +563,14 @@
       const WHATSAPP_NUMBER = "393345280521";
       const ENABLE_SIGNATURE = false;
       const BOARD_SIZE_OTHER = "__rdk_other__";
+      const LS_FIRST_SUBMIT = "rdk_first_submit";
+
+      function hasFirstSubmitDone(){
+        try { return localStorage.getItem(LS_FIRST_SUBMIT) === "true"; } catch (_) { return true; }
+      }
+      function markFirstSubmitDone(){
+        try { localStorage.setItem(LS_FIRST_SUBMIT, "true"); } catch (_) {}
+      }
 
       const BOARD_SIZE_BY_TYPE = {
         twintip: ["135x40", "138x41", "140x42", "145x43", "150x44", "155x44", "160x45"],
@@ -620,6 +641,8 @@
           hint_screenshot: "If needed, add screenshots manually in WhatsApp after sending.",
           btn_send: "Send via WhatsApp",
           btn_reset: "Reset",
+          thank_you_note: "Thanks 🙏\nYou're helping improve kitesurfing for everyone.",
+          first_submit_prefix: "🙏 Thanks!\nHere's what you're sharing:",
           preview_title: "Message preview",
           preview_empty: "Fill the required fields to generate the message…",
           footer_prefix: "Set the operator number in",
@@ -699,6 +722,8 @@
           hint_screenshot: "Se serve, aggiungi screenshot manualmente su WhatsApp dopo l’invio.",
           btn_send: "Invia su WhatsApp",
           btn_reset: "Reset",
+          thank_you_note: "Grazie davvero 🙏\nStai aiutando a migliorare il kite per tutti.",
+          first_submit_prefix: "🙏 Grazie!\nQuesti sono i dati che stai condividendo:",
           preview_title: "Anteprima messaggio",
           preview_empty: "Compila i campi obbligatori per generare il messaggio…",
           footer_prefix: "Imposta il numero operatore in",
@@ -779,6 +804,8 @@
           hint_screenshot: "Falls nötig, Screenshots nach dem Senden manuell in WhatsApp hinzufügen.",
           btn_send: "Über WhatsApp senden",
           btn_reset: "Zurücksetzen",
+          thank_you_note: "Danke 🙏\nDu hilfst, Kitesurfen für alle zu verbessern.",
+          first_submit_prefix: "🙏 Danke!\nDas sind die Daten, die du teilst:",
           preview_title: "Vorschau",
           preview_empty: "Fülle die Pflichtfelder aus, um die Nachricht zu erzeugen…",
           footer_prefix: "Operator-Nummer in",
@@ -859,6 +886,8 @@
           hint_screenshot: "Si hace falta, añade capturas manualmente en WhatsApp después de enviar.",
           btn_send: "Enviar por WhatsApp",
           btn_reset: "Reiniciar",
+          thank_you_note: "Gracias 🙏\nEstás ayudando a mejorar el kitesurf para todos.",
+          first_submit_prefix: "🙏 ¡Gracias!\nEstos son los datos que compartes:",
           preview_title: "Vista previa",
           preview_empty: "Rellena los campos obligatorios para generar el mensaje…",
           footer_prefix: "Configura el número del operador en",
@@ -939,6 +968,8 @@
           hint_screenshot: "Si besoin, ajoute des captures manuellement dans WhatsApp après l’envoi.",
           btn_send: "Envoyer via WhatsApp",
           btn_reset: "Réinitialiser",
+          thank_you_note: "Merci 🙏\nTu aides à améliorer le kitesurf pour tous.",
+          first_submit_prefix: "🙏 Merci !\nVoici les données que tu partages :",
           preview_title: "Aperçu",
           preview_empty: "Remplis les champs obligatoires pour générer le message…",
           footer_prefix: "Renseigne le numéro opérateur dans",
@@ -994,6 +1025,7 @@
         try { saved = localStorage.getItem("rdk_lang") || "it"; } catch (_) {}
         applyTranslations(translations[saved] ? saved : "it");
         syncBoardSizeOptions();
+        refreshPreview();
       })();
 
       function syncBoardSizeCustomUI(){
@@ -1147,8 +1179,13 @@
       }
 
       function refreshPreview(){
-        const msg = buildMessage();
-        preview.textContent = msg || t("preview_empty");
+        const core = buildMessage();
+        if (!core) {
+          preview.textContent = t("preview_empty");
+          return;
+        }
+        const pre = hasFirstSubmitDone() ? "" : (t("first_submit_prefix") + "\n\n");
+        preview.textContent = pre + core;
       }
 
       let sendAudioCtx = null;
@@ -1222,7 +1259,11 @@
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
         if (!form.reportValidity()) return;
-        const msg = await appendTechnicalBlock(buildMessage());
+        let body = buildMessage();
+        if (!hasFirstSubmitDone()) body = t("first_submit_prefix") + "\n\n" + body;
+        const msg = await appendTechnicalBlock(body);
+        markFirstSubmitDone();
+        refreshPreview();
         playSendFeedback();
         openWhatsAppWithMessage(msg);
       });
@@ -1230,7 +1271,7 @@
       resetBtn.addEventListener("click", () => {
         form.reset();
         syncBoardSizeOptions();
-        preview.textContent = t("preview_empty");
+        refreshPreview();
       });
     </script>
   </body>
