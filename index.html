@@ -99,7 +99,7 @@
         display:grid;
         gap: 12px;
         align-items:end;
-        grid-template-columns: minmax(4.5rem, 5.5rem) minmax(6.75rem, 1fr) minmax(8rem, 1.45fr);
+        grid-template-columns: minmax(4.5rem, 5.5rem) minmax(6.25rem, 0.68fr) minmax(9.5rem, 1.75fr);
       }
       .row.row-core-top > *{
         min-width: 0;
@@ -107,6 +107,10 @@
       @media (max-width: 640px){
         .row.row-core-top{
           grid-template-columns: 1fr;
+        }
+        .cell-board-type{
+          max-width: none;
+          justify-self: stretch;
         }
       }
       .row-core-top label,
@@ -125,7 +129,7 @@
       .kite-compact{
         justify-self: start;
         width: 100%;
-        max-width: 7.25rem;
+        max-width: 8.75rem;
       }
       @media (max-width: 640px){
         .cell-weight-narrow,
@@ -143,6 +147,11 @@
         padding-right: 8px;
         box-sizing: border-box;
       }
+      .cell-board-type{
+        max-width: 12rem;
+        justify-self: start;
+        width: 100%;
+      }
       .cell-board-type select{
         width: 100%;
         min-width: 0;
@@ -156,12 +165,12 @@
         flex-wrap: wrap;
       }
       .board-size-controls select{
-        flex: 1 1 6rem;
+        flex: 2 1 7.5rem;
         min-width: 0;
         width: auto;
       }
       .board-size-controls .input-board-size-custom{
-        flex: 1 1 7rem;
+        flex: 1 1 5rem;
         min-width: 0;
         max-width: 100%;
       }
@@ -171,7 +180,7 @@
       }
       .row.level-kite-wind{
         display:grid;
-        grid-template-columns: minmax(8.5rem, 1.22fr) minmax(5rem, 7rem) minmax(7rem, 1fr);
+        grid-template-columns: minmax(8rem, 0.92fr) minmax(5.5rem, 8.75rem) minmax(6.5rem, 1.05fr);
         gap: 12px;
         align-items:end;
       }
@@ -605,7 +614,7 @@
           opt_board_foil: "Foil",
           label_board_size: "Misura tavola",
           opt_board_size_prompt: "Scegli misura",
-          opt_board_size_other: "Altro (inserisci)",
+          opt_board_size_other: "Altro",
           ph_board_size_custom: "es. 137x41",
           label_level: "Livello",
           opt_level_prompt: "Seleziona livello",
