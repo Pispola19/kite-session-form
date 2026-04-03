@@ -94,6 +94,25 @@ Se manca anche una → **SCARTA**
 | `🌬️ Vento (kts): 18`   | `wind_kts`       | `"18"`        |
 | `📍 Spot: Punta Trettu`  | `location`       | `"Punta Trettu"` |
 | `🏷️ Marca: Duotone`    | `brand_raw`      | `"Duotone"`   |
+| `🪵 Misura tavola: 140x42` | `board_size_raw` | `"140x42"`  |
+| `🪵 Board size: 140x42` | `board_size_raw` | `"140x42"`  |
+| `🎯 Livello: Independent` | `level`        | `"Independent"` |
+| `🎯 Level: Independent` | `level`          | `"Independent"` |
+
+**Compatibilità lingue (etichetta → stesse chiavi payload):**
+
+Il form è multilingua: la parte **prima** del primo `:` (dopo trim) può comparire in italiano o in inglese. Per il parse minimo, mappare sullo stesso campo di output indipendentemente dalla variante:
+
+| Concetto     | Varianti etichetta accettate (testo dopo emoji / sul lato chiave) | Chiave payload   |
+|-------------|-------------------------------------------------------------------|------------------|
+| Board size  | `Misura tavola`, `Board size`                                     | `board_size_raw` |
+| Level       | `Livello`, `Level`                                                | `level`          |
+
+Il **valore** (dopo `:`) resta stringa grezza, senza normalizzazione.
+
+**Chiavi payload (grezze):** `board_size_raw`, `level` — valori stringa identici al testo dopo `:`, senza conversione.
+
+Se la riga è assente nel messaggio, la relativa chiave non compare nel payload (retrocompatibilità con messaggi precedenti all’estensione form; `level` obbligatorio solo su invii nuovi dal form).
 
 **Vincoli:**
 
