@@ -17,6 +17,12 @@
         --danger:#fb7185;
         --shadow: 0 10px 30px rgba(0,0,0,.35);
         --radius: 14px;
+        --field-req-border: rgba(251, 113, 133, 0.58);
+        --field-req-glow: rgba(251, 113, 133, 0.22);
+        --field-imp-border: rgba(234, 179, 8, 0.55);
+        --field-imp-glow: rgba(234, 179, 8, 0.2);
+        --field-soft-border: rgba(96, 165, 250, 0.52);
+        --field-soft-glow: rgba(96, 165, 250, 0.18);
       }
       *{ box-sizing:border-box; }
       body{
@@ -84,6 +90,13 @@
         line-height: 1.45;
         color: rgba(159,178,214,.92);
         max-width: 36rem;
+      }
+      .form-field-border-hint{
+        margin: -4px 0 10px 2px;
+        font-size: 10px;
+        line-height: 1.4;
+        color: rgba(159,178,214,.72);
+        max-width: 38rem;
       }
       .req-mark{
         color: var(--danger);
@@ -155,6 +168,13 @@
       .cell-board-type select{
         width: 100%;
         min-width: 0;
+      }
+      .board-size-hint-above{
+        margin: 0 0 5px 2px;
+        font-size: 11px;
+        line-height: 1.35;
+        color: rgba(159,178,214,.88);
+        max-width: 100%;
       }
       .board-size-controls{
         display: flex;
@@ -273,6 +293,25 @@
         border-color: rgba(96,165,250,.75);
         box-shadow: 0 0 0 3px rgba(96,165,250,.15);
       }
+      #kiteForm input:disabled,
+      #kiteForm select:disabled{
+        border-color: var(--border);
+        box-shadow: none;
+        opacity: 0.85;
+      }
+      #kiteForm .field-tier-neutral:enabled{
+        border-color: var(--field-soft-border);
+        box-shadow: 0 0 0 1px var(--field-soft-glow);
+      }
+      #kiteForm .field-tier-important:enabled{
+        border-color: var(--field-imp-border);
+        box-shadow: 0 0 0 1px var(--field-imp-glow);
+      }
+      #kiteForm input[required]:enabled,
+      #kiteForm select[required]:enabled{
+        border-color: var(--field-req-border);
+        box-shadow: 0 0 0 1px var(--field-req-glow);
+      }
       .hint{
         margin: 6px 2px 0;
         font-size: 12px;
@@ -381,6 +420,7 @@
           <form id="kiteForm" autocomplete="on" novalidate>
             <p class="section-label" data-i18n="section_core">Core</p>
             <p class="form-field-legend" data-i18n="form_field_legend">* Required. All other fields are optional.</p>
+            <p class="form-field-border-hint" data-i18n="form_field_border_hint">Outline: red = required · amber = useful optional · blue = other optional.</p>
             <div class="core-block">
               <div id="coreTopRow" class="row row-core-top">
                 <div class="cell-weight-narrow">
@@ -398,11 +438,12 @@
                 </div>
                 <div id="boardSizeCell" class="cell-board-size">
                   <label for="boardSize"><span data-i18n="label_board_size">Board size</span></label>
+                  <p id="boardSizeHintAbove" class="board-size-hint-above" data-i18n="board_size_hint_above" hidden>Choose a listed size, or Other and type beside (e.g. 137x41).</p>
                   <div class="board-size-controls">
-                    <select id="boardSize" name="boardSize" disabled>
+                    <select id="boardSize" name="boardSize" disabled class="field-tier-neutral">
                       <option value="" data-i18n="opt_board_size_prompt">Board size (optional)</option>
                     </select>
-                    <input type="text" id="boardSizeCustom" name="boardSizeCustom" autocomplete="off" maxlength="32" hidden class="input-board-size-custom" data-i18n-placeholder="ph_board_size_custom" placeholder="e.g. 137x41" />
+                    <input type="text" id="boardSizeCustom" name="boardSizeCustom" autocomplete="off" maxlength="32" hidden class="input-board-size-custom field-tier-neutral" data-i18n-placeholder="ph_board_size_custom" placeholder="e.g. 137x41" />
                   </div>
                 </div>
               </div>
@@ -423,7 +464,7 @@
                 </div>
                 <div class="wind-compact">
                   <label for="wind"><span data-i18n="label_wind">Estimated wind</span></label>
-                  <input id="wind" name="wind" type="text" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="Leave empty if unknown" data-i18n-placeholder="ph_wind" class="input-numeric-compact" />
+                  <input id="wind" name="wind" type="text" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="Leave empty if unknown" data-i18n-placeholder="ph_wind" class="input-numeric-compact field-tier-important" />
                 </div>
               </div>
             </div>
@@ -432,12 +473,12 @@
             <div class="row two">
               <div>
                 <label for="brand"><span data-i18n="label_brand">Kite brand</span></label>
-                <input id="brand" name="brand" type="text" inputmode="text" placeholder="Duotone, Core, North, Cabrinha..." data-i18n-placeholder="ph_brand" />
+                <input id="brand" name="brand" type="text" inputmode="text" placeholder="Duotone, Core, North, Cabrinha..." data-i18n-placeholder="ph_brand" class="field-tier-important" />
                 <div class="hint" data-i18n="hint_brand">Usa il nome ufficiale (senza abbreviazioni)</div>
               </div>
               <div>
                 <label for="model"><span data-i18n="label_model">Kite model</span></label>
-                <input id="model" name="model" type="text" inputmode="text" placeholder="Orbit, Dice, XR, Nexus..." data-i18n-placeholder="ph_model" />
+                <input id="model" name="model" type="text" inputmode="text" placeholder="Orbit, Dice, XR, Nexus..." data-i18n-placeholder="ph_model" class="field-tier-important" />
                 <div class="hint" data-i18n="hint_model">Inserisci solo il nome del modello (senza versioni)</div>
               </div>
             </div>
@@ -446,14 +487,14 @@
             <div class="row">
               <div>
                 <label for="location"><span data-i18n="label_location">Location</span></label>
-                <input id="location" name="location" type="text" inputmode="text" placeholder="e.g. Punta Trettu" data-i18n-placeholder="ph_location" />
+                <input id="location" name="location" type="text" inputmode="text" placeholder="e.g. Punta Trettu" data-i18n-placeholder="ph_location" class="field-tier-neutral" />
               </div>
             </div>
 
             <div class="row two">
               <div>
                 <label for="water"><span data-i18n="label_water">Water conditions</span></label>
-                <select id="water" name="water">
+                <select id="water" name="water" class="field-tier-important">
                   <option value="" data-i18n="opt_water_prompt">Water conditions (optional)</option>
                   <option value="flat" data-i18n="opt_water_flat">Flat</option>
                   <option value="chop_light" data-i18n="opt_water_chop_light">Chop light</option>
@@ -466,7 +507,7 @@
               </div>
               <div>
                 <label for="result"><span data-i18n="label_result">Session result</span></label>
-                <select id="result" name="result">
+                <select id="result" name="result" class="field-tier-neutral">
                   <option value="" data-i18n="opt_result_prompt">Session result (optional)</option>
                   <option value="underpowered" data-i18n="opt_result_underpowered">Underpowered</option>
                   <option value="good" data-i18n="opt_result_good">Good</option>
@@ -480,7 +521,7 @@
             <div class="row">
               <div>
                 <label for="note"><span data-i18n="label_notes">Notes</span></label>
-                <textarea id="note" name="note" placeholder="Anything useful (spot, gusts, setup, etc.)" data-i18n-placeholder="ph_notes"></textarea>
+                <textarea id="note" name="note" placeholder="Anything useful (spot, gusts, setup, etc.)" data-i18n-placeholder="ph_notes" class="field-tier-neutral"></textarea>
                 <div class="hint" data-i18n="hint_screenshot">If needed, add screenshots manually in WhatsApp after sending.</div>
               </div>
             </div>
@@ -526,6 +567,7 @@
           optional: "(optional)",
           section_core: "Core",
           form_field_legend: "* Required. All other fields are optional.",
+          form_field_border_hint: "Outline: red = required · amber = useful optional · blue = other optional.",
           section_tech: "Technical",
           section_context: "Context",
           label_weight: "Weight (kg)",
@@ -539,6 +581,7 @@
           opt_board_size_prompt: "Select size",
           opt_board_size_other: "Other (specify)",
           ph_board_size_custom: "e.g. 137x41",
+          board_size_hint_above: "Choose a size from the list; if it’s missing, pick Other and type in the field on the right (e.g. 137x41).",
           label_level: "Level",
           opt_level_prompt: "Select level",
           opt_level_beginner: "Beginner",
@@ -603,6 +646,7 @@
           optional: "(opzionale)",
           section_core: "Core",
           form_field_legend: "* Obbligatorio. Tutti gli altri campi sono opzionali.",
+          form_field_border_hint: "Contorno: rosso = obbligatorio · giallo = opzionale utile · azzurro = altri opzionali.",
           section_tech: "Tecnico",
           section_context: "Contesto",
           label_weight: "Peso (kg)",
@@ -616,6 +660,7 @@
           opt_board_size_prompt: "Scegli misura",
           opt_board_size_other: "Altro",
           ph_board_size_custom: "es. 137x41",
+          board_size_hint_above: "Scegli una misura dall’elenco (prima riga «Scegli misura»). Se non c’è, seleziona «Altro» e scrivi a destra (es. 137×41).",
           label_level: "Livello",
           opt_level_prompt: "Seleziona livello",
           opt_level_beginner: "Beginner",
@@ -681,6 +726,7 @@
           optional: "(optional)",
           section_core: "Session",
           form_field_legend: "* Pflichtfeld. Alle anderen Felder sind optional.",
+          form_field_border_hint: "Rahmen: rot = Pflicht · gelb = nützlich optional · blau = sonst optional.",
           section_tech: "Technik",
           section_context: "Umgebung",
           label_weight: "Gewicht (kg)",
@@ -694,6 +740,7 @@
           opt_board_size_prompt: "Größe wählen",
           opt_board_size_other: "Sonstiges (eintragen)",
           ph_board_size_custom: "z.B. 137x41",
+          board_size_hint_above: "Größe aus der Liste wählen; fehlt sie, „Sonstiges“ wählen und rechts eintragen (z. B. 137x41).",
           label_level: "Level",
           opt_level_prompt: "Level wählen",
           opt_level_beginner: "Beginner",
@@ -759,6 +806,7 @@
           optional: "(opcional)",
           section_core: "Núcleo",
           form_field_legend: "* Obligatorio. El resto de campos es opcional.",
+          form_field_border_hint: "Borde: rojo = obligatorio · ámbar = opcional útil · azul = otros opcionales.",
           section_tech: "Técnico",
           section_context: "Contexto",
           label_weight: "Peso (kg)",
@@ -772,6 +820,7 @@
           opt_board_size_prompt: "Elige talla",
           opt_board_size_other: "Otro (escribe)",
           ph_board_size_custom: "ej. 137x41",
+          board_size_hint_above: "Elige talla de la lista; si no está, elige Otro y escribe a la derecha (ej. 137x41).",
           label_level: "Nivel",
           opt_level_prompt: "Selecciona nivel",
           opt_level_beginner: "Beginner",
@@ -837,6 +886,7 @@
           optional: "(optionnel)",
           section_core: "Session",
           form_field_legend: "* Obligatoire. Tous les autres champs sont optionnels.",
+          form_field_border_hint: "Contour : rouge = obligatoire · ambre = optionnel utile · bleu = autres optionnels.",
           section_tech: "Technique",
           section_context: "Contexte",
           label_weight: "Poids (kg)",
@@ -850,6 +900,7 @@
           opt_board_size_prompt: "Choisir taille",
           opt_board_size_other: "Autre (préciser)",
           ph_board_size_custom: "ex. 137x41",
+          board_size_hint_above: "Choisis une taille dans la liste ; sinon Autre et indique à droite (ex. 137x41).",
           label_level: "Niveau",
           opt_level_prompt: "Choisir le niveau",
           opt_level_beginner: "Beginner",
@@ -957,6 +1008,7 @@
       function syncBoardSizeOptions(){
         const boardVal = String(document.getElementById("board")?.value || "").trim();
         const sel = document.getElementById("boardSize");
+        const hintAbove = document.getElementById("boardSizeHintAbove");
         if (!sel) return;
 
         const sizes = boardVal ? BOARD_SIZE_BY_TYPE[boardVal] : null;
@@ -971,6 +1023,7 @@
         if (!sizes){
           sel.disabled = true;
           sel.value = "";
+          if (hintAbove) hintAbove.hidden = true;
           syncBoardSizeCustomUI();
           return;
         }
@@ -988,6 +1041,7 @@
         sel.appendChild(oOther);
         if (sizes.includes(prev)) sel.value = prev;
         else if (prev === BOARD_SIZE_OTHER) sel.value = BOARD_SIZE_OTHER;
+        if (hintAbove) hintAbove.hidden = false;
         syncBoardSizeCustomUI();
       }
 
