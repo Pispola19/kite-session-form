@@ -82,24 +82,29 @@
         display:grid;
         gap: 10px;
         align-items:end;
-        grid-template-columns: minmax(4.5rem, 5.25rem) minmax(0, 1fr);
-      }
-      .row.row-core-top.has-board-size{
-        grid-template-columns: minmax(4.5rem, 5.25rem) minmax(5.5rem, 1fr) minmax(5.5rem, 1fr);
+        grid-template-columns: minmax(4.75rem, 5.5rem) minmax(4.75rem, 5.5rem) minmax(6.25rem, 1fr);
       }
       @media (max-width: 720px){
-        .row.row-core-top,
-        .row.row-core-top.has-board-size{
+        .row.row-core-top{
           grid-template-columns: 1fr;
         }
       }
       .input-weight-compact{
         width: 100%;
-        max-width: 5.25rem;
+        max-width: 5.5rem;
         text-align: center;
         font-variant-numeric: tabular-nums;
         padding-left: 8px;
         padding-right: 8px;
+        box-sizing: border-box;
+      }
+      .cell-board-type select{
+        width: 100%;
+        max-width: 5.5rem;
+      }
+      .cell-board-size select:disabled{
+        opacity: 0.55;
+        cursor: not-allowed;
       }
       .row.level-kite-wind{
         display:grid;
@@ -311,9 +316,9 @@
                   <option value="foil" data-i18n="opt_board_foil">Foil</option>
                 </select>
               </div>
-              <div id="boardSizeCell" class="cell-board-size" hidden>
+              <div id="boardSizeCell" class="cell-board-size">
                 <label for="boardSize"><span data-i18n="label_board_size">Board size</span> <span class="hint" data-i18n="optional">(optional)</span></label>
-                <select id="boardSize" name="boardSize">
+                <select id="boardSize" name="boardSize" disabled>
                   <option value="" data-i18n="opt_board_size_prompt">Board size (optional)</option>
                 </select>
               </div>
@@ -415,7 +420,7 @@
       const ENABLE_SIGNATURE = false;
 
       const BOARD_SIZE_BY_TYPE = {
-        twintip: ["135x40", "138x41", "140x42", "145x43", "150x44", "160x45"],
+        twintip: ["135x40", "138x41", "140x42", "145x43", "150x44", "155x44", "160x45"],
         surfboard: ["5'4", "5'6", "5'8", "6'0", "6'2"],
         foil: ["120", "130", "140", "150"],
       };
@@ -806,31 +811,25 @@
 
       function syncBoardSizeOptions(){
         const boardVal = String(document.getElementById("board")?.value || "").trim();
-        const cell = document.getElementById("boardSizeCell");
         const sel = document.getElementById("boardSize");
-        const topRow = document.getElementById("coreTopRow");
-        if (!cell || !sel) return;
+        if (!sel) return;
 
         const sizes = boardVal ? BOARD_SIZE_BY_TYPE[boardVal] : null;
-        if (!sizes){
-          topRow?.classList.remove("has-board-size");
-          cell.hidden = true;
-          sel.innerHTML = "";
-          const o0 = document.createElement("option");
-          o0.value = "";
-          o0.textContent = t("opt_board_size_prompt");
-          sel.appendChild(o0);
-          return;
-        }
-
-        topRow?.classList.add("has-board-size");
-        cell.hidden = false;
         const prev = sel.value;
+
         sel.innerHTML = "";
         const o0 = document.createElement("option");
         o0.value = "";
         o0.textContent = t("opt_board_size_prompt");
         sel.appendChild(o0);
+
+        if (!sizes){
+          sel.disabled = true;
+          sel.value = "";
+          return;
+        }
+
+        sel.disabled = false;
         sizes.forEach((s) => {
           const o = document.createElement("option");
           o.value = s;
@@ -985,6 +984,7 @@
 
       document.getElementById("board").addEventListener("change", () => {
         syncBoardSizeOptions();
+        refreshPreview();
       });
 
       ["weight","board","boardSize","level","kite","brand","model","wind","location","water","result","note"].forEach(bindFieldPreview);
