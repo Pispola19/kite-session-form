@@ -70,12 +70,39 @@
         border-color: rgba(96,165,250,.55);
         background: rgba(96,165,250,.12);
       }
-      .row.thirty-seventy{
-        grid-template-columns: 3fr 7fr;
+      .section-label{
+        margin: 2px 0 6px 2px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: rgba(159,178,214,.95);
+      }
+      .board-pair-row{
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
         align-items:end;
       }
-      @media (max-width: 420px){
-        .row.thirty-seventy{ grid-template-columns: 1fr; }
+      @media (max-width: 520px){
+        .board-pair-row{ grid-template-columns: 1fr; }
+      }
+      .row.level-kite-wind{
+        display:grid;
+        grid-template-columns: 1.15fr minmax(4.75rem, 5.25rem) minmax(4.75rem, 5.25rem);
+        gap: 12px;
+        align-items:end;
+      }
+      @media (max-width: 640px){
+        .row.level-kite-wind{ grid-template-columns: 1fr; }
+      }
+      .input-numeric-compact{
+        width: 100%;
+        max-width: 5.25rem;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+        padding-left: 8px;
+        padding-right: 8px;
       }
       h1{
         font-size: 20px;
@@ -128,17 +155,6 @@
       textarea{
         min-height: 88px;
         resize: vertical;
-      }
-      .wind-field-wrap{
-        max-width: 5rem;
-      }
-      input.input-wind-compact{
-        width: 100%;
-        max-width: 5rem;
-        text-align: center;
-        font-variant-numeric: tabular-nums;
-        padding-left: 10px;
-        padding-right: 10px;
       }
       input::placeholder, textarea::placeholder{ color: rgba(159,178,214,.7); }
       input:focus, textarea:focus, select:focus{
@@ -255,33 +271,33 @@
       <div class="card">
         <div class="card-inner">
           <form id="kiteForm" autocomplete="on" novalidate>
+            <p class="section-label" data-i18n="section_core">Core</p>
             <div class="row two">
               <div>
                 <label for="weight"><span data-i18n="label_weight">Weight (kg)</span> <span class="req" data-i18n="required">(required)</span></label>
                 <input id="weight" name="weight" type="text" inputmode="numeric" placeholder="e.g. 74" data-i18n-placeholder="ph_weight" required />
               </div>
-              <div>
-                <label for="board"><span data-i18n="label_board">Board type</span> <span class="req" data-i18n="required">(required)</span></label>
-                <select id="board" name="board" required>
-                  <option value="" data-i18n="opt_board_prompt">Select board type</option>
-                  <option value="twintip" data-i18n="opt_board_twintip">Twintip</option>
-                  <option value="surfboard" data-i18n="opt_board_surfboard">Surfboard</option>
-                  <option value="foil" data-i18n="opt_board_foil">Foil</option>
-                </select>
+              <div class="board-pair-row">
+                <div class="board-type-cell">
+                  <label for="board"><span data-i18n="label_board">Board type</span> <span class="req" data-i18n="required">(required)</span></label>
+                  <select id="board" name="board" required>
+                    <option value="" data-i18n="opt_board_prompt">Select board type</option>
+                    <option value="twintip" data-i18n="opt_board_twintip">Twintip</option>
+                    <option value="surfboard" data-i18n="opt_board_surfboard">Surfboard</option>
+                    <option value="foil" data-i18n="opt_board_foil">Foil</option>
+                  </select>
+                </div>
+                <div id="boardSizeCell" class="board-size-cell" hidden>
+                  <label for="boardSize"><span data-i18n="label_board_size">Board size</span> <span class="hint" data-i18n="optional">(optional)</span></label>
+                  <select id="boardSize" name="boardSize">
+                    <option value="" data-i18n="opt_board_size_prompt">Board size (optional)</option>
+                  </select>
+                </div>
               </div>
             </div>
 
-            <div id="boardSizeRow" class="row" hidden>
-              <div>
-                <label for="boardSize"><span data-i18n="label_board_size">Board size</span> <span class="hint" data-i18n="optional">(optional)</span></label>
-                <select id="boardSize" name="boardSize">
-                  <option value="" data-i18n="opt_board_size_prompt">Board size (optional)</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="row thirty-seventy">
-              <div>
+            <div class="row level-kite-wind">
+              <div class="level-cell">
                 <label for="level"><span data-i18n="label_level">Level</span> <span class="req" data-i18n="required">(required)</span></label>
                 <select id="level" name="level" required>
                   <option value="" data-i18n="opt_level_prompt">Select level</option>
@@ -290,12 +306,17 @@
                   <option value="advanced" data-i18n="opt_level_advanced">Advanced</option>
                 </select>
               </div>
-              <div>
+              <div class="kite-compact">
                 <label for="kite"><span data-i18n="label_kite_size">Kite size (m²)</span> <span class="req" data-i18n="required">(required)</span></label>
-                <input id="kite" name="kite" type="text" inputmode="numeric" placeholder="e.g. 9" data-i18n-placeholder="ph_kite_size" required />
+                <input id="kite" name="kite" type="text" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="e.g. 9" data-i18n-placeholder="ph_kite_size" required class="input-numeric-compact" />
+              </div>
+              <div class="wind-compact">
+                <label for="wind" data-i18n="label_wind">Estimated wind (optional)</label>
+                <input id="wind" name="wind" type="text" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="Leave empty if unknown" data-i18n-placeholder="ph_wind" class="input-numeric-compact" />
               </div>
             </div>
 
+            <p class="section-label" data-i18n="section_tech">Technical</p>
             <div class="row two">
               <div>
                 <label for="brand"><span data-i18n="label_brand">Kite brand</span> <span class="hint" data-i18n="optional">(optional)</span></label>
@@ -309,13 +330,7 @@
               </div>
             </div>
 
-            <div class="row">
-              <div class="wind-field-wrap">
-                <label for="wind" data-i18n="label_wind">Estimated wind (optional)</label>
-                <input id="wind" name="wind" type="text" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="Leave empty if unknown" data-i18n-placeholder="ph_wind" class="input-wind-compact" />
-              </div>
-            </div>
-
+            <p class="section-label" data-i18n="section_context">Context</p>
             <div class="row">
               <div>
                 <label for="location"><span data-i18n="label_location">Location</span> <span class="hint" data-i18n="optional">(optional)</span></label>
@@ -390,6 +405,9 @@
           subtitle: "Share your session in ~20 seconds. No login, no saving, no backend.",
           required: "(required)",
           optional: "(optional)",
+          section_core: "Core",
+          section_tech: "Technical",
+          section_context: "Context",
           label_weight: "Weight (kg)",
           ph_weight: "e.g. 74",
           label_board: "Board type",
@@ -455,6 +473,9 @@
           subtitle: "Condividi la sessione in ~20 secondi. Nessun login, nessun salvataggio, nessun backend.",
           required: "(obbligatorio)",
           optional: "(opzionale)",
+          section_core: "Core",
+          section_tech: "Tecnico",
+          section_context: "Contesto",
           label_weight: "Peso (kg)",
           ph_weight: "es. 74",
           label_board: "Tipo tavola",
@@ -521,6 +542,9 @@
           language: "Sprache",
           required: "(erforderlich)",
           optional: "(optional)",
+          section_core: "Session",
+          section_tech: "Technik",
+          section_context: "Umgebung",
           label_weight: "Gewicht (kg)",
           ph_weight: "z.B. 74",
           label_board: "Board-Typ",
@@ -587,6 +611,9 @@
           language: "Idioma",
           required: "(obligatorio)",
           optional: "(opcional)",
+          section_core: "Núcleo",
+          section_tech: "Técnico",
+          section_context: "Contexto",
           label_weight: "Peso (kg)",
           ph_weight: "p. ej. 74",
           label_board: "Tipo de tabla",
@@ -653,6 +680,9 @@
           language: "Langue",
           required: "(obligatoire)",
           optional: "(optionnel)",
+          section_core: "Session",
+          section_tech: "Technique",
+          section_context: "Contexte",
           label_weight: "Poids (kg)",
           ph_weight: "ex. 74",
           label_board: "Type de planche",
@@ -753,13 +783,13 @@
 
       function syncBoardSizeOptions(){
         const boardVal = String(document.getElementById("board")?.value || "").trim();
-        const row = document.getElementById("boardSizeRow");
+        const cell = document.getElementById("boardSizeCell");
         const sel = document.getElementById("boardSize");
-        if (!row || !sel) return;
+        if (!cell || !sel) return;
 
         const sizes = boardVal ? BOARD_SIZE_BY_TYPE[boardVal] : null;
         if (!sizes){
-          row.hidden = true;
+          cell.hidden = true;
           sel.innerHTML = "";
           const o0 = document.createElement("option");
           o0.value = "";
@@ -768,7 +798,7 @@
           return;
         }
 
-        row.hidden = false;
+        cell.hidden = false;
         const prev = sel.value;
         sel.innerHTML = "";
         const o0 = document.createElement("option");
