@@ -78,31 +78,56 @@
         text-transform: uppercase;
         color: rgba(159,178,214,.95);
       }
-      .board-pair-row{
+      .row.row-core-top{
         display:grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 12px;
+        gap: 10px;
         align-items:end;
+        grid-template-columns: minmax(4.5rem, 5.25rem) minmax(0, 1fr);
       }
-      @media (max-width: 520px){
-        .board-pair-row{ grid-template-columns: 1fr; }
+      .row.row-core-top.has-board-size{
+        grid-template-columns: minmax(4.5rem, 5.25rem) minmax(5.5rem, 1fr) minmax(5.5rem, 1fr);
       }
-      .row.level-kite-wind{
-        display:grid;
-        grid-template-columns: 1.15fr minmax(4.75rem, 5.25rem) minmax(4.75rem, 5.25rem);
-        gap: 12px;
-        align-items:end;
+      @media (max-width: 720px){
+        .row.row-core-top,
+        .row.row-core-top.has-board-size{
+          grid-template-columns: 1fr;
+        }
       }
-      @media (max-width: 640px){
-        .row.level-kite-wind{ grid-template-columns: 1fr; }
-      }
-      .input-numeric-compact{
+      .input-weight-compact{
         width: 100%;
         max-width: 5.25rem;
         text-align: center;
         font-variant-numeric: tabular-nums;
         padding-left: 8px;
         padding-right: 8px;
+      }
+      .row.level-kite-wind{
+        display:grid;
+        grid-template-columns: minmax(5.5rem, 8.5rem) minmax(4.75rem, 5.25rem) minmax(4.75rem, 5.25rem);
+        gap: 10px;
+        align-items:end;
+      }
+      .row.level-kite-wind .level-cell select{
+        width: 100%;
+        max-width: 8.5rem;
+      }
+      @media (max-width: 720px){
+        .row.level-kite-wind{ grid-template-columns: 1fr; }
+        .row.level-kite-wind .level-cell select{ max-width: 100%; }
+      }
+      .input-numeric-compact{
+        width: 100%;
+        max-width: 5.25rem;
+        min-width: 4.75rem;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+        padding-left: 8px;
+        padding-right: 8px;
+        box-sizing: border-box;
+      }
+      .row-core-top select,
+      .level-kite-wind select{
+        box-sizing: border-box;
       }
       h1{
         font-size: 20px;
@@ -272,27 +297,25 @@
         <div class="card-inner">
           <form id="kiteForm" autocomplete="on" novalidate>
             <p class="section-label" data-i18n="section_core">Core</p>
-            <div class="row two">
-              <div>
+            <div id="coreTopRow" class="row row-core-top">
+              <div class="cell-weight-narrow">
                 <label for="weight"><span data-i18n="label_weight">Weight (kg)</span> <span class="req" data-i18n="required">(required)</span></label>
-                <input id="weight" name="weight" type="text" inputmode="numeric" placeholder="e.g. 74" data-i18n-placeholder="ph_weight" required />
+                <input id="weight" name="weight" type="text" inputmode="numeric" maxlength="3" autocomplete="off" placeholder="e.g. 74" data-i18n-placeholder="ph_weight" required class="input-weight-compact" />
               </div>
-              <div class="board-pair-row">
-                <div class="board-type-cell">
-                  <label for="board"><span data-i18n="label_board">Board type</span> <span class="req" data-i18n="required">(required)</span></label>
-                  <select id="board" name="board" required>
-                    <option value="" data-i18n="opt_board_prompt">Select board type</option>
-                    <option value="twintip" data-i18n="opt_board_twintip">Twintip</option>
-                    <option value="surfboard" data-i18n="opt_board_surfboard">Surfboard</option>
-                    <option value="foil" data-i18n="opt_board_foil">Foil</option>
-                  </select>
-                </div>
-                <div id="boardSizeCell" class="board-size-cell" hidden>
-                  <label for="boardSize"><span data-i18n="label_board_size">Board size</span> <span class="hint" data-i18n="optional">(optional)</span></label>
-                  <select id="boardSize" name="boardSize">
-                    <option value="" data-i18n="opt_board_size_prompt">Board size (optional)</option>
-                  </select>
-                </div>
+              <div class="cell-board-type">
+                <label for="board"><span data-i18n="label_board">Board type</span> <span class="req" data-i18n="required">(required)</span></label>
+                <select id="board" name="board" required>
+                  <option value="" data-i18n="opt_board_prompt">Select board type</option>
+                  <option value="twintip" data-i18n="opt_board_twintip">Twintip</option>
+                  <option value="surfboard" data-i18n="opt_board_surfboard">Surfboard</option>
+                  <option value="foil" data-i18n="opt_board_foil">Foil</option>
+                </select>
+              </div>
+              <div id="boardSizeCell" class="cell-board-size" hidden>
+                <label for="boardSize"><span data-i18n="label_board_size">Board size</span> <span class="hint" data-i18n="optional">(optional)</span></label>
+                <select id="boardSize" name="boardSize">
+                  <option value="" data-i18n="opt_board_size_prompt">Board size (optional)</option>
+                </select>
               </div>
             </div>
 
@@ -392,7 +415,7 @@
       const ENABLE_SIGNATURE = false;
 
       const BOARD_SIZE_BY_TYPE = {
-        twintip: ["135x40", "138x41", "140x42", "142x42", "145x43", "150x44", "155x45", "160x45"],
+        twintip: ["135x40", "138x41", "140x42", "145x43", "150x44", "160x45"],
         surfboard: ["5'4", "5'6", "5'8", "6'0", "6'2"],
         foil: ["120", "130", "140", "150"],
       };
@@ -785,10 +808,12 @@
         const boardVal = String(document.getElementById("board")?.value || "").trim();
         const cell = document.getElementById("boardSizeCell");
         const sel = document.getElementById("boardSize");
+        const topRow = document.getElementById("coreTopRow");
         if (!cell || !sel) return;
 
         const sizes = boardVal ? BOARD_SIZE_BY_TYPE[boardVal] : null;
         if (!sizes){
+          topRow?.classList.remove("has-board-size");
           cell.hidden = true;
           sel.innerHTML = "";
           const o0 = document.createElement("option");
@@ -798,6 +823,7 @@
           return;
         }
 
+        topRow?.classList.add("has-board-size");
         cell.hidden = false;
         const prev = sel.value;
         sel.innerHTML = "";
