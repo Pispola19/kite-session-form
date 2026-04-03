@@ -139,10 +139,27 @@
         padding-right: 8px;
         box-sizing: border-box;
       }
-      .cell-board-type select,
-      .cell-board-size select{
+      .cell-board-type select{
         width: 100%;
         min-width: 0;
+      }
+      .board-size-controls{
+        display: flex;
+        gap: 8px;
+        align-items: flex-end;
+        width: 100%;
+        min-width: 0;
+        flex-wrap: wrap;
+      }
+      .board-size-controls select{
+        flex: 1 1 6rem;
+        min-width: 0;
+        width: auto;
+      }
+      .board-size-controls .input-board-size-custom{
+        flex: 1 1 7rem;
+        min-width: 0;
+        max-width: 100%;
       }
       .cell-board-size select:disabled{
         opacity: 0.55;
@@ -365,9 +382,12 @@
                 </div>
                 <div id="boardSizeCell" class="cell-board-size">
                   <label for="boardSize"><span data-i18n="label_board_size">Board size</span></label>
-                  <select id="boardSize" name="boardSize" disabled>
-                    <option value="" data-i18n="opt_board_size_prompt">Board size (optional)</option>
-                  </select>
+                  <div class="board-size-controls">
+                    <select id="boardSize" name="boardSize" disabled>
+                      <option value="" data-i18n="opt_board_size_prompt">Board size (optional)</option>
+                    </select>
+                    <input type="text" id="boardSizeCustom" name="boardSizeCustom" autocomplete="off" maxlength="32" hidden class="input-board-size-custom" data-i18n-placeholder="ph_board_size_custom" placeholder="e.g. 137x41" />
+                  </div>
                 </div>
               </div>
 
@@ -420,17 +440,23 @@
                 <select id="water" name="water">
                   <option value="" data-i18n="opt_water_prompt">Water conditions (optional)</option>
                   <option value="flat" data-i18n="opt_water_flat">Flat</option>
-                  <option value="choppy" data-i18n="opt_water_choppy">Choppy</option>
+                  <option value="chop_light" data-i18n="opt_water_chop_light">Chop light</option>
+                  <option value="chop" data-i18n="opt_water_chop">Chop</option>
+                  <option value="chop_strong" data-i18n="opt_water_chop_strong">Chop strong</option>
+                  <option value="small_waves" data-i18n="opt_water_small_waves">Small waves</option>
                   <option value="waves" data-i18n="opt_water_waves">Waves</option>
+                  <option value="big_waves" data-i18n="opt_water_big_waves">Big waves</option>
                 </select>
               </div>
               <div>
                 <label for="result"><span data-i18n="label_result">Session result</span></label>
                 <select id="result" name="result">
                   <option value="" data-i18n="opt_result_prompt">Session result (optional)</option>
-                  <option value="perfect" data-i18n="opt_result_perfect">Perfect</option>
-                  <option value="too_much" data-i18n="opt_result_too_much">Too much</option>
-                  <option value="too_little" data-i18n="opt_result_too_little">Too little</option>
+                  <option value="underpowered" data-i18n="opt_result_underpowered">Underpowered</option>
+                  <option value="good" data-i18n="opt_result_good">Good</option>
+                  <option value="powered" data-i18n="opt_result_powered">Powered</option>
+                  <option value="overpowered" data-i18n="opt_result_overpowered">Overpowered</option>
+                  <option value="survival" data-i18n="opt_result_survival">Survival</option>
                 </select>
               </div>
             </div>
@@ -466,6 +492,7 @@
       // CONFIG: numero destinatario in formato internazionale, solo cifre (no +, no spazi)
       const WHATSAPP_NUMBER = "393345280521";
       const ENABLE_SIGNATURE = false;
+      const BOARD_SIZE_OTHER = "__rdk_other__";
 
       const BOARD_SIZE_BY_TYPE = {
         twintip: ["135x40", "138x41", "140x42", "145x43", "150x44", "155x44", "160x45"],
@@ -494,6 +521,8 @@
           opt_board_foil: "Foil",
           label_board_size: "Board size",
           opt_board_size_prompt: "Select size",
+          opt_board_size_other: "Other (specify)",
+          ph_board_size_custom: "e.g. 137x41",
           label_level: "Level",
           opt_level_prompt: "Select level",
           opt_level_beginner: "Beginner",
@@ -514,13 +543,19 @@
           label_water: "Water conditions",
           opt_water_prompt: "Water conditions",
           opt_water_flat: "Flat",
-          opt_water_choppy: "Choppy",
+          opt_water_chop_light: "Chop light",
+          opt_water_chop: "Chop",
+          opt_water_chop_strong: "Chop strong",
+          opt_water_small_waves: "Small waves",
           opt_water_waves: "Waves",
+          opt_water_big_waves: "Big waves",
           label_result: "Session result",
           opt_result_prompt: "Session result",
-          opt_result_perfect: "Perfect",
-          opt_result_too_much: "Too much",
-          opt_result_too_little: "Too little",
+          opt_result_underpowered: "Underpowered",
+          opt_result_good: "Good",
+          opt_result_powered: "Powered",
+          opt_result_overpowered: "Overpowered",
+          opt_result_survival: "Survival",
           label_notes: "Notes",
           ph_notes: "Anything useful (spot, gusts, setup, etc.)",
           hint_screenshot: "If needed, add screenshots manually in WhatsApp after sending.",
@@ -563,6 +598,8 @@
           opt_board_foil: "Foil",
           label_board_size: "Misura tavola",
           opt_board_size_prompt: "Scegli misura",
+          opt_board_size_other: "Altro (inserisci)",
+          ph_board_size_custom: "es. 137x41",
           label_level: "Livello",
           opt_level_prompt: "Seleziona livello",
           opt_level_beginner: "Beginner",
@@ -583,13 +620,19 @@
           label_water: "Condizioni acqua",
           opt_water_prompt: "Condizioni acqua",
           opt_water_flat: "Piatta",
-          opt_water_choppy: "Chop",
+          opt_water_chop_light: "Chop leggero",
+          opt_water_chop: "Chop",
+          opt_water_chop_strong: "Chop forte",
+          opt_water_small_waves: "Piccole onde",
           opt_water_waves: "Onde",
+          opt_water_big_waves: "Grandi onde",
           label_result: "Risultato sessione",
           opt_result_prompt: "Risultato sessione",
-          opt_result_perfect: "Perfetta",
-          opt_result_too_much: "Troppo vento",
-          opt_result_too_little: "Poco vento",
+          opt_result_underpowered: "Sottomotorato",
+          opt_result_good: "Giusta",
+          opt_result_powered: "Carica",
+          opt_result_overpowered: "Over power",
+          opt_result_survival: "Survival",
           label_notes: "Note",
           ph_notes: "Info utili (raffiche, setup, condizioni...)",
           hint_screenshot: "Se serve, aggiungi screenshot manualmente su WhatsApp dopo l’invio.",
@@ -633,6 +676,8 @@
           opt_board_foil: "Foil",
           label_board_size: "Board-Größe",
           opt_board_size_prompt: "Größe wählen",
+          opt_board_size_other: "Sonstiges (eintragen)",
+          ph_board_size_custom: "z.B. 137x41",
           label_level: "Level",
           opt_level_prompt: "Level wählen",
           opt_level_beginner: "Beginner",
@@ -653,13 +698,19 @@
           label_water: "Wasserbedingungen",
           opt_water_prompt: "Wasserbedingungen",
           opt_water_flat: "Flach",
-          opt_water_choppy: "Kabbelig",
+          opt_water_chop_light: "Chop leicht",
+          opt_water_chop: "Chop",
+          opt_water_chop_strong: "Chop stark",
+          opt_water_small_waves: "Kleine Wellen",
           opt_water_waves: "Wellen",
+          opt_water_big_waves: "Große Wellen",
           label_result: "Session-Ergebnis",
           opt_result_prompt: "Session-Ergebnis",
-          opt_result_perfect: "Perfekt",
-          opt_result_too_much: "Zu viel",
-          opt_result_too_little: "Zu wenig",
+          opt_result_underpowered: "Unterpowert",
+          opt_result_good: "Gut",
+          opt_result_powered: "Powered",
+          opt_result_overpowered: "Überpowert",
+          opt_result_survival: "Survival",
           label_notes: "Notizen",
           ph_notes: "Nützliche Infos (Spot, Böen, Setup, usw.)",
           hint_screenshot: "Falls nötig, Screenshots nach dem Senden manuell in WhatsApp hinzufügen.",
@@ -703,6 +754,8 @@
           opt_board_foil: "Foil",
           label_board_size: "Tamaño tabla",
           opt_board_size_prompt: "Elige talla",
+          opt_board_size_other: "Otro (escribe)",
+          ph_board_size_custom: "ej. 137x41",
           label_level: "Nivel",
           opt_level_prompt: "Selecciona nivel",
           opt_level_beginner: "Beginner",
@@ -723,13 +776,19 @@
           label_water: "Condiciones del agua",
           opt_water_prompt: "Condiciones del agua",
           opt_water_flat: "Plana",
-          opt_water_choppy: "Picada",
+          opt_water_chop_light: "Chop ligero",
+          opt_water_chop: "Chop",
+          opt_water_chop_strong: "Chop fuerte",
+          opt_water_small_waves: "Olas pequeñas",
           opt_water_waves: "Olas",
+          opt_water_big_waves: "Olas grandes",
           label_result: "Resultado de la sesión",
           opt_result_prompt: "Resultado de la sesión",
-          opt_result_perfect: "Perfecta",
-          opt_result_too_much: "Demasiado",
-          opt_result_too_little: "Demasiado poco",
+          opt_result_underpowered: "Poca potencia",
+          opt_result_good: "Buena",
+          opt_result_powered: "A máximo",
+          opt_result_overpowered: "Demasiada potencia",
+          opt_result_survival: "Survival",
           label_notes: "Notas",
           ph_notes: "Info útil (lugar, rachas, setup, etc.)",
           hint_screenshot: "Si hace falta, añade capturas manualmente en WhatsApp después de enviar.",
@@ -773,6 +832,8 @@
           opt_board_foil: "Foil",
           label_board_size: "Taille planche",
           opt_board_size_prompt: "Choisir taille",
+          opt_board_size_other: "Autre (préciser)",
+          ph_board_size_custom: "ex. 137x41",
           label_level: "Niveau",
           opt_level_prompt: "Choisir le niveau",
           opt_level_beginner: "Beginner",
@@ -793,13 +854,19 @@
           label_water: "État de l’eau",
           opt_water_prompt: "État de l’eau",
           opt_water_flat: "Plat",
-          opt_water_choppy: "Clapot",
+          opt_water_chop_light: "Chop léger",
+          opt_water_chop: "Chop",
+          opt_water_chop_strong: "Chop fort",
+          opt_water_small_waves: "Petites vagues",
           opt_water_waves: "Vagues",
+          opt_water_big_waves: "Grosses vagues",
           label_result: "Résultat session",
           opt_result_prompt: "Résultat session",
-          opt_result_perfect: "Parfaite",
-          opt_result_too_much: "Trop",
-          opt_result_too_little: "Pas assez",
+          opt_result_underpowered: "Underpowered",
+          opt_result_good: "Bon",
+          opt_result_powered: "Bien chargé",
+          opt_result_overpowered: "Trop chargé",
+          opt_result_survival: "Survival",
           label_notes: "Notes",
           ph_notes: "Infos utiles (spot, rafales, réglages, etc.)",
           hint_screenshot: "Si besoin, ajoute des captures manuellement dans WhatsApp après l’envoi.",
@@ -862,6 +929,15 @@
         syncBoardSizeOptions();
       })();
 
+      function syncBoardSizeCustomUI(){
+        const sel = document.getElementById("boardSize");
+        const custom = document.getElementById("boardSizeCustom");
+        if (!sel || !custom) return;
+        const show = !sel.disabled && sel.value === BOARD_SIZE_OTHER;
+        if (!show) custom.value = "";
+        custom.hidden = !show;
+      }
+
       function syncBoardSizeOptions(){
         const boardVal = String(document.getElementById("board")?.value || "").trim();
         const sel = document.getElementById("boardSize");
@@ -879,6 +955,7 @@
         if (!sizes){
           sel.disabled = true;
           sel.value = "";
+          syncBoardSizeCustomUI();
           return;
         }
 
@@ -889,7 +966,13 @@
           o.textContent = s;
           sel.appendChild(o);
         });
+        const oOther = document.createElement("option");
+        oOther.value = BOARD_SIZE_OTHER;
+        oOther.textContent = t("opt_board_size_other");
+        sel.appendChild(oOther);
         if (sizes.includes(prev)) sel.value = prev;
+        else if (prev === BOARD_SIZE_OTHER) sel.value = BOARD_SIZE_OTHER;
+        syncBoardSizeCustomUI();
       }
 
       function val(id){
@@ -964,7 +1047,8 @@
       function buildMessage(){
         const weight = val("weight");
         const board = val("board");
-        const boardSize = val("boardSize");
+        const boardSizeSel = val("boardSize");
+        const boardSize = boardSizeSel === BOARD_SIZE_OTHER ? val("boardSizeCustom") : boardSizeSel;
         const level = val("level");
         const kite = val("kite");
         const brand = val("brand");
@@ -1039,8 +1123,12 @@
         syncBoardSizeOptions();
         refreshPreview();
       });
+      document.getElementById("boardSize").addEventListener("change", () => {
+        syncBoardSizeCustomUI();
+        refreshPreview();
+      });
 
-      ["weight","board","boardSize","level","kite","brand","model","wind","location","water","result","note"].forEach(bindFieldPreview);
+      ["weight","board","boardSize","boardSizeCustom","level","kite","brand","model","wind","location","water","result","note"].forEach(bindFieldPreview);
 
       function syncFlagUI(){
         flagButtons.forEach((btn) => {
