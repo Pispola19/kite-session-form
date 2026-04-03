@@ -29,7 +29,7 @@
         line-height:1.4;
       }
       .wrap{
-        max-width: 768px;
+        max-width: 720px;
         padding: 20px 16px 44px;
         margin: 0 auto;
       }
@@ -78,71 +78,28 @@
         text-transform: uppercase;
         color: rgba(159,178,214,.95);
       }
-      .form-field-legend{
-        margin: 0 0 10px 2px;
-        font-size: 11px;
-        line-height: 1.45;
-        color: rgba(159,178,214,.92);
-        max-width: 36rem;
-      }
-      .req-mark{
-        color: var(--danger);
-        font-weight: 700;
-        margin-left: 3px;
-        white-space: nowrap;
-      }
-      .core-block{
-        display: grid;
-        gap: 14px;
-      }
       .row.row-core-top{
         display:grid;
-        gap: 12px;
+        gap: 10px;
         align-items:end;
-        grid-template-columns: minmax(4.5rem, 5.5rem) minmax(7rem, 1.35fr) minmax(8rem, 1fr);
+        grid-template-columns: minmax(4.75rem, 5.5rem) minmax(5.75rem, 7rem) minmax(5rem, 6rem);
       }
-      .row.row-core-top > *{
-        min-width: 0;
-      }
-      @media (max-width: 640px){
+      @media (max-width: 720px){
         .row.row-core-top{
           grid-template-columns: 1fr;
         }
       }
-      .row-core-top label,
-      .row.level-kite-wind label{
-        white-space: normal;
-        overflow-wrap: break-word;
-        word-wrap: break-word;
-        hyphens: auto;
-        max-width: 100%;
-      }
-      .cell-weight-narrow,
-      .kite-compact{
-        justify-self: start;
-        width: 100%;
-        max-width: 6rem;
-      }
-      @media (max-width: 640px){
-        .cell-weight-narrow,
-        .kite-compact{
-          max-width: 100%;
-          justify-self: stretch;
-        }
-      }
       .input-weight-compact{
         width: 100%;
-        max-width: 5.75rem;
+        max-width: 5.5rem;
         text-align: center;
         font-variant-numeric: tabular-nums;
         padding-left: 8px;
         padding-right: 8px;
         box-sizing: border-box;
       }
-      .cell-board-type select,
-      .cell-board-size select{
+      .cell-board-type select{
         width: 100%;
-        min-width: 0;
       }
       .cell-board-size select:disabled{
         opacity: 0.55;
@@ -150,24 +107,17 @@
       }
       .row.level-kite-wind{
         display:grid;
-        grid-template-columns: minmax(9rem, 1.5fr) minmax(4.5rem, 5.75rem) minmax(7rem, 1fr);
-        gap: 12px;
+        grid-template-columns: minmax(5.5rem, 8.5rem) minmax(4.75rem, 5.25rem) minmax(4.75rem, 5.25rem);
+        gap: 10px;
         align-items:end;
       }
-      .row.level-kite-wind > *{
-        min-width: 0;
-      }
-      .row.level-kite-wind .level-cell select,
-      .wind-compact input{
+      .row.level-kite-wind .level-cell select{
         width: 100%;
-        max-width: none;
+        max-width: 8.5rem;
       }
-      .wind-compact .input-numeric-compact{
-        max-width: 100%;
-      }
-      @media (max-width: 640px){
+      @media (max-width: 720px){
         .row.level-kite-wind{ grid-template-columns: 1fr; }
-        .wind-compact input{ max-width: 100%; }
+        .row.level-kite-wind .level-cell select{ max-width: 100%; }
       }
       .input-numeric-compact{
         width: 100%;
@@ -244,6 +194,10 @@
         margin: 6px 2px 0;
         font-size: 12px;
         color: rgba(159,178,214,.85);
+      }
+      .req{
+        color: rgba(233,240,255,.9);
+        font-weight: 600;
       }
       .error{
         display:none;
@@ -347,60 +301,57 @@
         <div class="card-inner">
           <form id="kiteForm" autocomplete="on" novalidate>
             <p class="section-label" data-i18n="section_core">Core</p>
-            <p class="form-field-legend" data-i18n="form_field_legend">* Required. All other fields are optional.</p>
-            <div class="core-block">
-              <div id="coreTopRow" class="row row-core-top">
-                <div class="cell-weight-narrow">
-                  <label for="weight"><span data-i18n="label_weight">Weight (kg)</span><span class="req-mark" aria-hidden="true">*</span></label>
-                  <input id="weight" name="weight" type="text" inputmode="numeric" maxlength="3" autocomplete="off" placeholder="e.g. 74" data-i18n-placeholder="ph_weight" required class="input-weight-compact" />
-                </div>
-                <div class="cell-board-type">
-                  <label for="board"><span data-i18n="label_board">Board type</span><span class="req-mark" aria-hidden="true">*</span></label>
-                  <select id="board" name="board" required>
-                    <option value="" data-i18n="opt_board_prompt">Select board type</option>
-                    <option value="twintip" data-i18n="opt_board_twintip">Twintip</option>
-                    <option value="surfboard" data-i18n="opt_board_surfboard">Surfboard</option>
-                    <option value="foil" data-i18n="opt_board_foil">Foil</option>
-                  </select>
-                </div>
-                <div id="boardSizeCell" class="cell-board-size">
-                  <label for="boardSize"><span data-i18n="label_board_size">Board size</span></label>
-                  <select id="boardSize" name="boardSize" disabled>
-                    <option value="" data-i18n="opt_board_size_prompt">Board size (optional)</option>
-                  </select>
-                </div>
+            <div id="coreTopRow" class="row row-core-top">
+              <div class="cell-weight-narrow">
+                <label for="weight"><span data-i18n="label_weight">Weight (kg)</span> <span class="req" data-i18n="required">(required)</span></label>
+                <input id="weight" name="weight" type="text" inputmode="numeric" maxlength="3" autocomplete="off" placeholder="e.g. 74" data-i18n-placeholder="ph_weight" required class="input-weight-compact" />
               </div>
+              <div class="cell-board-type">
+                <label for="board"><span data-i18n="label_board">Board type</span> <span class="req" data-i18n="required">(required)</span></label>
+                <select id="board" name="board" required>
+                  <option value="" data-i18n="opt_board_prompt">Select board type</option>
+                  <option value="twintip" data-i18n="opt_board_twintip">Twintip</option>
+                  <option value="surfboard" data-i18n="opt_board_surfboard">Surfboard</option>
+                  <option value="foil" data-i18n="opt_board_foil">Foil</option>
+                </select>
+              </div>
+              <div id="boardSizeCell" class="cell-board-size">
+                <label for="boardSize"><span data-i18n="label_board_size">Board size</span> <span class="hint" data-i18n="optional">(optional)</span></label>
+                <select id="boardSize" name="boardSize" disabled>
+                  <option value="" data-i18n="opt_board_size_prompt">Board size (optional)</option>
+                </select>
+              </div>
+            </div>
 
-              <div class="row level-kite-wind">
-                <div class="level-cell">
-                  <label for="level"><span data-i18n="label_level">Level</span><span class="req-mark" aria-hidden="true">*</span></label>
-                  <select id="level" name="level" required>
-                    <option value="" data-i18n="opt_level_prompt">Select level</option>
-                    <option value="beginner" data-i18n="opt_level_beginner">Beginner</option>
-                    <option value="independent" data-i18n="opt_level_independent">Independent</option>
-                    <option value="advanced" data-i18n="opt_level_advanced">Advanced</option>
-                  </select>
-                </div>
-                <div class="kite-compact">
-                  <label for="kite"><span data-i18n="label_kite_size">Kite size (m²)</span><span class="req-mark" aria-hidden="true">*</span></label>
-                  <input id="kite" name="kite" type="text" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="e.g. 9" data-i18n-placeholder="ph_kite_size" required class="input-numeric-compact" />
-                </div>
-                <div class="wind-compact">
-                  <label for="wind"><span data-i18n="label_wind">Estimated wind</span></label>
-                  <input id="wind" name="wind" type="text" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="Leave empty if unknown" data-i18n-placeholder="ph_wind" class="input-numeric-compact" />
-                </div>
+            <div class="row level-kite-wind">
+              <div class="level-cell">
+                <label for="level"><span data-i18n="label_level">Level</span> <span class="req" data-i18n="required">(required)</span></label>
+                <select id="level" name="level" required>
+                  <option value="" data-i18n="opt_level_prompt">Select level</option>
+                  <option value="beginner" data-i18n="opt_level_beginner">Beginner</option>
+                  <option value="independent" data-i18n="opt_level_independent">Independent</option>
+                  <option value="advanced" data-i18n="opt_level_advanced">Advanced</option>
+                </select>
+              </div>
+              <div class="kite-compact">
+                <label for="kite"><span data-i18n="label_kite_size">Kite size (m²)</span> <span class="req" data-i18n="required">(required)</span></label>
+                <input id="kite" name="kite" type="text" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="e.g. 9" data-i18n-placeholder="ph_kite_size" required class="input-numeric-compact" />
+              </div>
+              <div class="wind-compact">
+                <label for="wind" data-i18n="label_wind">Estimated wind (optional)</label>
+                <input id="wind" name="wind" type="text" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="Leave empty if unknown" data-i18n-placeholder="ph_wind" class="input-numeric-compact" />
               </div>
             </div>
 
             <p class="section-label" data-i18n="section_tech">Technical</p>
             <div class="row two">
               <div>
-                <label for="brand"><span data-i18n="label_brand">Kite brand</span></label>
+                <label for="brand"><span data-i18n="label_brand">Kite brand</span> <span class="hint" data-i18n="optional">(optional)</span></label>
                 <input id="brand" name="brand" type="text" inputmode="text" placeholder="Duotone, Core, North, Cabrinha..." data-i18n-placeholder="ph_brand" />
                 <div class="hint" data-i18n="hint_brand">Usa il nome ufficiale (senza abbreviazioni)</div>
               </div>
               <div>
-                <label for="model"><span data-i18n="label_model">Kite model</span></label>
+                <label for="model"><span data-i18n="label_model">Kite model</span> <span class="hint" data-i18n="optional">(optional)</span></label>
                 <input id="model" name="model" type="text" inputmode="text" placeholder="Orbit, Dice, XR, Nexus..." data-i18n-placeholder="ph_model" />
                 <div class="hint" data-i18n="hint_model">Inserisci solo il nome del modello (senza versioni)</div>
               </div>
@@ -409,14 +360,14 @@
             <p class="section-label" data-i18n="section_context">Context</p>
             <div class="row">
               <div>
-                <label for="location"><span data-i18n="label_location">Location</span></label>
+                <label for="location"><span data-i18n="label_location">Location</span> <span class="hint" data-i18n="optional">(optional)</span></label>
                 <input id="location" name="location" type="text" inputmode="text" placeholder="e.g. Punta Trettu" data-i18n-placeholder="ph_location" />
               </div>
             </div>
 
             <div class="row two">
               <div>
-                <label for="water"><span data-i18n="label_water">Water conditions</span></label>
+                <label for="water"><span data-i18n="label_water">Water conditions</span> <span class="hint" data-i18n="optional">(optional)</span></label>
                 <select id="water" name="water">
                   <option value="" data-i18n="opt_water_prompt">Water conditions (optional)</option>
                   <option value="flat" data-i18n="opt_water_flat">Flat</option>
@@ -425,7 +376,7 @@
                 </select>
               </div>
               <div>
-                <label for="result"><span data-i18n="label_result">Session result</span></label>
+                <label for="result"><span data-i18n="label_result">Session result</span> <span class="hint" data-i18n="optional">(optional)</span></label>
                 <select id="result" name="result">
                   <option value="" data-i18n="opt_result_prompt">Session result (optional)</option>
                   <option value="perfect" data-i18n="opt_result_perfect">Perfect</option>
@@ -437,7 +388,7 @@
 
             <div class="row">
               <div>
-                <label for="note"><span data-i18n="label_notes">Notes</span></label>
+                <label for="note"><span data-i18n="label_notes">Notes</span> <span class="hint" data-i18n="optional">(optional)</span></label>
                 <textarea id="note" name="note" placeholder="Anything useful (spot, gusts, setup, etc.)" data-i18n-placeholder="ph_notes"></textarea>
                 <div class="hint" data-i18n="hint_screenshot">If needed, add screenshots manually in WhatsApp after sending.</div>
               </div>
@@ -482,7 +433,6 @@
           required: "(required)",
           optional: "(optional)",
           section_core: "Core",
-          form_field_legend: "* Required. All other fields are optional.",
           section_tech: "Technical",
           section_context: "Context",
           label_weight: "Weight (kg)",
@@ -493,7 +443,7 @@
           opt_board_surfboard: "Surfboard",
           opt_board_foil: "Foil",
           label_board_size: "Board size",
-          opt_board_size_prompt: "Select size",
+          opt_board_size_prompt: "Board size (optional)",
           label_level: "Level",
           opt_level_prompt: "Select level",
           opt_level_beginner: "Beginner",
@@ -507,17 +457,17 @@
           label_model: "Kite model",
           ph_model: "Orbit, Dice, XR, Nexus...",
           hint_model: "Model name only (no versions)",
-          label_wind: "Estimated wind",
-          ph_wind: "e.g. 18",
+          label_wind: "Estimated wind (optional)",
+          ph_wind: "Leave empty if unknown",
           label_location: "Location",
           ph_location: "e.g. Punta Trettu",
           label_water: "Water conditions",
-          opt_water_prompt: "Water conditions",
+          opt_water_prompt: "Water conditions (optional)",
           opt_water_flat: "Flat",
           opt_water_choppy: "Choppy",
           opt_water_waves: "Waves",
           label_result: "Session result",
-          opt_result_prompt: "Session result",
+          opt_result_prompt: "Session result (optional)",
           opt_result_perfect: "Perfect",
           opt_result_too_much: "Too much",
           opt_result_too_little: "Too little",
@@ -551,7 +501,6 @@
           required: "(obbligatorio)",
           optional: "(opzionale)",
           section_core: "Core",
-          form_field_legend: "* Obbligatorio. Tutti gli altri campi sono opzionali.",
           section_tech: "Tecnico",
           section_context: "Contesto",
           label_weight: "Peso (kg)",
@@ -562,7 +511,7 @@
           opt_board_surfboard: "Surfboard",
           opt_board_foil: "Foil",
           label_board_size: "Misura tavola",
-          opt_board_size_prompt: "Scegli misura",
+          opt_board_size_prompt: "Misura tavola (opzionale)",
           label_level: "Livello",
           opt_level_prompt: "Seleziona livello",
           opt_level_beginner: "Beginner",
@@ -576,17 +525,17 @@
           label_model: "Modello kite",
           ph_model: "Orbit, Dice, XR, Nexus...",
           hint_model: "Inserisci solo il nome del modello (senza versioni)",
-          label_wind: "Vento stimato",
-          ph_wind: "es. 18",
+          label_wind: "Vento stimato (opzionale)",
+          ph_wind: "Lascia vuoto se non lo sai",
           label_location: "Spot",
           ph_location: "es. Punta Trettu",
           label_water: "Condizioni acqua",
-          opt_water_prompt: "Condizioni acqua",
+          opt_water_prompt: "Condizioni acqua (opzionale)",
           opt_water_flat: "Piatta",
           opt_water_choppy: "Chop",
           opt_water_waves: "Onde",
           label_result: "Risultato sessione",
-          opt_result_prompt: "Risultato sessione",
+          opt_result_prompt: "Risultato sessione (opzionale)",
           opt_result_perfect: "Perfetta",
           opt_result_too_much: "Troppo vento",
           opt_result_too_little: "Poco vento",
@@ -621,7 +570,6 @@
           required: "(erforderlich)",
           optional: "(optional)",
           section_core: "Session",
-          form_field_legend: "* Pflichtfeld. Alle anderen Felder sind optional.",
           section_tech: "Technik",
           section_context: "Umgebung",
           label_weight: "Gewicht (kg)",
@@ -632,7 +580,7 @@
           opt_board_surfboard: "Surfboard",
           opt_board_foil: "Foil",
           label_board_size: "Board-Größe",
-          opt_board_size_prompt: "Größe wählen",
+          opt_board_size_prompt: "Board-Größe (optional)",
           label_level: "Level",
           opt_level_prompt: "Level wählen",
           opt_level_beginner: "Beginner",
@@ -646,17 +594,17 @@
           label_model: "Kite-Modell",
           ph_model: "Orbit, Dice, XR, Nexus...",
           hint_model: "Nur Modellname (ohne Versionen/Generationen)",
-          label_wind: "Geschätzter Wind",
-          ph_wind: "z.B. 18",
+          label_wind: "Geschätzter Wind (optional)",
+          ph_wind: "Leer lassen, wenn unbekannt",
           label_location: "Spot",
           ph_location: "z.B. Punta Trettu",
           label_water: "Wasserbedingungen",
-          opt_water_prompt: "Wasserbedingungen",
+          opt_water_prompt: "Wasserbedingungen (optional)",
           opt_water_flat: "Flach",
           opt_water_choppy: "Kabbelig",
           opt_water_waves: "Wellen",
           label_result: "Session-Ergebnis",
-          opt_result_prompt: "Session-Ergebnis",
+          opt_result_prompt: "Session-Ergebnis (optional)",
           opt_result_perfect: "Perfekt",
           opt_result_too_much: "Zu viel",
           opt_result_too_little: "Zu wenig",
@@ -691,7 +639,6 @@
           required: "(obligatorio)",
           optional: "(opcional)",
           section_core: "Núcleo",
-          form_field_legend: "* Obligatorio. El resto de campos es opcional.",
           section_tech: "Técnico",
           section_context: "Contexto",
           label_weight: "Peso (kg)",
@@ -702,7 +649,7 @@
           opt_board_surfboard: "Surfboard",
           opt_board_foil: "Foil",
           label_board_size: "Tamaño tabla",
-          opt_board_size_prompt: "Elige talla",
+          opt_board_size_prompt: "Tamaño tabla (opcional)",
           label_level: "Nivel",
           opt_level_prompt: "Selecciona nivel",
           opt_level_beginner: "Beginner",
@@ -716,17 +663,17 @@
           label_model: "Modelo de kite",
           ph_model: "Orbit, Dice, XR, Nexus...",
           hint_model: "Solo el nombre del modelo (sin versiones)",
-          label_wind: "Viento estimado",
-          ph_wind: "p. ej. 18",
+          label_wind: "Viento estimado (opcional)",
+          ph_wind: "Déjalo vacío si no lo sabes",
           label_location: "Lugar",
           ph_location: "p. ej. Punta Trettu",
           label_water: "Condiciones del agua",
-          opt_water_prompt: "Condiciones del agua",
+          opt_water_prompt: "Condiciones del agua (opcional)",
           opt_water_flat: "Plana",
           opt_water_choppy: "Picada",
           opt_water_waves: "Olas",
           label_result: "Resultado de la sesión",
-          opt_result_prompt: "Resultado de la sesión",
+          opt_result_prompt: "Resultado de la sesión (opcional)",
           opt_result_perfect: "Perfecta",
           opt_result_too_much: "Demasiado",
           opt_result_too_little: "Demasiado poco",
@@ -761,7 +708,6 @@
           required: "(obligatoire)",
           optional: "(optionnel)",
           section_core: "Session",
-          form_field_legend: "* Obligatoire. Tous les autres champs sont optionnels.",
           section_tech: "Technique",
           section_context: "Contexte",
           label_weight: "Poids (kg)",
@@ -772,7 +718,7 @@
           opt_board_surfboard: "Surfboard",
           opt_board_foil: "Foil",
           label_board_size: "Taille planche",
-          opt_board_size_prompt: "Choisir taille",
+          opt_board_size_prompt: "Taille planche (optionnel)",
           label_level: "Niveau",
           opt_level_prompt: "Choisir le niveau",
           opt_level_beginner: "Beginner",
@@ -786,17 +732,17 @@
           label_model: "Modèle du kite",
           ph_model: "Orbit, Dice, XR, Nexus...",
           hint_model: "Nom du modèle uniquement (sans versions)",
-          label_wind: "Vent estimé",
-          ph_wind: "ex. 18",
+          label_wind: "Vent estimé (optionnel)",
+          ph_wind: "Laisser vide si inconnu",
           label_location: "Spot",
           ph_location: "ex. Punta Trettu",
           label_water: "État de l’eau",
-          opt_water_prompt: "État de l’eau",
+          opt_water_prompt: "État de l’eau (optionnel)",
           opt_water_flat: "Plat",
           opt_water_choppy: "Clapot",
           opt_water_waves: "Vagues",
           label_result: "Résultat session",
-          opt_result_prompt: "Résultat session",
+          opt_result_prompt: "Résultat session (optionnel)",
           opt_result_perfect: "Parfaite",
           opt_result_too_much: "Trop",
           opt_result_too_little: "Pas assez",
