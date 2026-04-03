@@ -1061,16 +1061,16 @@ You’re helping improve kitesurfing for everyone.</p>
         }
 
         sel.disabled = false;
+        const oOther = document.createElement("option");
+        oOther.value = BOARD_SIZE_OTHER;
+        oOther.textContent = t("opt_board_size_other");
+        sel.appendChild(oOther);
         sizes.forEach((s) => {
           const o = document.createElement("option");
           o.value = s;
           o.textContent = s;
           sel.appendChild(o);
         });
-        const oOther = document.createElement("option");
-        oOther.value = BOARD_SIZE_OTHER;
-        oOther.textContent = t("opt_board_size_other");
-        sel.appendChild(oOther);
         if (sizes.includes(prev)) sel.value = prev;
         else if (prev === BOARD_SIZE_OTHER) sel.value = BOARD_SIZE_OTHER;
         if (hintAbove) hintAbove.hidden = false;
