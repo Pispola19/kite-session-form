@@ -1265,7 +1265,9 @@ You’re helping improve kitesurfing for everyone.</p>
         markFirstSubmitDone();
         refreshPreview();
         playSendFeedback();
-        // openWhatsAppWithMessage(msg);
+        if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+  openWhatsAppWithMessage(msg);
+}
       });
 
       resetBtn.addEventListener("click", () => {
