@@ -145,21 +145,183 @@ function send() {
 
   let message = "";
 
-  if(weight) message += "⚖️ Peso (kg): " + weight + "\n";
-  if(kite) message += "🪁 Kite (m²): " + kite + "\n";
-  if(wind) message += "🌬️ Vento (kts): " + wind + "\n";
-  if(board) message += "🪵 Board size: " + board + "\n";
-  if(spot) message += "📍 Spot: " + spot + "\n";
+  if(weight) message += "⚖️ Peso (kg): " + weight + "%0A";
+  if(kite) message += "🪁 Kite (m²): " + kite + "%0A";
+  if(wind) message += "🌬️ Vento (kts): " + wind + "%0A";
+  if(board) message += "🪵 Board size: " + board + "%0A";
+  if(spot) message += "📍 Spot: " + spot + "%0A";
 
-  message += "---\n";
-  message += "ID: " + id + "\n";
-  message += "TS: " + ts + "\n";
-  message += "SRC: rdk_v1\n";
+  message += "---%0A";
+  message += "ID: " + id + "%0A";
+  message += "TS: " + ts + "%0A";
+  message += "SRC: rdk_v1%0A";
   message += "---";
 
-  const encodedMessage = encodeURIComponent(message);
+  window.open("https://wa.me/?text=" + message, "_blank");
+}
+</script>
 
-  window.location.href = "https://wa.me/?text=" + encodedMessage;
+</body>
+</html><!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kite Session Form</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #0f172a;
+  color: #e2e8f0;
+  margin: 0;
+  padding: 20px;
+}
+.container {
+  max-width: 600px;
+  margin: auto;
+}
+h1 {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+.form-group {
+  margin-bottom: 12px;
+}
+input, select, textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #334155;
+  background: #020617;
+  color: #e2e8f0;
+}
+button {
+  width: 100%;
+  padding: 12px;
+  background: #22c55e;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  color: #020617;
+  margin-top: 10px;
+}
+.suggestion-box {
+  margin-top: 20px;
+  background: #020617;
+  border: 1px solid #334155;
+  border-radius: 10px;
+  padding: 12px;
+}
+.suggestion-title {
+  font-size: 14px;
+  margin-bottom: 8px;
+  color: #38bdf8;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+}
+th, td {
+  border: 1px solid #334155;
+  padding: 6px;
+  text-align: center;
+}
+th {
+  background: #0f172a;
+}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>Kite Session</h1>
+
+<div class="form-group">
+<label>Peso (kg)</label>
+<input type="number" id="weight">
+</div>
+
+<div class="form-group">
+<label>Kite (m²)</label>
+<input type="number" id="kite">
+</div>
+
+<div class="form-group">
+<label>Vento (kts)</label>
+<input type="number" id="wind">
+</div>
+
+<div class="form-group">
+<label>Board size</label>
+<input type="text" id="board">
+</div>
+
+<div class="form-group">
+<label>Spot</label>
+<input type="text" id="spot">
+</div>
+
+<button onclick="send()">Invia</button>
+
+<div class="suggestion-box">
+<div class="suggestion-title">Suggerimento tavola per peso rider</div>
+<table>
+<tr>
+<th>Peso rider (kg)</th>
+<th>Lunghezza (cm)</th>
+<th>Larghezza (cm)</th>
+</tr>
+<tr>
+<td>&lt;50-60</td>
+<td>125-133</td>
+<td>38-40</td>
+</tr>
+<tr>
+<td>60-80</td>
+<td>133-138</td>
+<td>40-41</td>
+</tr>
+<tr>
+<td>80-100</td>
+<td>138-144</td>
+<td>41-43</td>
+</tr>
+<tr>
+<td>&gt;100</td>
+<td>144-160+</td>
+<td>43-46</td>
+</tr>
+</table>
+</div>
+
+</div>
+
+<script>
+function send() {
+  const weight = document.getElementById("weight").value;
+  const kite = document.getElementById("kite").value;
+  const wind = document.getElementById("wind").value;
+  const board = document.getElementById("board").value;
+  const spot = document.getElementById("spot").value;
+
+  const id = Math.random().toString(36).substring(2,12);
+  const ts = new Date().toISOString();
+
+  let message = "";
+
+  if(weight) message += "⚖️ Peso (kg): " + weight + "%0A";
+  if(kite) message += "🪁 Kite (m²): " + kite + "%0A";
+  if(wind) message += "🌬️ Vento (kts): " + wind + "%0A";
+  if(board) message += "🪵 Board size: " + board + "%0A";
+  if(spot) message += "📍 Spot: " + spot + "%0A";
+
+  message += "---%0A";
+  message += "ID: " + id + "%0A";
+  message += "TS: " + ts + "%0A";
+  message += "SRC: rdk_v1%0A";
+  message += "---";
+
+  window.open("https://wa.me/?text=" + message, "_blank");
 }
 </script>
 
