@@ -1,329 +1,1381 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="it">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kite Session Form</title>
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #0f172a;
-  color: #e2e8f0;
-  margin: 0;
-  padding: 20px;
-}
-.container {
-  max-width: 600px;
-  margin: auto;
-}
-h1 {
-  font-size: 22px;
-  margin-bottom: 10px;
-}
-.form-group {
-  margin-bottom: 12px;
-}
-input, select, textarea {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #334155;
-  background: #020617;
-  color: #e2e8f0;
-}
-button {
-  width: 100%;
-  padding: 12px;
-  background: #22c55e;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  color: #020617;
-  margin-top: 10px;
-}
-.suggestion-box {
-  margin-top: 20px;
-  background: #020617;
-  border: 1px solid #334155;
-  border-radius: 10px;
-  padding: 12px;
-}
-.suggestion-title {
-  font-size: 14px;
-  margin-bottom: 8px;
-  color: #38bdf8;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-}
-th, td {
-  border: 1px solid #334155;
-  padding: 6px;
-  text-align: center;
-}
-th {
-  background: #0f172a;
-}
-</style>
-</head>
-<body>
-<div class="container">
-<h1>Kite Session</h1>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <title>Stai usando la vela giusta?</title>
+    <style>
+      :root{
+        --bg:#0b1220;
+        --card:#0f1b32;
+        --muted:#9fb2d6;
+        --text:#e9f0ff;
+        --border:#1d2b4a;
+        --accent:#34d399;
+        --accent2:#60a5fa;
+        --danger:#fb7185;
+        --shadow: 0 10px 30px rgba(0,0,0,.35);
+        --radius: 14px;
+        --field-req-border: rgba(251, 113, 133, 0.58);
+        --field-req-glow: rgba(251, 113, 133, 0.22);
+        --field-imp-border: rgba(234, 179, 8, 0.55);
+        --field-imp-glow: rgba(234, 179, 8, 0.2);
+        --field-soft-border: rgba(96, 165, 250, 0.52);
+        --field-soft-glow: rgba(96, 165, 250, 0.18);
+        --success-border: rgba(52,211,153,.35);
+        --success-bg: rgba(52,211,153,.10);
+      }
+      *{ box-sizing:border-box; }
+      body{
+        margin:0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+        background: radial-gradient(1200px 600px at 15% 0%, rgba(96,165,250,.12), transparent 60%),
+                    radial-gradient(900px 500px at 85% 10%, rgba(52,211,153,.10), transparent 55%),
+                    var(--bg);
+        color:var(--text);
+        line-height:1.4;
+      }
+      .wrap{
+        max-width: 768px;
+        padding: 20px 16px 44px;
+        margin: 0 auto;
+      }
+      header{
+        padding: 10px 4px 16px;
+      }
+      .topbar{
+        display:flex;
+        align-items:flex-start;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .lang{
+        display:flex;
+        align-items:center;
+        gap: 8px;
+        justify-content:flex-end;
+      }
+      .lang .flags{
+        display:flex;
+        gap: 6px;
+        padding: 6px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: rgba(255,255,255,.03);
+      }
+      .flag-btn{
+        cursor:pointer;
+        border: 1px solid transparent;
+        background: transparent;
+        color: var(--text);
+        border-radius: 999px;
+        padding: 6px 8px;
+        font-size: 16px;
+        line-height: 1;
+      }
+      .flag-btn[aria-pressed="true"]{
+        border-color: rgba(96,165,250,.55);
+        background: rgba(96,165,250,.12);
+      }
+      .section-label{
+        margin: 2px 0 6px 2px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: rgba(159,178,214,.95);
+      }
+      .form-field-legend{
+        margin: 0 0 10px 2px;
+        font-size: 11px;
+        line-height: 1.45;
+        color: rgba(159,178,214,.92);
+        max-width: 36rem;
+      }
+      .form-field-border-hint{
+        margin: -4px 0 10px 2px;
+        font-size: 10px;
+        line-height: 1.4;
+        color: rgba(159,178,214,.72);
+        max-width: 38rem;
+      }
+      .req-mark{
+        color: var(--danger);
+        font-weight: 700;
+        margin-left: 3px;
+        white-space: nowrap;
+      }
+      .core-block{
+        display: grid;
+        gap: 14px;
+      }
+      .row.row-core-top{
+        display:grid;
+        gap: 12px;
+        align-items:end;
+        grid-template-columns: minmax(4.5rem, 5.5rem) minmax(6.75rem, 0.88fr) minmax(7.75rem, 1.48fr);
+      }
+      .row.row-core-top > *{
+        min-width: 0;
+      }
+      @media (max-width: 640px){
+        .row.row-core-top{
+          grid-template-columns: 1fr;
+        }
+        .cell-board-type{
+          max-width: none;
+          justify-self: stretch;
+        }
+      }
+      .row-core-top label,
+      .row.level-kite-wind label{
+        white-space: normal;
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        hyphens: auto;
+        max-width: 100%;
+      }
+      .cell-weight-narrow{
+        justify-self: start;
+        width: 100%;
+        max-width: 6rem;
+      }
+      .kite-compact{
+        justify-self: start;
+        width: 100%;
+        max-width: 8.75rem;
+      }
+      @media (max-width: 640px){
+        .cell-weight-narrow,
+        .kite-compact{
+          max-width: 100%;
+          justify-self: stretch;
+        }
+      }
+      .input-weight-compact{
+        width: 100%;
+        max-width: 5.75rem;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+        padding-left: 8px;
+        padding-right: 8px;
+        box-sizing: border-box;
+      }
+      .cell-board-type{
+        max-width: 15.5rem;
+        justify-self: start;
+        width: 100%;
+      }
+      .cell-board-type select{
+        width: 100%;
+        min-width: 0;
+      }
+      .board-size-hint-above{
+        margin: 0 0 5px 2px;
+        font-size: 11px;
+        line-height: 1.35;
+        color: rgba(159,178,214,.88);
+        max-width: 100%;
+      }
+      .board-size-controls{
+        display: flex;
+        gap: 8px;
+        align-items: flex-end;
+        width: 100%;
+        min-width: 0;
+        flex-wrap: wrap;
+      }
+      .board-size-controls select{
+        flex: 1.55 1 6.25rem;
+        min-width: 0;
+        width: auto;
+      }
+      .board-size-controls .input-board-size-custom{
+        flex: 1 1 5.25rem;
+        min-width: 0;
+        max-width: 100%;
+      }
+      .cell-board-size select:disabled{
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+      .row.level-kite-wind{
+        display:grid;
+        grid-template-columns: minmax(8rem, 0.92fr) minmax(5.5rem, 8.75rem) minmax(6.5rem, 1.05fr);
+        gap: 12px;
+        align-items:end;
+      }
+      .row.level-kite-wind > *{
+        min-width: 0;
+      }
+      .row.level-kite-wind .level-cell select,
+      .wind-compact input{
+        width: 100%;
+        max-width: none;
+      }
+      .wind-compact .input-numeric-compact{
+        max-width: 100%;
+      }
+      .kite-compact .input-numeric-compact{
+        max-width: 100%;
+      }
+      @media (max-width: 640px){
+        .row.level-kite-wind{ grid-template-columns: 1fr; }
+        .wind-compact input{ max-width: 100%; }
+      }
+      .input-numeric-compact{
+        width: 100%;
+        max-width: 5.25rem;
+        min-width: 4.75rem;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+        padding-left: 8px;
+        padding-right: 8px;
+        box-sizing: border-box;
+      }
+      .row-core-top select,
+      .level-kite-wind select{
+        box-sizing: border-box;
+      }
+      h1{
+        font-size: 22px;
+        margin: 0 0 6px 0;
+        letter-spacing:.2px;
+      }
+      p.sub{
+        margin:0;
+        color:var(--muted);
+        font-size: 13px;
+      }
+      .card{
+        background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow:hidden;
+      }
+      .card-inner{
+        padding: 14px;
+      }
+      form{
+        display:grid;
+        gap: 12px;
+      }
+      .row{
+        display:grid;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+      @media (min-width: 640px){
+        .row.two{ grid-template-columns: 1fr 1fr; }
+      }
+      label{
+        display:block;
+        font-size: 12px;
+        color: var(--muted);
+        margin: 0 0 6px 2px;
+      }
+      input, select, textarea{
+        width:100%;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(9,14,26,.55);
+        color: var(--text);
+        padding: 12px 12px;
+        outline: none;
+        font-size: 15px;
+      }
+      textarea{
+        min-height: 88px;
+        resize: vertical;
+      }
+      input::placeholder, textarea::placeholder{ color: rgba(159,178,214,.7); }
+      input:focus, textarea:focus, select:focus{
+        border-color: rgba(96,165,250,.75);
+        box-shadow: 0 0 0 3px rgba(96,165,250,.15);
+      }
+      #kiteForm input:disabled,
+      #kiteForm select:disabled{
+        border-color: var(--border);
+        box-shadow: none;
+        opacity: 0.85;
+      }
+      #kiteForm .field-tier-neutral:enabled{
+        border-color: var(--field-soft-border);
+        box-shadow: 0 0 0 1px var(--field-soft-glow);
+      }
+      #kiteForm .field-tier-important:enabled{
+        border-color: var(--field-imp-border);
+        box-shadow: 0 0 0 1px var(--field-imp-glow);
+      }
+      #kiteForm input[required]:enabled,
+      #kiteForm select[required]:enabled{
+        border-color: var(--field-req-border);
+        box-shadow: 0 0 0 1px var(--field-req-glow);
+      }
+      .hint{
+        margin: 6px 2px 0;
+        font-size: 12px;
+        color: rgba(159,178,214,.85);
+      }
+      .hint-strong{
+        margin: 8px 2px 0;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(96,165,250,.28);
+        background: rgba(96,165,250,.10);
+        color: rgba(233,240,255,.98);
+        font-size: 14px;
+        line-height: 1.45;
+      }
+      .error{
+        display:none;
+        margin: 10px 0 0;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(251,113,133,.35);
+        background: rgba(251,113,133,.10);
+        color: rgba(255,235,240,.95);
+        font-size: 13px;
+      }
+      .send-notice{
+        display:none;
+        margin: 10px 0 0;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: rgba(233,240,255,.98);
+        font-size: 14px;
+        line-height: 1.45;
+      }
+      .actions{
+        display:flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        align-items:center;
+        margin-top: 6px;
+      }
+      .thank-you-note{
+        margin: 14px 2px 4px;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(52,211,153,.28);
+        background: rgba(52,211,153,.08);
+        color: rgba(233,240,255,.95);
+        font-size: 14px;
+        line-height: 1.45;
+        white-space: pre-line;
+      }
+      button{
+        cursor:pointer;
+        border: none;
+        border-radius: 12px;
+        padding: 12px 14px;
+        font-size: 15px;
+        font-weight: 700;
+      }
+      button.primary{
+        background: linear-gradient(90deg, var(--accent2), var(--accent));
+        color: #06111f;
+        flex: 1 1 220px;
+      }
+      button.secondary{
+        background: rgba(255,255,255,.06);
+        color: var(--text);
+        border: 1px solid var(--border);
+        flex: 0 0 auto;
+      }
+      .preview{
+        margin-top: 14px;
+        border-top: 1px solid var(--border);
+        padding-top: 12px;
+      }
+      .preview h2{
+        font-size: 13px;
+        margin: 0 0 8px;
+        color: var(--muted);
+        font-weight: 700;
+        letter-spacing:.2px;
+      }
+      pre{
+        margin:0;
+        white-space: pre-wrap;
+        word-break: break-word;
+        background: rgba(9,14,26,.45);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 12px;
+        font-size: 14px;
+        line-height: 1.35;
+      }
+      footer{
+        margin-top: 12px;
+        color: rgba(159,178,214,.8);
+        font-size: 12px;
+        padding: 0 4px;
+      }
+      code{ color: rgba(233,240,255,.95); }
+      .pill{
+        display:inline-block;
+        padding: 2px 8px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,.04);
+        color: rgba(233,240,255,.9);
+        font-size: 12px;
+        margin-left: 6px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="topbar">
+          <div>
+            <h1><span data-i18n="title">Stai usando la vela giusta?</span> <span class="pill">MVP</span></h1>
+            <p class="sub" data-i18n="subtitle">Compila in 10–20 secondi e invia su WhatsApp. Dati reali, nessun login.</p>
+          </div>
+          <div class="lang">
+            <div class="flags" role="group" aria-label="Language">
+              <button type="button" class="flag-btn" data-lang="it" aria-pressed="false" title="Italiano">🇮🇹</button>
+              <button type="button" class="flag-btn" data-lang="en" aria-pressed="false" title="English">🇬🇧</button>
+              <button type="button" class="flag-btn" data-lang="de" aria-pressed="false" title="Deutsch">🇩🇪</button>
+              <button type="button" class="flag-btn" data-lang="es" aria-pressed="false" title="Español">🇪🇸</button>
+              <button type="button" class="flag-btn" data-lang="fr" aria-pressed="false" title="Français">🇫🇷</button>
+            </div>
+          </div>
+        </div>
+      </header>
 
-<div class="form-group">
-<label>Peso (kg)</label>
-<input type="number" id="weight">
-</div>
+      <div class="card">
+        <div class="card-inner">
+          <form id="kiteForm" autocomplete="on" novalidate>
+            <p class="section-label" data-i18n="section_core">Core</p>
+            <p class="form-field-legend" data-i18n="form_field_legend">* Obbligatorio. Tutti gli altri campi sono opzionali.</p>
+            <p class="form-field-border-hint" data-i18n="form_field_border_hint">Contorno: rosso = obbligatorio · giallo = opzionale utile · azzurro = altri opzionali.</p>
 
-<div class="form-group">
-<label>Kite (m²)</label>
-<input type="number" id="kite">
-</div>
+            <div class="core-block">
+              <div id="coreTopRow" class="row row-core-top">
+                <div class="cell-weight-narrow">
+                  <label for="weight"><span data-i18n="label_weight">Peso (kg)</span><span class="req-mark" aria-hidden="true">*</span></label>
+                  <input id="weight" name="weight" type="text" inputmode="numeric" maxlength="3" autocomplete="off" placeholder="es. 74" data-i18n-placeholder="ph_weight" required class="input-weight-compact" />
+                </div>
 
-<div class="form-group">
-<label>Vento (kts)</label>
-<input type="number" id="wind">
-</div>
+                <div class="cell-board-type">
+                  <label for="board"><span data-i18n="label_board">Tipo tavola</span><span class="req-mark" aria-hidden="true">*</span></label>
+                  <select id="board" name="board" required>
+                    <option value="" data-i18n="opt_board_prompt">Seleziona tipo tavola</option>
+                    <option value="twintip" data-i18n="opt_board_twintip">Twintip</option>
+                    <option value="surfboard" data-i18n="opt_board_surfboard">Surfboard</option>
+                    <option value="foil" data-i18n="opt_board_foil">Foil</option>
+                  </select>
+                </div>
 
-<div class="form-group">
-<label>Board size</label>
-<input type="text" id="board">
-</div>
+                <div id="boardSizeCell" class="cell-board-size">
+                  <label for="boardSize"><span data-i18n="label_board_size">Misura tavola</span></label>
+                  <p id="boardSizeHintAbove" class="board-size-hint-above" data-i18n="board_size_hint_above" hidden>Scegli una misura dall’elenco. Se non c’è, seleziona Altro e scrivi a destra.</p>
+                  <div class="board-size-controls">
+                    <select id="boardSize" name="boardSize" disabled class="field-tier-neutral">
+                      <option value="" data-i18n="opt_board_size_prompt">Scegli misura</option>
+                    </select>
+                    <input type="text" id="boardSizeCustom" name="boardSizeCustom" autocomplete="off" maxlength="32" hidden class="input-board-size-custom field-tier-neutral" data-i18n-placeholder="ph_board_size_custom" placeholder="es. 137x41" />
+                  </div>
+                </div>
+              </div>
 
-<div class="form-group">
-<label>Spot</label>
-<input type="text" id="spot">
-</div>
+              <div class="row level-kite-wind">
+                <div class="level-cell">
+                  <label for="level"><span data-i18n="label_level">Livello</span><span class="req-mark" aria-hidden="true">*</span></label>
+                  <select id="level" name="level" required>
+                    <option value="" data-i18n="opt_level_prompt">Seleziona livello</option>
+                    <option value="beginner" data-i18n="opt_level_beginner">Beginner</option>
+                    <option value="independent" data-i18n="opt_level_independent">Independent</option>
+                    <option value="advanced" data-i18n="opt_level_advanced">Advanced</option>
+                  </select>
+                </div>
 
-<button onclick="send()">Invia</button>
+                <div class="kite-compact">
+                  <label for="kite"><span data-i18n="label_kite_size">Misura kite (m²)</span><span class="req-mark" aria-hidden="true">*</span></label>
+                  <input id="kite" name="kite" type="text" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="es. 9" data-i18n-placeholder="ph_kite_size" required class="input-numeric-compact" />
+                </div>
 
-<div class="suggestion-box">
-<div class="suggestion-title">Suggerimento tavola per peso rider</div>
-<table>
-<tr>
-<th>Peso rider (kg)</th>
-<th>Lunghezza (cm)</th>
-<th>Larghezza (cm)</th>
-</tr>
-<tr>
-<td>&lt;50-60</td>
-<td>125-133</td>
-<td>38-40</td>
-</tr>
-<tr>
-<td>60-80</td>
-<td>133-138</td>
-<td>40-41</td>
-</tr>
-<tr>
-<td>80-100</td>
-<td>138-144</td>
-<td>41-43</td>
-</tr>
-<tr>
-<td>&gt;100</td>
-<td>144-160+</td>
-<td>43-46</td>
-</tr>
-</table>
-</div>
+                <div class="wind-compact">
+                  <label for="wind"><span data-i18n="label_wind">Vento stimato</span></label>
+                  <input id="wind" name="wind" type="text" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="lascia vuoto se non lo sai" data-i18n-placeholder="ph_wind" class="input-numeric-compact field-tier-important" />
+                </div>
+              </div>
+            </div>
 
-</div>
+            <p class="section-label" data-i18n="section_tech">Tecnico</p>
+            <div class="row two">
+              <div>
+                <label for="brand"><span data-i18n="label_brand">Marca kite</span></label>
+                <input id="brand" name="brand" type="text" inputmode="text" placeholder="Duotone, Core, North, Cabrinha..." data-i18n-placeholder="ph_brand" class="field-tier-important" />
+                <div class="hint" data-i18n="hint_brand">Usa il nome ufficiale (senza abbreviazioni)</div>
+              </div>
+              <div>
+                <label for="model"><span data-i18n="label_model">Modello kite</span></label>
+                <input id="model" name="model" type="text" inputmode="text" placeholder="Orbit, Dice, XR, Nexus..." data-i18n-placeholder="ph_model" class="field-tier-important" />
+                <div class="hint" data-i18n="hint_model">Inserisci solo il nome del modello (senza versioni)</div>
+              </div>
+            </div>
 
-<script>
-function send() {
-  const weight = document.getElementById("weight").value;
-  const kite = document.getElementById("kite").value;
-  const wind = document.getElementById("wind").value;
-  const board = document.getElementById("board").value;
-  const spot = document.getElementById("spot").value;
+            <p class="section-label" data-i18n="section_context">Contesto</p>
+            <div class="row">
+              <div>
+                <label for="location"><span data-i18n="label_location">Spot</span></label>
+                <input id="location" name="location" type="text" inputmode="text" placeholder="es. Punta Trettu" data-i18n-placeholder="ph_location" class="field-tier-neutral" />
+              </div>
+            </div>
 
-  const id = Math.random().toString(36).substring(2,12);
-  const ts = new Date().toISOString();
+            <div class="row two">
+              <div>
+                <label for="water"><span data-i18n="label_water">Condizioni acqua</span></label>
+                <select id="water" name="water" class="field-tier-important">
+                  <option value="" data-i18n="opt_water_prompt">Condizioni acqua</option>
+                  <option value="flat" data-i18n="opt_water_flat">Piatta</option>
+                  <option value="chop_light" data-i18n="opt_water_chop_light">Chop leggero</option>
+                  <option value="chop" data-i18n="opt_water_chop">Chop</option>
+                  <option value="chop_strong" data-i18n="opt_water_chop_strong">Chop forte</option>
+                  <option value="small_waves" data-i18n="opt_water_small_waves">Piccole onde</option>
+                  <option value="waves" data-i18n="opt_water_waves">Onde</option>
+                  <option value="big_waves" data-i18n="opt_water_big_waves">Grandi onde</option>
+                </select>
+              </div>
 
-  let message = "";
+              <div>
+                <label for="result"><span data-i18n="label_result">Risultato sessione</span></label>
+                <select id="result" name="result" class="field-tier-neutral">
+                  <option value="" data-i18n="opt_result_prompt">Risultato sessione</option>
+                  <option value="underpowered" data-i18n="opt_result_underpowered">Sottoinvelato</option>
+                  <option value="good" data-i18n="opt_result_good">Giusto</option>
+                  <option value="powered" data-i18n="opt_result_powered">Invelato</option>
+                  <option value="overpowered" data-i18n="opt_result_overpowered">Sovrainvelato</option>
+                  <option value="survival" data-i18n="opt_result_survival">Sopravvivenza</option>
+                </select>
+              </div>
+            </div>
 
-  if(weight) message += "⚖️ Peso (kg): " + weight + "%0A";
-  if(kite) message += "🪁 Kite (m²): " + kite + "%0A";
-  if(wind) message += "🌬️ Vento (kts): " + wind + "%0A";
-  if(board) message += "🪵 Board size: " + board + "%0A";
-  if(spot) message += "📍 Spot: " + spot + "%0A";
+            <div class="row">
+              <div>
+                <label for="note"><span data-i18n="label_notes">Note</span></label>
+                <textarea id="note" name="note" placeholder="Info utili (raffiche, setup, condizioni...)" data-i18n-placeholder="ph_notes" class="field-tier-neutral"></textarea>
+                <div class="hint" data-i18n="hint_screenshot">Se serve, aggiungi screenshot manualmente su WhatsApp dopo l’invio.</div>
+              </div>
+            </div>
 
-  message += "---%0A";
-  message += "ID: " + id + "%0A";
-  message += "TS: " + ts + "%0A";
-  message += "SRC: rdk_v1%0A";
-  message += "---";
+            <div class="actions">
+              <button type="submit" class="primary" id="sendBtn" data-i18n="btn_send">Invia su WhatsApp</button>
+              <button type="button" class="secondary" id="resetBtn" data-i18n="btn_reset">Reset</button>
+            </div>
 
-  window.open("https://wa.me/?text=" + message, "_blank");
-}
-</script>
+            <div class="send-notice" id="sendNotice">Si apre WhatsApp: controlla il messaggio e premi Invia.</div>
 
-</body>
-</html><!DOCTYPE html>
-<html lang="it">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kite Session Form</title>
-<style>
-body {
-  font-family: Arial, sans-serif;
-  background: #0f172a;
-  color: #e2e8f0;
-  margin: 0;
-  padding: 20px;
-}
-.container {
-  max-width: 600px;
-  margin: auto;
-}
-h1 {
-  font-size: 22px;
-  margin-bottom: 10px;
-}
-.form-group {
-  margin-bottom: 12px;
-}
-input, select, textarea {
-  width: 100%;
-  padding: 10px;
-  border-radius: 8px;
-  border: 1px solid #334155;
-  background: #020617;
-  color: #e2e8f0;
-}
-button {
-  width: 100%;
-  padding: 12px;
-  background: #22c55e;
-  border: none;
-  border-radius: 10px;
-  font-weight: bold;
-  color: #020617;
-  margin-top: 10px;
-}
-.suggestion-box {
-  margin-top: 20px;
-  background: #020617;
-  border: 1px solid #334155;
-  border-radius: 10px;
-  padding: 12px;
-}
-.suggestion-title {
-  font-size: 14px;
-  margin-bottom: 8px;
-  color: #38bdf8;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-}
-th, td {
-  border: 1px solid #334155;
-  padding: 6px;
-  text-align: center;
-}
-th {
-  background: #0f172a;
-}
-</style>
-</head>
-<body>
-<div class="container">
-<h1>Kite Session</h1>
+            <p class="hint-strong" id="finalStepHint" data-i18n="final_step_hint">
+              Ultimo step: quando si apre WhatsApp, premi Invia.
+            </p>
 
-<div class="form-group">
-<label>Peso (kg)</label>
-<input type="number" id="weight">
-</div>
+            <p class="thank-you-note" data-i18n="thank_you_note" id="thankYouNote">Grazie davvero 🙏
+Stai aiutando a migliorare il kite per tutti.</p>
 
-<div class="form-group">
-<label>Kite (m²)</label>
-<input type="number" id="kite">
-</div>
+            <div class="preview" aria-live="polite">
+              <h2 data-i18n="preview_title">Anteprima messaggio</h2>
+              <pre id="previewText" data-i18n="preview_empty">Compila i campi obbligatori per generare il messaggio…</pre>
+            </div>
+          </form>
+        </div>
+      </div>
 
-<div class="form-group">
-<label>Vento (kts)</label>
-<input type="number" id="wind">
-</div>
+      <footer>
+        <span data-i18n="footer_prefix">Imposta il numero operatore in</span> <code>WHATSAPP_NUMBER</code>
+        <span data-i18n="footer_suffix">(formato internazionale, solo cifre; es. 393331112233).</span>
+      </footer>
+    </div>
 
-<div class="form-group">
-<label>Board size</label>
-<input type="text" id="board">
-</div>
+    <script>
+      // CONFIG: numero destinatario in formato internazionale, solo cifre (no +, no spazi)
+      const WHATSAPP_NUMBER = "393345280521";
+      const ENABLE_SIGNATURE = false;
+      const BOARD_SIZE_OTHER = "__rdk_other__";
+      const LS_FIRST_SUBMIT = "rdk_first_submit";
 
-<div class="form-group">
-<label>Spot</label>
-<input type="text" id="spot">
-</div>
+      function hasFirstSubmitDone(){
+        try { return localStorage.getItem(LS_FIRST_SUBMIT) === "true"; } catch (_) { return true; }
+      }
 
-<button onclick="send()">Invia</button>
+      function markFirstSubmitDone(){
+        try { localStorage.setItem(LS_FIRST_SUBMIT, "true"); } catch (_) {}
+      }
 
-<div class="suggestion-box">
-<div class="suggestion-title">Suggerimento tavola per peso rider</div>
-<table>
-<tr>
-<th>Peso rider (kg)</th>
-<th>Lunghezza (cm)</th>
-<th>Larghezza (cm)</th>
-</tr>
-<tr>
-<td>&lt;50-60</td>
-<td>125-133</td>
-<td>38-40</td>
-</tr>
-<tr>
-<td>60-80</td>
-<td>133-138</td>
-<td>40-41</td>
-</tr>
-<tr>
-<td>80-100</td>
-<td>138-144</td>
-<td>41-43</td>
-</tr>
-<tr>
-<td>&gt;100</td>
-<td>144-160+</td>
-<td>43-46</td>
-</tr>
-</table>
-</div>
+      const BOARD_SIZE_BY_TYPE = {
+        twintip: [    "125x38",
+    "129x38",
+    "130x39",
+    "132x39",
+    "133x39",
+    "133x40",
+    "134x40",
+    "135x40",
+    "136x40.5",
+    "137x40.5",
+    "137x41",
+    "138x41",
+    "138x42",
+    "139x41",
+    "140x41",
+    "140x42",
+    "141x41",
+    "141x42",
+    "142x42",
+    "144x41.5",
+    "144x44",
+    "145x43",
+    "146x43",
+    "147x44",
+    "148x45",
+    "160x45",
+    "160x46"],
+        surfboard: ["5'4", "5'6", "5'8", "6'0", "6'2"],
+        foil: ["120", "130", "140", "150"],
+      };
 
-</div>
+      const translations = {
+        en: {
+          htmlLang: "en",
+          pageTitle: "Are you using the right kite?",
+          title: "Are you using the right kite?",
+          subtitle: "Fill it in 10–20 seconds and send via WhatsApp. Real data, no login.",
+          required: "(required)",
+          optional: "(optional)",
+          section_core: "Core",
+          form_field_legend: "* Required. All other fields are optional.",
+          form_field_border_hint: "Outline: red = required · amber = useful optional · blue = other optional.",
+          section_tech: "Technical",
+          section_context: "Context",
+          label_weight: "Weight (kg)",
+          ph_weight: "e.g. 74",
+          label_board: "Board type",
+          opt_board_prompt: "Select board type",
+          opt_board_twintip: "Twintip",
+          opt_board_surfboard: "Surfboard",
+          opt_board_foil: "Foil",
+          label_board_size: "Board size",
+          opt_board_size_prompt: "Select size",
+          opt_board_size_other: "Other (specify)",
+          ph_board_size_custom: "e.g. 137x41",
+          board_size_hint_above: "Choose a size from the list; if it's missing, pick Other and type in the field on the right (e.g. 137x41).",
+          label_level: "Level",
+          opt_level_prompt: "Select level",
+          opt_level_beginner: "Beginner",
+          opt_level_independent: "Independent",
+          opt_level_advanced: "Advanced",
+          label_kite_size: "Kite size (m²)",
+          ph_kite_size: "e.g. 9",
+          label_brand: "Kite brand",
+          ph_brand: "Duotone, Core, North, Cabrinha...",
+          hint_brand: "Use the official name (no abbreviations)",
+          label_model: "Kite model",
+          ph_model: "Orbit, Dice, XR, Nexus...",
+          hint_model: "Model name only (no versions)",
+          label_wind: "Estimated wind",
+          ph_wind: "leave empty if unknown",
+          label_location: "Location",
+          ph_location: "e.g. Punta Trettu",
+          label_water: "Water conditions",
+          opt_water_prompt: "Water conditions",
+          opt_water_flat: "Flat",
+          opt_water_chop_light: "Chop light",
+          opt_water_chop: "Chop",
+          opt_water_chop_strong: "Chop strong",
+          opt_water_small_waves: "Small waves",
+          opt_water_waves: "Waves",
+          opt_water_big_waves: "Big waves",
+          label_result: "Session result",
+          opt_result_prompt: "Session result",
+          opt_result_underpowered: "Underpowered",
+          opt_result_good: "Good",
+          opt_result_powered: "Powered",
+          opt_result_overpowered: "Overpowered",
+          opt_result_survival: "Survival",
+          label_notes: "Notes",
+          ph_notes: "Anything useful (spot, gusts, setup, etc.)",
+          hint_screenshot: "If needed, add screenshots manually in WhatsApp after sending.",
+          btn_send: "Send via WhatsApp",
+          btn_reset: "Reset",
+          thank_you_note: "Thanks 🙏\nYou're helping improve kitesurfing for everyone.",
+          first_submit_prefix: "Thanks 🙏\nThis is the summary of the data you are sending:",
+          final_step_hint: "Final step: when WhatsApp opens, press Send.",
+          send_notice: "WhatsApp is opening: check the message and press Send.",
+          preview_title: "Message preview",
+          preview_empty: "Fill the required fields to generate the message…",
+          footer_prefix: "Set the operator number in",
+          footer_suffix: "(international format, digits only; e.g. 393331112233).",
+          msg_weight: "Weight (kg)",
+          msg_board: "Board",
+          msg_board_size: "Board size",
+          msg_level: "Level",
+          msg_kite: "Kite (m²)",
+          msg_brand: "Brand",
+          msg_model: "Model",
+          msg_wind: "Estimated wind",
+          msg_location: "Location",
+          msg_water: "Water",
+          msg_result: "Result",
+          msg_notes: "Notes",
+        },
 
-<script>
-function send() {
-  const weight = document.getElementById("weight").value;
-  const kite = document.getElementById("kite").value;
-  const wind = document.getElementById("wind").value;
-  const board = document.getElementById("board").value;
-  const spot = document.getElementById("spot").value;
+        it: {
+          htmlLang: "it",
+          pageTitle: "Stai usando la vela giusta?",
+          title: "Stai usando la vela giusta?",
+          subtitle: "Compila in 10–20 secondi e invia su WhatsApp. Dati reali, nessun login.",
+          required: "(obbligatorio)",
+          optional: "(opzionale)",
+          section_core: "Core",
+          form_field_legend: "* Obbligatorio. Tutti gli altri campi sono opzionali.",
+          form_field_border_hint: "Contorno: rosso = obbligatorio · giallo = opzionale utile · azzurro = altri opzionali.",
+          section_tech: "Tecnico",
+          section_context: "Contesto",
+          label_weight: "Peso (kg)",
+          ph_weight: "es. 74",
+          label_board: "Tipo tavola",
+          opt_board_prompt: "Seleziona tipo tavola",
+          opt_board_twintip: "Twintip",
+          opt_board_surfboard: "Surfboard",
+          opt_board_foil: "Foil",
+          label_board_size: "Misura tavola",
+          opt_board_size_prompt: "Scegli misura",
+          opt_board_size_other: "Altro",
+          ph_board_size_custom: "es. 137x41",
+          board_size_hint_above: "Scegli una misura dall’elenco. Se non c’è, seleziona «Altro» e scrivi a destra (es. 137x41).",
+          label_level: "Livello",
+          opt_level_prompt: "Seleziona livello",
+          opt_level_beginner: "Beginner",
+          opt_level_independent: "Independent",
+          opt_level_advanced: "Advanced",
+          label_kite_size: "Misura kite (m²)",
+          ph_kite_size: "es. 9",
+          label_brand: "Marca kite",
+          ph_brand: "Duotone, Core, North, Cabrinha...",
+          hint_brand: "Usa il nome ufficiale (senza abbreviazioni)",
+          label_model: "Modello kite",
+          ph_model: "Orbit, Dice, XR, Nexus...",
+          hint_model: "Inserisci solo il nome del modello (senza versioni)",
+          label_wind: "Vento stimato",
+          ph_wind: "lascia vuoto se non lo sai",
+          label_location: "Spot",
+          ph_location: "es. Punta Trettu",
+          label_water: "Condizioni acqua",
+          opt_water_prompt: "Condizioni acqua",
+          opt_water_flat: "Piatta",
+          opt_water_chop_light: "Chop leggero",
+          opt_water_chop: "Chop",
+          opt_water_chop_strong: "Chop forte",
+          opt_water_small_waves: "Piccole onde",
+          opt_water_waves: "Onde",
+          opt_water_big_waves: "Grandi onde",
+          label_result: "Risultato sessione",
+          opt_result_prompt: "Risultato sessione",
+          opt_result_underpowered: "Sottoinvelato",
+          opt_result_good: "Giusto",
+          opt_result_powered: "Invelato",
+          opt_result_overpowered: "Sovrainvelato",
+          opt_result_survival: "Sopravvivenza",
+          label_notes: "Note",
+          ph_notes: "Info utili (raffiche, setup, condizioni...)",
+          hint_screenshot: "Se serve, aggiungi screenshot manualmente su WhatsApp dopo l’invio.",
+          btn_send: "Invia su WhatsApp",
+          btn_reset: "Reset",
+          thank_you_note: "Grazie davvero 🙏\nStai aiutando a migliorare il kite per tutti.",
+          first_submit_prefix: "Grazie 🙏\nQuesto è il riepilogo dei dati che stai inviando:",
+          final_step_hint: "Ultimo step: quando si apre WhatsApp, premi Invia.",
+          send_notice: "Si apre WhatsApp: controlla il messaggio e premi Invia.",
+          preview_title: "Anteprima messaggio",
+          preview_empty: "Compila i campi obbligatori per generare il messaggio…",
+          footer_prefix: "Imposta il numero operatore in",
+          footer_suffix: "(formato internazionale, solo cifre; es. 393331112233).",
+          msg_weight: "Peso (kg)",
+          msg_board: "Tipo tavola",
+          msg_board_size: "Misura tavola",
+          msg_level: "Livello",
+          msg_kite: "Kite (m²)",
+          msg_brand: "Marca",
+          msg_model: "Modello",
+          msg_wind: "Vento stimato",
+          msg_location: "Spot",
+          msg_water: "Condizioni acqua",
+          msg_result: "Risultato sessione",
+          msg_notes: "Note",
+        },
 
-  const id = Math.random().toString(36).substring(2,12);
-  const ts = new Date().toISOString();
+        de: {
+          htmlLang: "de",
+          pageTitle: "Verwendest du den richtigen Kite?",
+          title: "Verwendest du den richtigen Kite?",
+          subtitle: "In 10–20 Sekunden ausfüllen und per WhatsApp senden. Echte Daten, kein Login.",
+          required: "(erforderlich)",
+          optional: "(optional)",
+          section_core: "Session",
+          form_field_legend: "* Pflichtfeld. Alle anderen Felder sind optional.",
+          form_field_border_hint: "Rahmen: rot = Pflicht · gelb = nützlich optional · blau = sonst optional.",
+          section_tech: "Technik",
+          section_context: "Umgebung",
+          label_weight: "Gewicht (kg)",
+          ph_weight: "z.B. 74",
+          label_board: "Board-Typ",
+          opt_board_prompt: "Board-Typ wählen",
+          opt_board_twintip: "Twintip",
+          opt_board_surfboard: "Surfboard",
+          opt_board_foil: "Foil",
+          label_board_size: "Board-Größe",
+          opt_board_size_prompt: "Größe wählen",
+          opt_board_size_other: "Sonstiges",
+          ph_board_size_custom: "z.B. 137x41",
+          board_size_hint_above: "Größe aus der Liste wählen; fehlt sie, „Sonstiges“ wählen und rechts eintragen (z. B. 137x41).",
+          label_level: "Level",
+          opt_level_prompt: "Level wählen",
+          opt_level_beginner: "Beginner",
+          opt_level_independent: "Independent",
+          opt_level_advanced: "Advanced",
+          label_kite_size: "Kite-Größe (m²)",
+          ph_kite_size: "z.B. 9",
+          label_brand: "Kite-Marke",
+          ph_brand: "Duotone, Core, North, Cabrinha...",
+          hint_brand: "Offiziellen Namen verwenden (ohne Abkürzungen)",
+          label_model: "Kite-Modell",
+          ph_model: "Orbit, Dice, XR, Nexus...",
+          hint_model: "Nur Modellname (ohne Versionen)",
+          label_wind: "Geschätzter Wind",
+          ph_wind: "leer lassen, falls unbekannt",
+          label_location: "Spot",
+          ph_location: "z.B. Punta Trettu",
+          label_water: "Wasserbedingungen",
+          opt_water_prompt: "Wasserbedingungen",
+          opt_water_flat: "Flach",
+          opt_water_chop_light: "Chop leicht",
+          opt_water_chop: "Chop",
+          opt_water_chop_strong: "Chop stark",
+          opt_water_small_waves: "Kleine Wellen",
+          opt_water_waves: "Wellen",
+          opt_water_big_waves: "Große Wellen",
+          label_result: "Session-Ergebnis",
+          opt_result_prompt: "Session-Ergebnis",
+          opt_result_underpowered: "Unterpowert",
+          opt_result_good: "Gut",
+          opt_result_powered: "Gepowert",
+          opt_result_overpowered: "Überpowert",
+          opt_result_survival: "Überleben",
+          label_notes: "Notizen",
+          ph_notes: "Nützliche Infos (Spot, Böen, Setup usw.)",
+          hint_screenshot: "Falls nötig, Screenshots nach dem Senden manuell in WhatsApp hinzufügen.",
+          btn_send: "Über WhatsApp senden",
+          btn_reset: "Zurücksetzen",
+          thank_you_note: "Danke 🙏\nDu hilfst, Kitesurfen für alle zu verbessern.",
+          first_submit_prefix: "Danke 🙏\nDas ist die Zusammenfassung der Daten, die du sendest:",
+          final_step_hint: "Letzter Schritt: Wenn WhatsApp geöffnet wird, auf Senden drücken.",
+          send_notice: "WhatsApp wird geöffnet: Nachricht prüfen und auf Senden drücken.",
+          preview_title: "Vorschau",
+          preview_empty: "Pflichtfelder ausfüllen, um die Nachricht zu erzeugen…",
+          footer_prefix: "Operator-Nummer in",
+          footer_suffix: "(internationales Format, nur Ziffern; z.B. 393331112233).",
+          msg_weight: "Gewicht (kg)",
+          msg_board: "Board",
+          msg_board_size: "Board-Größe",
+          msg_level: "Level",
+          msg_kite: "Kite (m²)",
+          msg_brand: "Marke",
+          msg_model: "Modell",
+          msg_wind: "Geschätzter Wind",
+          msg_location: "Spot",
+          msg_water: "Wasser",
+          msg_result: "Ergebnis",
+          msg_notes: "Notizen",
+        },
 
-  let message = "";
+        es: {
+          htmlLang: "es",
+          pageTitle: "¿Estás usando la cometa correcta?",
+          title: "¿Estás usando la cometa correcta?",
+          subtitle: "Rellénalo en 10–20 segundos y envíalo por WhatsApp. Datos reales, sin login.",
+          required: "(obligatorio)",
+          optional: "(opcional)",
+          section_core: "Núcleo",
+          form_field_legend: "* Obligatorio. El resto de campos es opcional.",
+          form_field_border_hint: "Borde: rojo = obligatorio · ámbar = opcional útil · azul = otros opcionales.",
+          section_tech: "Técnico",
+          section_context: "Contexto",
+          label_weight: "Peso (kg)",
+          ph_weight: "p. ej. 74",
+          label_board: "Tipo de tabla",
+          opt_board_prompt: "Selecciona tipo de tabla",
+          opt_board_twintip: "Twintip",
+          opt_board_surfboard: "Surfboard",
+          opt_board_foil: "Foil",
+          label_board_size: "Tamaño tabla",
+          opt_board_size_prompt: "Elige talla",
+          opt_board_size_other: "Otro",
+          ph_board_size_custom: "ej. 137x41",
+          board_size_hint_above: "Elige talla de la lista; si no está, elige Otro y escribe a la derecha (ej. 137x41).",
+          label_level: "Nivel",
+          opt_level_prompt: "Selecciona nivel",
+          opt_level_beginner: "Beginner",
+          opt_level_independent: "Independent",
+          opt_level_advanced: "Advanced",
+          label_kite_size: "Tamaño de kite (m²)",
+          ph_kite_size: "p. ej. 9",
+          label_brand: "Marca de kite",
+          ph_brand: "Duotone, Core, North, Cabrinha...",
+          hint_brand: "Usa el nombre oficial (sin abreviaturas)",
+          label_model: "Modelo de kite",
+          ph_model: "Orbit, Dice, XR, Nexus...",
+          hint_model: "Solo el nombre del modelo (sin versiones)",
+          label_wind: "Viento estimado",
+          ph_wind: "déjalo vacío si no lo sabes",
+          label_location: "Lugar",
+          ph_location: "p. ej. Punta Trettu",
+          label_water: "Condiciones del agua",
+          opt_water_prompt: "Condiciones del agua",
+          opt_water_flat: "Plana",
+          opt_water_chop_light: "Chop ligero",
+          opt_water_chop: "Chop",
+          opt_water_chop_strong: "Chop fuerte",
+          opt_water_small_waves: "Olas pequeñas",
+          opt_water_waves: "Olas",
+          opt_water_big_waves: "Olas grandes",
+          label_result: "Resultado de la sesión",
+          opt_result_prompt: "Resultado de la sesión",
+          opt_result_underpowered: "Poco viento",
+          opt_result_good: "Bien",
+          opt_result_powered: "Potente",
+          opt_result_overpowered: "Pasado",
+          opt_result_survival: "Supervivencia",
+          label_notes: "Notas",
+          ph_notes: "Información útil (lugar, rachas, setup, etc.)",
+          hint_screenshot: "Si hace falta, añade capturas manualmente en WhatsApp después de enviar.",
+          btn_send: "Enviar por WhatsApp",
+          btn_reset: "Reiniciar",
+          thank_you_note: "Gracias 🙏\nEstás ayudando a mejorar el kitesurf para todos.",
+          first_submit_prefix: "Gracias 🙏\nEste es el resumen de los datos que estás enviando:",
+          final_step_hint: "Último paso: cuando se abra WhatsApp, pulsa Enviar.",
+          send_notice: "Se abre WhatsApp: revisa el mensaje y pulsa Enviar.",
+          preview_title: "Vista previa",
+          preview_empty: "Rellena los campos obligatorios para generar el mensaje…",
+          footer_prefix: "Configura el número del operador en",
+          footer_suffix: "(formato internacional, solo dígitos; p. ej. 393331112233).",
+          msg_weight: "Peso (kg)",
+          msg_board: "Tabla",
+          msg_board_size: "Tamaño tabla",
+          msg_level: "Nivel",
+          msg_kite: "Kite (m²)",
+          msg_brand: "Marca",
+          msg_model: "Modelo",
+          msg_wind: "Viento estimado",
+          msg_location: "Lugar",
+          msg_water: "Agua",
+          msg_result: "Resultado",
+          msg_notes: "Notas",
+        },
 
-  if(weight) message += "⚖️ Peso (kg): " + weight + "%0A";
-  if(kite) message += "🪁 Kite (m²): " + kite + "%0A";
-  if(wind) message += "🌬️ Vento (kts): " + wind + "%0A";
-  if(board) message += "🪵 Board size: " + board + "%0A";
-  if(spot) message += "📍 Spot: " + spot + "%0A";
+        fr: {
+          htmlLang: "fr",
+          pageTitle: "Utilises-tu la bonne voile ?",
+          title: "Utilises-tu la bonne voile ?",
+          subtitle: "Remplis en 10–20 secondes et envoie par WhatsApp. Données réelles, sans login.",
+          required: "(obligatoire)",
+          optional: "(optionnel)",
+          section_core: "Session",
+          form_field_legend: "* Obligatoire. Tous les autres champs sont optionnels.",
+          form_field_border_hint: "Contour : rouge = obligatoire · ambre = optionnel utile · bleu = autres optionnels.",
+          section_tech: "Technique",
+          section_context: "Contexte",
+          label_weight: "Poids (kg)",
+          ph_weight: "ex. 74",
+          label_board: "Type de planche",
+          opt_board_prompt: "Choisir le type de planche",
+          opt_board_twintip: "Twintip",
+          opt_board_surfboard: "Surfboard",
+          opt_board_foil: "Foil",
+          label_board_size: "Taille planche",
+          opt_board_size_prompt: "Choisir taille",
+          opt_board_size_other: "Autre",
+          ph_board_size_custom: "ex. 137x41",
+          board_size_hint_above: "Choisis une taille dans la liste ; sinon Autre et indique à droite (ex. 137x41).",
+          label_level: "Niveau",
+          opt_level_prompt: "Choisir le niveau",
+          opt_level_beginner: "Beginner",
+          opt_level_independent: "Independent",
+          opt_level_advanced: "Advanced",
+          label_kite_size: "Taille du kite (m²)",
+          ph_kite_size: "ex. 9",
+          label_brand: "Marque du kite",
+          ph_brand: "Duotone, Core, North, Cabrinha...",
+          hint_brand: "Utilise le nom officiel (sans abréviations)",
+          label_model: "Modèle du kite",
+          ph_model: "Orbit, Dice, XR, Nexus...",
+          hint_model: "Nom du modèle uniquement (sans versions)",
+          label_wind: "Vent estimé",
+          ph_wind: "laisser vide si inconnu",
+          label_location: "Spot",
+          ph_location: "ex. Punta Trettu",
+          label_water: "État de l’eau",
+          opt_water_prompt: "État de l’eau",
+          opt_water_flat: "Plat",
+          opt_water_chop_light: "Chop léger",
+          opt_water_chop: "Chop",
+          opt_water_chop_strong: "Chop fort",
+          opt_water_small_waves: "Petites vagues",
+          opt_water_waves: "Vagues",
+          opt_water_big_waves: "Grosses vagues",
+          label_result: "Résultat session",
+          opt_result_prompt: "Résultat session",
+          opt_result_underpowered: "Sous-toilé",
+          opt_result_good: "Bien",
+          opt_result_powered: "Toilé",
+          opt_result_overpowered: "Surtoilé",
+          opt_result_survival: "Survie",
+          label_notes: "Notes",
+          ph_notes: "Infos utiles (spot, rafales, réglages, etc.)",
+          hint_screenshot: "Si besoin, ajoute des captures manuellement dans WhatsApp après l’envoi.",
+          btn_send: "Envoyer via WhatsApp",
+          btn_reset: "Réinitialiser",
+          thank_you_note: "Merci 🙏\nTu aides à améliorer le kitesurf pour tous.",
+          first_submit_prefix: "Merci 🙏\nVoici le récapitulatif des données que tu envoies :",
+          final_step_hint: "Dernière étape : quand WhatsApp s’ouvre, appuie sur Envoyer.",
+          send_notice: "WhatsApp va s’ouvrir : vérifie le message et appuie sur Envoyer.",
+          preview_title: "Aperçu",
+          preview_empty: "Remplis les champs obligatoires pour générer le message…",
+          footer_prefix: "Renseigne le numéro opérateur dans",
+          footer_suffix: "(format international, chiffres uniquement ; ex. 393331112233).",
+          msg_weight: "Poids (kg)",
+          msg_board: "Planche",
+          msg_board_size: "Taille planche",
+          msg_level: "Niveau",
+          msg_kite: "Kite (m²)",
+          msg_brand: "Marque",
+          msg_model: "Modèle",
+          msg_wind: "Vent estimé",
+          msg_location: "Spot",
+          msg_water: "Eau",
+          msg_result: "Résultat",
+          msg_notes: "Notes",
+        },
+      };
 
-  message += "---%0A";
-  message += "ID: " + id + "%0A";
-  message += "TS: " + ts + "%0A";
-  message += "SRC: rdk_v1%0A";
-  message += "---";
+      let currentLang = "it";
 
-  window.open("https://wa.me/?text=" + message, "_blank");
-}
-</script>
+      function t(key){
+        const pack = translations[currentLang] || translations.en;
+        return pack[key] ?? translations.en[key] ?? "";
+      }
 
-</body>
+      function applyTranslations(lang){
+        if (!translations[lang]) lang = "en";
+        currentLang = lang;
+        try { localStorage.setItem("rdk_lang", lang); } catch (_) {}
+
+        document.documentElement.lang = t("htmlLang") || "en";
+        document.title = t("pageTitle") || "Are you using the right kite?";
+
+        document.querySelectorAll("[data-i18n]").forEach((el) => {
+          const key = el.getAttribute("data-i18n");
+          el.textContent = t(key);
+        });
+
+        document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+          const key = el.getAttribute("data-i18n-placeholder");
+          el.setAttribute("placeholder", t(key));
+        });
+      }
+
+      const form = document.getElementById("kiteForm");
+      const preview = document.getElementById("previewText");
+      const resetBtn = document.getElementById("resetBtn");
+      const flagButtons = Array.from(document.querySelectorAll(".flag-btn[data-lang]"));
+
+      (function initLanguage(){
+        let saved = "it";
+        try { saved = localStorage.getItem("rdk_lang") || "it"; } catch (_) {}
+        applyTranslations(translations[saved] ? saved : "it");
+        syncBoardSizeOptions();
+        refreshPreview();
+      })();
+
+      function syncBoardSizeCustomUI(){
+        const sel = document.getElementById("boardSize");
+        const custom = document.getElementById("boardSizeCustom");
+        if (!sel || !custom) return;
+        const show = !sel.disabled && sel.value === BOARD_SIZE_OTHER;
+        if (!show) custom.value = "";
+        custom.hidden = !show;
+      }
+
+      function syncBoardSizeOptions(){
+        const boardVal = String(document.getElementById("board")?.value || "").trim();
+        const sel = document.getElementById("boardSize");
+        const hintAbove = document.getElementById("boardSizeHintAbove");
+        if (!sel) return;
+
+        const sizes = boardVal ? BOARD_SIZE_BY_TYPE[boardVal] : null;
+        const prev = sel.value;
+
+        sel.innerHTML = "";
+        const o0 = document.createElement("option");
+        o0.value = "";
+        o0.textContent = t("opt_board_size_prompt");
+        sel.appendChild(o0);
+
+        if (!sizes){
+          sel.disabled = true;
+          sel.value = "";
+          if (hintAbove) hintAbove.hidden = true;
+          syncBoardSizeCustomUI();
+          return;
+        }
+
+        sel.disabled = false;
+
+        const oOther = document.createElement("option");
+        oOther.value = BOARD_SIZE_OTHER;
+        oOther.textContent = t("opt_board_size_other");
+        sel.appendChild(oOther);
+
+        sizes.forEach((s) => {
+          const o = document.createElement("option");
+          o.value = s;
+          o.textContent = s;
+          sel.appendChild(o);
+        });
+
+        if (sizes.includes(prev)) sel.value = prev;
+        else if (prev === BOARD_SIZE_OTHER) sel.value = BOARD_SIZE_OTHER;
+
+        if (hintAbove) hintAbove.hidden = false;
+        syncBoardSizeCustomUI();
+      }
+
+      function val(id){
+        return String(document.getElementById(id).value || "").trim();
+      }
+
+      function selectedText(id){
+        const el = document.getElementById(id);
+        if (!el || !("selectedIndex" in el)) return "";
+        const opt = el.options[el.selectedIndex];
+        return String(opt?.textContent || "").trim();
+      }
+
+      function randomRdkId(){
+        const len = 10;
+        const alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
+        const chars = [];
+
+        if (window.crypto && window.crypto.getRandomValues){
+          const buf = new Uint8Array(len);
+          window.crypto.getRandomValues(buf);
+          for (let i = 0; i < len; i++) chars.push(alphabet[buf[i] % alphabet.length]);
+        } else {
+          for (let i = 0; i < len; i++) chars.push(alphabet[Math.floor(Math.random() * alphabet.length)]);
+        }
+
+        return chars.join("");
+      }
+
+      function rdkTimestampIso(){
+        const d = new Date();
+        const p = (n) => String(n).padStart(2, "0");
+        return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
+      }
+
+      async function generateSignature(text){
+        const key = "RDK_SECRET_PLACEHOLDER";
+        const enc = new TextEncoder();
+
+        const cryptoKey = await crypto.subtle.importKey(
+          "raw",
+          enc.encode(key),
+          { name: "HMAC", hash: "SHA-256" },
+          false,
+          ["sign"]
+        );
+
+        const signature = await crypto.subtle.sign(
+          "HMAC",
+          cryptoKey,
+          enc.encode(text)
+        );
+
+        return Array.from(new Uint8Array(signature))
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("")
+          .slice(0, 10);
+      }
+
+      async function appendTechnicalBlock(body){
+        const id = randomRdkId();
+        const ts = rdkTimestampIso();
+
+        let block = `${body}\n---\nID: ${id}\nTS: ${ts}\nSRC: rdk_v1`;
+
+        if (ENABLE_SIGNATURE){
+          const sig = await generateSignature(block);
+          block += `\nSIG: ${sig}`;
+        }
+
+        block += `\n---`;
+        return block;
+      }
+
+      function buildMessage(){
+        const weight = val("weight");
+        const board = val("board");
+        const boardSizeSel = val("boardSize");
+        const boardSize = boardSizeSel === BOARD_SIZE_OTHER ? val("boardSizeCustom") : boardSizeSel;
+        const level = val("level");
+        const kite = val("kite");
+        const brand = val("brand");
+        const model = val("model");
+        const wind = val("wind");
+        const location = val("location");
+        const water = val("water");
+        const result = val("result");
+        const note = val("note");
+
+        const lines = [];
+        if (weight) lines.push(`⚖️ ${t("msg_weight")}: ${weight}`);
+        if (board) lines.push(`🪵 ${t("msg_board")}: ${selectedText("board") || board}`);
+        if (boardSize) lines.push(`🪵 ${t("msg_board_size")}: ${boardSize}`);
+        if (level) lines.push(`🎯 ${t("msg_level")}: ${selectedText("level") || level}`);
+        if (kite) lines.push(`🪁 ${t("msg_kite")}: ${kite}`);
+        if (brand) lines.push(`🏷️ ${t("msg_brand")}: ${brand}`);
+        if (model) lines.push(`🪁 ${t("msg_model")}: ${model}`);
+        if (wind) lines.push(`🌬️ ${t("msg_wind")}: ${wind}`);
+        if (location) lines.push(`📍 ${t("msg_location")}: ${location}`);
+        if (water) lines.push(`🌊 ${t("msg_water")}: ${selectedText("water") || water}`);
+        if (result) lines.push(`✅ ${t("msg_result")}: ${selectedText("result") || result}`);
+        if (note) lines.push(`${t("msg_notes")}: ${note}`);
+
+        return lines.join("\n");
+      }
+
+      function refreshPreview(){
+        const core = buildMessage();
+        if (!core) {
+          preview.textContent = t("preview_empty");
+          return;
+        }
+
+        const pre = hasFirstSubmitDone() ? "" : (t("first_submit_prefix") + "\n\n");
+        preview.textContent = pre + core;
+      }
+
+      let sendAudioCtx = null;
+
+      function playSendFeedback(){
+        try {
+          const AC = window.AudioContext || window.webkitAudioContext;
+          if (!AC) return;
+
+          sendAudioCtx = sendAudioCtx || new AC();
+          const ctx = sendAudioCtx;
+          if (ctx.state === "suspended") void ctx.resume();
+
+          const t0 = ctx.currentTime;
+          const osc = ctx.createOscillator();
+          const g = ctx.createGain();
+
+          osc.type = "sine";
+          osc.frequency.setValueAtTime(1040, t0);
+          g.gain.setValueAtTime(0.0001, t0);
+          g.gain.exponentialRampToValueAtTime(0.08, t0 + 0.015);
+          g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.22);
+
+          osc.connect(g);
+          g.connect(ctx.destination);
+          osc.start(t0);
+          osc.stop(t0 + 0.24);
+        } catch (_) {}
+      }
+
+      function showSendNotice(){
+        const el = document.getElementById("sendNotice");
+        if (!el) return;
+        el.textContent = t("send_notice");
+        el.style.display = "block";
+        window.setTimeout(() => {
+          el.style.display = "none";
+        }, 2600);
+      }
+
+      function openWhatsAppWithMessage(message){
+        const encoded = encodeURIComponent(message);
+        const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`;
+        window.open(url, "_blank", "noopener,noreferrer");
+      }
+
+      function bindFieldPreview(id){
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.addEventListener("input", refreshPreview);
+        el.addEventListener("change", refreshPreview);
+      }
+
+      document.getElementById("board").addEventListener("change", () => {
+        syncBoardSizeOptions();
+        refreshPreview();
+      });
+
+      document.getElementById("boardSize").addEventListener("change", () => {
+        syncBoardSizeCustomUI();
+        refreshPreview();
+      });
+
+      ["weight","board","boardSize","boardSizeCustom","level","kite","brand","model","wind","location","water","result","note"].forEach(bindFieldPreview);
+
+      function syncFlagUI(){
+        flagButtons.forEach((btn) => {
+          const lang = btn.getAttribute("data-lang");
+          btn.setAttribute("aria-pressed", lang === currentLang ? "true" : "false");
+        });
+      }
+
+      flagButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const lang = btn.getAttribute("data-lang");
+          applyTranslations(lang);
+          syncBoardSizeOptions();
+          syncFlagUI();
+          refreshPreview();
+        });
+      });
+
+      syncFlagUI();
+
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        if (!form.reportValidity()) return;
+
+        let body = buildMessage();
+        if (!hasFirstSubmitDone()) {
+          body = t("first_submit_prefix") + "\n\n" + body;
+        }
+
+        const msg = await appendTechnicalBlock(body);
+
+        markFirstSubmitDone();
+        refreshPreview();
+        playSendFeedback();
+        showSendNotice();
+        openWhatsAppWithMessage(msg);
+      });
+
+      resetBtn.addEventListener("click", () => {
+        form.reset();
+        syncBoardSizeOptions();
+        refreshPreview();
+      });
+    </script>
+  </body>
 </html>
