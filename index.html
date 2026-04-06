@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark light" />
-    <title>Kite Session → WhatsApp</title>
+    <title>Stai usando la vela giusta?</title>
     <style>
       :root{
         --bg:#0b1220;
@@ -23,6 +23,8 @@
         --field-imp-glow: rgba(234, 179, 8, 0.2);
         --field-soft-border: rgba(96, 165, 250, 0.52);
         --field-soft-glow: rgba(96, 165, 250, 0.18);
+        --success-border: rgba(52,211,153,.35);
+        --success-bg: rgba(52,211,153,.10);
       }
       *{ box-sizing:border-box; }
       body{
@@ -237,7 +239,7 @@
         box-sizing: border-box;
       }
       h1{
-        font-size: 20px;
+        font-size: 22px;
         margin: 0 0 6px 0;
         letter-spacing:.2px;
       }
@@ -317,6 +319,16 @@
         font-size: 12px;
         color: rgba(159,178,214,.85);
       }
+      .hint-strong{
+        margin: 8px 2px 0;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid rgba(96,165,250,.28);
+        background: rgba(96,165,250,.10);
+        color: rgba(233,240,255,.98);
+        font-size: 14px;
+        line-height: 1.45;
+      }
       .error{
         display:none;
         margin: 10px 0 0;
@@ -326,6 +338,17 @@
         background: rgba(251,113,133,.10);
         color: rgba(255,235,240,.95);
         font-size: 13px;
+      }
+      .send-notice{
+        display:none;
+        margin: 10px 0 0;
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 1px solid var(--success-border);
+        background: var(--success-bg);
+        color: rgba(233,240,255,.98);
+        font-size: 14px;
+        line-height: 1.45;
       }
       .actions{
         display:flex;
@@ -411,8 +434,8 @@
       <header>
         <div class="topbar">
           <div>
-            <h1><span data-i18n="title">Kite session → WhatsApp</span> <span class="pill">MVP</span></h1>
-            <p class="sub" data-i18n="subtitle">Share your session in ~20 seconds. No login, no saving, no backend.</p>
+            <h1><span data-i18n="title">Stai usando la vela giusta?</span> <span class="pill">MVP</span></h1>
+            <p class="sub" data-i18n="subtitle">Compila in 10–20 secondi e invia su WhatsApp. Dati reali, nessun login.</p>
           </div>
           <div class="lang">
             <div class="flags" role="group" aria-label="Language">
@@ -430,131 +453,144 @@
         <div class="card-inner">
           <form id="kiteForm" autocomplete="on" novalidate>
             <p class="section-label" data-i18n="section_core">Core</p>
-            <p class="form-field-legend" data-i18n="form_field_legend">* Required. All other fields are optional.</p>
-            <p class="form-field-border-hint" data-i18n="form_field_border_hint">Outline: red = required · amber = useful optional · blue = other optional.</p>
+            <p class="form-field-legend" data-i18n="form_field_legend">* Obbligatorio. Tutti gli altri campi sono opzionali.</p>
+            <p class="form-field-border-hint" data-i18n="form_field_border_hint">Contorno: rosso = obbligatorio · giallo = opzionale utile · azzurro = altri opzionali.</p>
+
             <div class="core-block">
               <div id="coreTopRow" class="row row-core-top">
                 <div class="cell-weight-narrow">
-                  <label for="weight"><span data-i18n="label_weight">Weight (kg)</span><span class="req-mark" aria-hidden="true">*</span></label>
-                  <input id="weight" name="weight" type="text" inputmode="numeric" maxlength="3" autocomplete="off" placeholder="e.g. 74" data-i18n-placeholder="ph_weight" required class="input-weight-compact" />
+                  <label for="weight"><span data-i18n="label_weight">Peso (kg)</span><span class="req-mark" aria-hidden="true">*</span></label>
+                  <input id="weight" name="weight" type="text" inputmode="numeric" maxlength="3" autocomplete="off" placeholder="es. 74" data-i18n-placeholder="ph_weight" required class="input-weight-compact" />
                 </div>
+
                 <div class="cell-board-type">
-                  <label for="board"><span data-i18n="label_board">Board type</span><span class="req-mark" aria-hidden="true">*</span></label>
+                  <label for="board"><span data-i18n="label_board">Tipo tavola</span><span class="req-mark" aria-hidden="true">*</span></label>
                   <select id="board" name="board" required>
-                    <option value="" data-i18n="opt_board_prompt">Select board type</option>
+                    <option value="" data-i18n="opt_board_prompt">Seleziona tipo tavola</option>
                     <option value="twintip" data-i18n="opt_board_twintip">Twintip</option>
                     <option value="surfboard" data-i18n="opt_board_surfboard">Surfboard</option>
                     <option value="foil" data-i18n="opt_board_foil">Foil</option>
                   </select>
                 </div>
+
                 <div id="boardSizeCell" class="cell-board-size">
-                  <label for="boardSize"><span data-i18n="label_board_size">Board size</span></label>
-                  <p id="boardSizeHintAbove" class="board-size-hint-above" data-i18n="board_size_hint_above" hidden>Choose a listed size, or Other and type beside (e.g. 137x41).</p>
+                  <label for="boardSize"><span data-i18n="label_board_size">Misura tavola</span></label>
+                  <p id="boardSizeHintAbove" class="board-size-hint-above" data-i18n="board_size_hint_above" hidden>Scegli una misura dall’elenco. Se non c’è, seleziona Altro e scrivi a destra.</p>
                   <div class="board-size-controls">
                     <select id="boardSize" name="boardSize" disabled class="field-tier-neutral">
-                      <option value="" data-i18n="opt_board_size_prompt">Board size (optional)</option>
+                      <option value="" data-i18n="opt_board_size_prompt">Scegli misura</option>
                     </select>
-                    <input type="text" id="boardSizeCustom" name="boardSizeCustom" autocomplete="off" maxlength="32" hidden class="input-board-size-custom field-tier-neutral" data-i18n-placeholder="ph_board_size_custom" placeholder="e.g. 137x41" />
+                    <input type="text" id="boardSizeCustom" name="boardSizeCustom" autocomplete="off" maxlength="32" hidden class="input-board-size-custom field-tier-neutral" data-i18n-placeholder="ph_board_size_custom" placeholder="es. 137x41" />
                   </div>
                 </div>
               </div>
 
               <div class="row level-kite-wind">
                 <div class="level-cell">
-                  <label for="level"><span data-i18n="label_level">Level</span><span class="req-mark" aria-hidden="true">*</span></label>
+                  <label for="level"><span data-i18n="label_level">Livello</span><span class="req-mark" aria-hidden="true">*</span></label>
                   <select id="level" name="level" required>
-                    <option value="" data-i18n="opt_level_prompt">Select level</option>
+                    <option value="" data-i18n="opt_level_prompt">Seleziona livello</option>
                     <option value="beginner" data-i18n="opt_level_beginner">Beginner</option>
                     <option value="independent" data-i18n="opt_level_independent">Independent</option>
                     <option value="advanced" data-i18n="opt_level_advanced">Advanced</option>
                   </select>
                 </div>
+
                 <div class="kite-compact">
-                  <label for="kite"><span data-i18n="label_kite_size">Kite size (m²)</span><span class="req-mark" aria-hidden="true">*</span></label>
-                  <input id="kite" name="kite" type="text" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="e.g. 9" data-i18n-placeholder="ph_kite_size" required class="input-numeric-compact" />
+                  <label for="kite"><span data-i18n="label_kite_size">Misura kite (m²)</span><span class="req-mark" aria-hidden="true">*</span></label>
+                  <input id="kite" name="kite" type="text" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="es. 9" data-i18n-placeholder="ph_kite_size" required class="input-numeric-compact" />
                 </div>
+
                 <div class="wind-compact">
-                  <label for="wind"><span data-i18n="label_wind">Estimated wind</span></label>
-                  <input id="wind" name="wind" type="text" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="Leave empty if unknown" data-i18n-placeholder="ph_wind" class="input-numeric-compact field-tier-important" />
+                  <label for="wind"><span data-i18n="label_wind">Vento stimato</span></label>
+                  <input id="wind" name="wind" type="text" inputmode="numeric" maxlength="2" autocomplete="off" placeholder="lascia vuoto se non lo sai" data-i18n-placeholder="ph_wind" class="input-numeric-compact field-tier-important" />
                 </div>
               </div>
             </div>
 
-            <p class="section-label" data-i18n="section_tech">Technical</p>
+            <p class="section-label" data-i18n="section_tech">Tecnico</p>
             <div class="row two">
               <div>
-                <label for="brand"><span data-i18n="label_brand">Kite brand</span></label>
+                <label for="brand"><span data-i18n="label_brand">Marca kite</span></label>
                 <input id="brand" name="brand" type="text" inputmode="text" placeholder="Duotone, Core, North, Cabrinha..." data-i18n-placeholder="ph_brand" class="field-tier-important" />
                 <div class="hint" data-i18n="hint_brand">Usa il nome ufficiale (senza abbreviazioni)</div>
               </div>
               <div>
-                <label for="model"><span data-i18n="label_model">Kite model</span></label>
+                <label for="model"><span data-i18n="label_model">Modello kite</span></label>
                 <input id="model" name="model" type="text" inputmode="text" placeholder="Orbit, Dice, XR, Nexus..." data-i18n-placeholder="ph_model" class="field-tier-important" />
                 <div class="hint" data-i18n="hint_model">Inserisci solo il nome del modello (senza versioni)</div>
               </div>
             </div>
 
-            <p class="section-label" data-i18n="section_context">Context</p>
+            <p class="section-label" data-i18n="section_context">Contesto</p>
             <div class="row">
               <div>
-                <label for="location"><span data-i18n="label_location">Location</span></label>
-                <input id="location" name="location" type="text" inputmode="text" placeholder="e.g. Punta Trettu" data-i18n-placeholder="ph_location" class="field-tier-neutral" />
+                <label for="location"><span data-i18n="label_location">Spot</span></label>
+                <input id="location" name="location" type="text" inputmode="text" placeholder="es. Punta Trettu" data-i18n-placeholder="ph_location" class="field-tier-neutral" />
               </div>
             </div>
 
             <div class="row two">
               <div>
-                <label for="water"><span data-i18n="label_water">Water conditions</span></label>
+                <label for="water"><span data-i18n="label_water">Condizioni acqua</span></label>
                 <select id="water" name="water" class="field-tier-important">
-                  <option value="" data-i18n="opt_water_prompt">Water conditions (optional)</option>
-                  <option value="flat" data-i18n="opt_water_flat">Flat</option>
-                  <option value="chop_light" data-i18n="opt_water_chop_light">Chop light</option>
+                  <option value="" data-i18n="opt_water_prompt">Condizioni acqua</option>
+                  <option value="flat" data-i18n="opt_water_flat">Piatta</option>
+                  <option value="chop_light" data-i18n="opt_water_chop_light">Chop leggero</option>
                   <option value="chop" data-i18n="opt_water_chop">Chop</option>
-                  <option value="chop_strong" data-i18n="opt_water_chop_strong">Chop strong</option>
-                  <option value="small_waves" data-i18n="opt_water_small_waves">Small waves</option>
-                  <option value="waves" data-i18n="opt_water_waves">Waves</option>
-                  <option value="big_waves" data-i18n="opt_water_big_waves">Big waves</option>
+                  <option value="chop_strong" data-i18n="opt_water_chop_strong">Chop forte</option>
+                  <option value="small_waves" data-i18n="opt_water_small_waves">Piccole onde</option>
+                  <option value="waves" data-i18n="opt_water_waves">Onde</option>
+                  <option value="big_waves" data-i18n="opt_water_big_waves">Grandi onde</option>
                 </select>
               </div>
+
               <div>
-                <label for="result"><span data-i18n="label_result">Session result</span></label>
+                <label for="result"><span data-i18n="label_result">Risultato sessione</span></label>
                 <select id="result" name="result" class="field-tier-neutral">
-                  <option value="" data-i18n="opt_result_prompt">Session result (optional)</option>
-                  <option value="underpowered" data-i18n="opt_result_underpowered">Underpowered</option>
-                  <option value="good" data-i18n="opt_result_good">Good</option>
-                  <option value="powered" data-i18n="opt_result_powered">Powered</option>
-                  <option value="overpowered" data-i18n="opt_result_overpowered">Overpowered</option>
-                  <option value="survival" data-i18n="opt_result_survival">Survival</option>
+                  <option value="" data-i18n="opt_result_prompt">Risultato sessione</option>
+                  <option value="underpowered" data-i18n="opt_result_underpowered">Sottoinvelato</option>
+                  <option value="good" data-i18n="opt_result_good">Giusto</option>
+                  <option value="powered" data-i18n="opt_result_powered">Invelato</option>
+                  <option value="overpowered" data-i18n="opt_result_overpowered">Sovrainvelato</option>
+                  <option value="survival" data-i18n="opt_result_survival">Sopravvivenza</option>
                 </select>
               </div>
             </div>
 
             <div class="row">
               <div>
-                <label for="note"><span data-i18n="label_notes">Notes</span></label>
-                <textarea id="note" name="note" placeholder="Anything useful (spot, gusts, setup, etc.)" data-i18n-placeholder="ph_notes" class="field-tier-neutral"></textarea>
-                <div class="hint" data-i18n="hint_screenshot">If needed, add screenshots manually in WhatsApp after sending.</div>
+                <label for="note"><span data-i18n="label_notes">Note</span></label>
+                <textarea id="note" name="note" placeholder="Info utili (raffiche, setup, condizioni...)" data-i18n-placeholder="ph_notes" class="field-tier-neutral"></textarea>
+                <div class="hint" data-i18n="hint_screenshot">Se serve, aggiungi screenshot manualmente su WhatsApp dopo l’invio.</div>
               </div>
             </div>
 
             <div class="actions">
-              <button type="submit" class="primary" id="sendBtn" data-i18n="btn_send">Send via WhatsApp</button>
+              <button type="submit" class="primary" id="sendBtn" data-i18n="btn_send">Invia su WhatsApp</button>
               <button type="button" class="secondary" id="resetBtn" data-i18n="btn_reset">Reset</button>
             </div>
-            <p class="thank-you-note" data-i18n="thank_you_note" id="thankYouNote">Thanks 🙏
-You’re helping improve kitesurfing for everyone.</p>
+
+            <div class="send-notice" id="sendNotice">Si apre WhatsApp: controlla il messaggio e premi Invia.</div>
+
+            <p class="hint-strong" id="finalStepHint" data-i18n="final_step_hint">
+              Ultimo step: quando si apre WhatsApp, premi Invia.
+            </p>
+
+            <p class="thank-you-note" data-i18n="thank_you_note" id="thankYouNote">Grazie davvero 🙏
+Stai aiutando a migliorare il kite per tutti.</p>
 
             <div class="preview" aria-live="polite">
-              <h2 data-i18n="preview_title">Message preview</h2>
-              <pre id="previewText" data-i18n="preview_empty">Fill the required fields to generate the message…</pre>
+              <h2 data-i18n="preview_title">Anteprima messaggio</h2>
+              <pre id="previewText" data-i18n="preview_empty">Compila i campi obbligatori per generare il messaggio…</pre>
             </div>
           </form>
         </div>
       </div>
 
       <footer>
-        <span data-i18n="footer_prefix">Set the operator number in</span> <code>WHATSAPP_NUMBER</code>
-        <span data-i18n="footer_suffix">(international format, digits only; e.g. 393331112233).</span>
+        <span data-i18n="footer_prefix">Imposta il numero operatore in</span> <code>WHATSAPP_NUMBER</code>
+        <span data-i18n="footer_suffix">(formato internazionale, solo cifre; es. 393331112233).</span>
       </footer>
     </div>
 
@@ -568,6 +604,7 @@ You’re helping improve kitesurfing for everyone.</p>
       function hasFirstSubmitDone(){
         try { return localStorage.getItem(LS_FIRST_SUBMIT) === "true"; } catch (_) { return true; }
       }
+
       function markFirstSubmitDone(){
         try { localStorage.setItem(LS_FIRST_SUBMIT, "true"); } catch (_) {}
       }
@@ -581,9 +618,9 @@ You’re helping improve kitesurfing for everyone.</p>
       const translations = {
         en: {
           htmlLang: "en",
-          pageTitle: "Kite session → WhatsApp",
-          title: "Kite session → WhatsApp",
-          subtitle: "Share your session in ~20 seconds. No login, no saving, no backend.",
+          pageTitle: "Are you using the right kite?",
+          title: "Are you using the right kite?",
+          subtitle: "Fill it in 10–20 seconds and send via WhatsApp. Real data, no login.",
           required: "(required)",
           optional: "(optional)",
           section_core: "Core",
@@ -602,7 +639,7 @@ You’re helping improve kitesurfing for everyone.</p>
           opt_board_size_prompt: "Select size",
           opt_board_size_other: "Other (specify)",
           ph_board_size_custom: "e.g. 137x41",
-          board_size_hint_above: "Choose a size from the list; if it’s missing, pick Other and type in the field on the right (e.g. 137x41).",
+          board_size_hint_above: "Choose a size from the list; if it's missing, pick Other and type in the field on the right (e.g. 137x41).",
           label_level: "Level",
           opt_level_prompt: "Select level",
           opt_level_beginner: "Beginner",
@@ -617,7 +654,7 @@ You’re helping improve kitesurfing for everyone.</p>
           ph_model: "Orbit, Dice, XR, Nexus...",
           hint_model: "Model name only (no versions)",
           label_wind: "Estimated wind",
-          ph_wind: "e.g. 18",
+          ph_wind: "leave empty if unknown",
           label_location: "Location",
           ph_location: "e.g. Punta Trettu",
           label_water: "Water conditions",
@@ -642,7 +679,9 @@ You’re helping improve kitesurfing for everyone.</p>
           btn_send: "Send via WhatsApp",
           btn_reset: "Reset",
           thank_you_note: "Thanks 🙏\nYou're helping improve kitesurfing for everyone.",
-          first_submit_prefix: "Thanks!\nHere is what you are sharing:",
+          first_submit_prefix: "Thanks 🙏\nThis is the summary of the data you are sending:",
+          final_step_hint: "Final step: when WhatsApp opens, press Send.",
+          send_notice: "WhatsApp is opening: check the message and press Send.",
           preview_title: "Message preview",
           preview_empty: "Fill the required fields to generate the message…",
           footer_prefix: "Set the operator number in",
@@ -660,11 +699,12 @@ You’re helping improve kitesurfing for everyone.</p>
           msg_result: "Result",
           msg_notes: "Notes",
         },
+
         it: {
           htmlLang: "it",
-          pageTitle: "Sessione kite → WhatsApp",
-          title: "Sessione kite → WhatsApp",
-          subtitle: "Condividi la sessione in ~20 secondi. Nessun login, nessun salvataggio, nessun backend.",
+          pageTitle: "Stai usando la vela giusta?",
+          title: "Stai usando la vela giusta?",
+          subtitle: "Compila in 10–20 secondi e invia su WhatsApp. Dati reali, nessun login.",
           required: "(obbligatorio)",
           optional: "(opzionale)",
           section_core: "Core",
@@ -683,7 +723,7 @@ You’re helping improve kitesurfing for everyone.</p>
           opt_board_size_prompt: "Scegli misura",
           opt_board_size_other: "Altro",
           ph_board_size_custom: "es. 137x41",
-          board_size_hint_above: "Scegli una misura dall’elenco (prima riga «Scegli misura»). Se non c’è, seleziona «Altro» e scrivi a destra (es. 137×41).",
+          board_size_hint_above: "Scegli una misura dall’elenco. Se non c’è, seleziona «Altro» e scrivi a destra (es. 137x41).",
           label_level: "Livello",
           opt_level_prompt: "Seleziona livello",
           opt_level_beginner: "Beginner",
@@ -698,7 +738,7 @@ You’re helping improve kitesurfing for everyone.</p>
           ph_model: "Orbit, Dice, XR, Nexus...",
           hint_model: "Inserisci solo il nome del modello (senza versioni)",
           label_wind: "Vento stimato",
-          ph_wind: "es. 18",
+          ph_wind: "lascia vuoto se non lo sai",
           label_location: "Spot",
           ph_location: "es. Punta Trettu",
           label_water: "Condizioni acqua",
@@ -723,7 +763,9 @@ You’re helping improve kitesurfing for everyone.</p>
           btn_send: "Invia su WhatsApp",
           btn_reset: "Reset",
           thank_you_note: "Grazie davvero 🙏\nStai aiutando a migliorare il kite per tutti.",
-          first_submit_prefix: "Grazie!\nQuesti sono i dati che stai condividendo:",
+          first_submit_prefix: "Grazie 🙏\nQuesto è il riepilogo dei dati che stai inviando:",
+          final_step_hint: "Ultimo step: quando si apre WhatsApp, premi Invia.",
+          send_notice: "Si apre WhatsApp: controlla il messaggio e premi Invia.",
           preview_title: "Anteprima messaggio",
           preview_empty: "Compila i campi obbligatori per generare il messaggio…",
           footer_prefix: "Imposta il numero operatore in",
@@ -741,12 +783,12 @@ You’re helping improve kitesurfing for everyone.</p>
           msg_result: "Risultato sessione",
           msg_notes: "Note",
         },
+
         de: {
           htmlLang: "de",
-          pageTitle: "Kite-Session → WhatsApp",
-          title: "Kite-Session → WhatsApp",
-          subtitle: "Teile deine Session in ~20 Sekunden. Kein Login, kein Speichern, kein Backend.",
-          language: "Sprache",
+          pageTitle: "Verwendest du den richtigen Kite?",
+          title: "Verwendest du den richtigen Kite?",
+          subtitle: "In 10–20 Sekunden ausfüllen und per WhatsApp senden. Echte Daten, kein Login.",
           required: "(erforderlich)",
           optional: "(optional)",
           section_core: "Session",
@@ -763,7 +805,7 @@ You’re helping improve kitesurfing for everyone.</p>
           opt_board_foil: "Foil",
           label_board_size: "Board-Größe",
           opt_board_size_prompt: "Größe wählen",
-          opt_board_size_other: "Sonstiges (eintragen)",
+          opt_board_size_other: "Sonstiges",
           ph_board_size_custom: "z.B. 137x41",
           board_size_hint_above: "Größe aus der Liste wählen; fehlt sie, „Sonstiges“ wählen und rechts eintragen (z. B. 137x41).",
           label_level: "Level",
@@ -778,9 +820,9 @@ You’re helping improve kitesurfing for everyone.</p>
           hint_brand: "Offiziellen Namen verwenden (ohne Abkürzungen)",
           label_model: "Kite-Modell",
           ph_model: "Orbit, Dice, XR, Nexus...",
-          hint_model: "Nur Modellname (ohne Versionen/Generationen)",
+          hint_model: "Nur Modellname (ohne Versionen)",
           label_wind: "Geschätzter Wind",
-          ph_wind: "z.B. 18",
+          ph_wind: "leer lassen, falls unbekannt",
           label_location: "Spot",
           ph_location: "z.B. Punta Trettu",
           label_water: "Wasserbedingungen",
@@ -800,19 +842,21 @@ You’re helping improve kitesurfing for everyone.</p>
           opt_result_overpowered: "Überpowert",
           opt_result_survival: "Überleben",
           label_notes: "Notizen",
-          ph_notes: "Nützliche Infos (Spot, Böen, Setup, usw.)",
+          ph_notes: "Nützliche Infos (Spot, Böen, Setup usw.)",
           hint_screenshot: "Falls nötig, Screenshots nach dem Senden manuell in WhatsApp hinzufügen.",
           btn_send: "Über WhatsApp senden",
           btn_reset: "Zurücksetzen",
           thank_you_note: "Danke 🙏\nDu hilfst, Kitesurfen für alle zu verbessern.",
-          first_submit_prefix: "Danke!\nDas sind die Daten, die du teilst:",
+          first_submit_prefix: "Danke 🙏\nDas ist die Zusammenfassung der Daten, die du sendest:",
+          final_step_hint: "Letzter Schritt: Wenn WhatsApp geöffnet wird, auf Senden drücken.",
+          send_notice: "WhatsApp wird geöffnet: Nachricht prüfen und auf Senden drücken.",
           preview_title: "Vorschau",
-          preview_empty: "Fülle die Pflichtfelder aus, um die Nachricht zu erzeugen…",
+          preview_empty: "Pflichtfelder ausfüllen, um die Nachricht zu erzeugen…",
           footer_prefix: "Operator-Nummer in",
           footer_suffix: "(internationales Format, nur Ziffern; z.B. 393331112233).",
           msg_weight: "Gewicht (kg)",
           msg_board: "Board",
-          msg_board_size: "Board size",
+          msg_board_size: "Board-Größe",
           msg_level: "Level",
           msg_kite: "Kite (m²)",
           msg_brand: "Marke",
@@ -823,12 +867,12 @@ You’re helping improve kitesurfing for everyone.</p>
           msg_result: "Ergebnis",
           msg_notes: "Notizen",
         },
+
         es: {
           htmlLang: "es",
-          pageTitle: "Sesión de kite → WhatsApp",
-          title: "Sesión de kite → WhatsApp",
-          subtitle: "Comparte tu sesión en ~20 segundos. Sin login, sin guardar, sin backend.",
-          language: "Idioma",
+          pageTitle: "¿Estás usando la cometa correcta?",
+          title: "¿Estás usando la cometa correcta?",
+          subtitle: "Rellénalo en 10–20 segundos y envíalo por WhatsApp. Datos reales, sin login.",
           required: "(obligatorio)",
           optional: "(opcional)",
           section_core: "Núcleo",
@@ -845,7 +889,7 @@ You’re helping improve kitesurfing for everyone.</p>
           opt_board_foil: "Foil",
           label_board_size: "Tamaño tabla",
           opt_board_size_prompt: "Elige talla",
-          opt_board_size_other: "Otro (escribe)",
+          opt_board_size_other: "Otro",
           ph_board_size_custom: "ej. 137x41",
           board_size_hint_above: "Elige talla de la lista; si no está, elige Otro y escribe a la derecha (ej. 137x41).",
           label_level: "Nivel",
@@ -862,7 +906,7 @@ You’re helping improve kitesurfing for everyone.</p>
           ph_model: "Orbit, Dice, XR, Nexus...",
           hint_model: "Solo el nombre del modelo (sin versiones)",
           label_wind: "Viento estimado",
-          ph_wind: "p. ej. 18",
+          ph_wind: "déjalo vacío si no lo sabes",
           label_location: "Lugar",
           ph_location: "p. ej. Punta Trettu",
           label_water: "Condiciones del agua",
@@ -882,20 +926,22 @@ You’re helping improve kitesurfing for everyone.</p>
           opt_result_overpowered: "Pasado",
           opt_result_survival: "Supervivencia",
           label_notes: "Notas",
-          ph_notes: "Info útil (lugar, rachas, setup, etc.)",
+          ph_notes: "Información útil (lugar, rachas, setup, etc.)",
           hint_screenshot: "Si hace falta, añade capturas manualmente en WhatsApp después de enviar.",
           btn_send: "Enviar por WhatsApp",
           btn_reset: "Reiniciar",
           thank_you_note: "Gracias 🙏\nEstás ayudando a mejorar el kitesurf para todos.",
-          first_submit_prefix: "Gracias!\nEstos son los datos que compartes:",
+          first_submit_prefix: "Gracias 🙏\nEste es el resumen de los datos que estás enviando:",
+          final_step_hint: "Último paso: cuando se abra WhatsApp, pulsa Enviar.",
+          send_notice: "Se abre WhatsApp: revisa el mensaje y pulsa Enviar.",
           preview_title: "Vista previa",
           preview_empty: "Rellena los campos obligatorios para generar el mensaje…",
           footer_prefix: "Configura el número del operador en",
           footer_suffix: "(formato internacional, solo dígitos; p. ej. 393331112233).",
           msg_weight: "Peso (kg)",
           msg_board: "Tabla",
-          msg_board_size: "Board size",
-          msg_level: "Level",
+          msg_board_size: "Tamaño tabla",
+          msg_level: "Nivel",
           msg_kite: "Kite (m²)",
           msg_brand: "Marca",
           msg_model: "Modelo",
@@ -905,12 +951,12 @@ You’re helping improve kitesurfing for everyone.</p>
           msg_result: "Resultado",
           msg_notes: "Notas",
         },
+
         fr: {
           htmlLang: "fr",
-          pageTitle: "Session kite → WhatsApp",
-          title: "Session kite → WhatsApp",
-          subtitle: "Partage ta session en ~20 secondes. Pas de login, pas de sauvegarde, pas de backend.",
-          language: "Langue",
+          pageTitle: "Utilises-tu la bonne voile ?",
+          title: "Utilises-tu la bonne voile ?",
+          subtitle: "Remplis en 10–20 secondes et envoie par WhatsApp. Données réelles, sans login.",
           required: "(obligatoire)",
           optional: "(optionnel)",
           section_core: "Session",
@@ -927,7 +973,7 @@ You’re helping improve kitesurfing for everyone.</p>
           opt_board_foil: "Foil",
           label_board_size: "Taille planche",
           opt_board_size_prompt: "Choisir taille",
-          opt_board_size_other: "Autre (préciser)",
+          opt_board_size_other: "Autre",
           ph_board_size_custom: "ex. 137x41",
           board_size_hint_above: "Choisis une taille dans la liste ; sinon Autre et indique à droite (ex. 137x41).",
           label_level: "Niveau",
@@ -944,7 +990,7 @@ You’re helping improve kitesurfing for everyone.</p>
           ph_model: "Orbit, Dice, XR, Nexus...",
           hint_model: "Nom du modèle uniquement (sans versions)",
           label_wind: "Vent estimé",
-          ph_wind: "ex. 18",
+          ph_wind: "laisser vide si inconnu",
           label_location: "Spot",
           ph_location: "ex. Punta Trettu",
           label_water: "État de l’eau",
@@ -969,15 +1015,17 @@ You’re helping improve kitesurfing for everyone.</p>
           btn_send: "Envoyer via WhatsApp",
           btn_reset: "Réinitialiser",
           thank_you_note: "Merci 🙏\nTu aides à améliorer le kitesurf pour tous.",
-          first_submit_prefix: "Merci !\nVoici les données que tu partages :",
+          first_submit_prefix: "Merci 🙏\nVoici le récapitulatif des données que tu envoies :",
+          final_step_hint: "Dernière étape : quand WhatsApp s’ouvre, appuie sur Envoyer.",
+          send_notice: "WhatsApp va s’ouvrir : vérifie le message et appuie sur Envoyer.",
           preview_title: "Aperçu",
           preview_empty: "Remplis les champs obligatoires pour générer le message…",
           footer_prefix: "Renseigne le numéro opérateur dans",
           footer_suffix: "(format international, chiffres uniquement ; ex. 393331112233).",
           msg_weight: "Poids (kg)",
           msg_board: "Planche",
-          msg_board_size: "Board size",
-          msg_level: "Level",
+          msg_board_size: "Taille planche",
+          msg_level: "Niveau",
           msg_kite: "Kite (m²)",
           msg_brand: "Marque",
           msg_model: "Modèle",
@@ -1002,7 +1050,7 @@ You’re helping improve kitesurfing for everyone.</p>
         try { localStorage.setItem("rdk_lang", lang); } catch (_) {}
 
         document.documentElement.lang = t("htmlLang") || "en";
-        document.title = t("pageTitle") || "Kite session → WhatsApp";
+        document.title = t("pageTitle") || "Are you using the right kite?";
 
         document.querySelectorAll("[data-i18n]").forEach((el) => {
           const key = el.getAttribute("data-i18n");
@@ -1061,18 +1109,22 @@ You’re helping improve kitesurfing for everyone.</p>
         }
 
         sel.disabled = false;
+
         const oOther = document.createElement("option");
         oOther.value = BOARD_SIZE_OTHER;
         oOther.textContent = t("opt_board_size_other");
         sel.appendChild(oOther);
+
         sizes.forEach((s) => {
           const o = document.createElement("option");
           o.value = s;
           o.textContent = s;
           sel.appendChild(o);
         });
+
         if (sizes.includes(prev)) sel.value = prev;
         else if (prev === BOARD_SIZE_OTHER) sel.value = BOARD_SIZE_OTHER;
+
         if (hintAbove) hintAbove.hidden = false;
         syncBoardSizeCustomUI();
       }
@@ -1092,6 +1144,7 @@ You’re helping improve kitesurfing for everyone.</p>
         const len = 10;
         const alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
         const chars = [];
+
         if (window.crypto && window.crypto.getRandomValues){
           const buf = new Uint8Array(len);
           window.crypto.getRandomValues(buf);
@@ -1099,6 +1152,7 @@ You’re helping improve kitesurfing for everyone.</p>
         } else {
           for (let i = 0; i < len; i++) chars.push(alphabet[Math.floor(Math.random() * alphabet.length)]);
         }
+
         return chars.join("");
       }
 
@@ -1111,6 +1165,7 @@ You’re helping improve kitesurfing for everyone.</p>
       async function generateSignature(text){
         const key = "RDK_SECRET_PLACEHOLDER";
         const enc = new TextEncoder();
+
         const cryptoKey = await crypto.subtle.importKey(
           "raw",
           enc.encode(key),
@@ -1184,26 +1239,32 @@ You’re helping improve kitesurfing for everyone.</p>
           preview.textContent = t("preview_empty");
           return;
         }
+
         const pre = hasFirstSubmitDone() ? "" : (t("first_submit_prefix") + "\n\n");
         preview.textContent = pre + core;
       }
 
       let sendAudioCtx = null;
+
       function playSendFeedback(){
         try {
           const AC = window.AudioContext || window.webkitAudioContext;
           if (!AC) return;
+
           sendAudioCtx = sendAudioCtx || new AC();
           const ctx = sendAudioCtx;
           if (ctx.state === "suspended") void ctx.resume();
+
           const t0 = ctx.currentTime;
           const osc = ctx.createOscillator();
           const g = ctx.createGain();
+
           osc.type = "sine";
           osc.frequency.setValueAtTime(1040, t0);
           g.gain.setValueAtTime(0.0001, t0);
           g.gain.exponentialRampToValueAtTime(0.08, t0 + 0.015);
           g.gain.exponentialRampToValueAtTime(0.0001, t0 + 0.22);
+
           osc.connect(g);
           g.connect(ctx.destination);
           osc.start(t0);
@@ -1211,9 +1272,17 @@ You’re helping improve kitesurfing for everyone.</p>
         } catch (_) {}
       }
 
+      function showSendNotice(){
+        const el = document.getElementById("sendNotice");
+        if (!el) return;
+        el.textContent = t("send_notice");
+        el.style.display = "block";
+        window.setTimeout(() => {
+          el.style.display = "none";
+        }, 2600);
+      }
+
       function openWhatsAppWithMessage(message){
-        // wa.me richiede: https://wa.me/<NUMERO>?text=<URL_ENCODED>
-        // encodeURIComponent converte newline in %0A (requisito)
         const encoded = encodeURIComponent(message);
         const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encoded}`;
         window.open(url, "_blank", "noopener,noreferrer");
@@ -1230,6 +1299,7 @@ You’re helping improve kitesurfing for everyone.</p>
         syncBoardSizeOptions();
         refreshPreview();
       });
+
       document.getElementById("boardSize").addEventListener("change", () => {
         syncBoardSizeCustomUI();
         refreshPreview();
@@ -1258,16 +1328,21 @@ You’re helping improve kitesurfing for everyone.</p>
 
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
+
         if (!form.reportValidity()) return;
+
         let body = buildMessage();
-        if (!hasFirstSubmitDone()) body = t("first_submit_prefix") + "\n\n" + body;
+        if (!hasFirstSubmitDone()) {
+          body = t("first_submit_prefix") + "\n\n" + body;
+        }
+
         const msg = await appendTechnicalBlock(body);
+
         markFirstSubmitDone();
         refreshPreview();
         playSendFeedback();
-        if (/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-  openWhatsAppWithMessage(msg);
-}
+        showSendNotice();
+        openWhatsAppWithMessage(msg);
       });
 
       resetBtn.addEventListener("click", () => {
