@@ -188,6 +188,28 @@
               <div>
                 <label for="model"><span data-i18n="label_model">Modello kite</span></label>
                 <input id="model" name="model" type="text" inputmode="text" placeholder="Orbit, Dice, XR, Nexus..." data-i18n-placeholder="ph_model" class="field-tier-important" />
+                <select id="modelSelect" name="modelSelect" hidden class="field-tier-important">
+                  <option value="" data-i18n="opt_model_prompt">Select model</option>
+                  <option value="Evo">Evo</option>
+                  <option value="Evo SLS">Evo SLS</option>
+                  <option value="Evo D/Lab">Evo D/Lab</option>
+                  <option value="Evo Concept Blue">Evo Concept Blue</option>
+                  <option value="Rebel">Rebel</option>
+                  <option value="Rebel SLS">Rebel SLS</option>
+                  <option value="Rebel D/Lab">Rebel D/Lab</option>
+                  <option value="Neo">Neo</option>
+                  <option value="Neo SLS">Neo SLS</option>
+                  <option value="Neo D/Lab">Neo D/Lab</option>
+                  <option value="Juice">Juice</option>
+                  <option value="Juice D/Lab">Juice D/Lab</option>
+                  <option value="Vegas">Vegas</option>
+                  <option value="Vegas Concept Blue">Vegas Concept Blue</option>
+                  <option value="Vegas D/Lab">Vegas D/Lab</option>
+                  <option value="Volt">Volt</option>
+                  <option value="Volt D/Lab">Volt D/Lab</option>
+                  <option value="__model_other__" data-i18n="opt_model_other">Other</option>
+                </select>
+                <input id="modelCustom" name="modelCustom" type="text" inputmode="text" hidden data-i18n-placeholder="ph_model_custom" placeholder="Insert model" class="field-tier-important" />
                 <div class="hint" data-i18n="hint_model">Inserisci solo il nome del modello (senza versioni)</div>
               </div>
             </div>

@@ -7,6 +7,8 @@
   const WHATSAPP_NUMBER = "393345280521";
   const BOARD_SIZE_OTHER = "__rdk_other__";
   const BRAND_OTHER = "__brand_other__";
+  const MODEL_OTHER = "__model_other__";
+  const DUOTONE_BRAND = "Duotone Kiteboarding";
   const LS_FIRST_SUBMIT = "rdk_first_submit";
 
   const BOARD_SIZE_BY_TYPE = {
@@ -187,6 +189,51 @@
     custom.hidden = !show;
   }
 
+  function getDuotoneModelValue(){
+    const modelSelect = document.getElementById("modelSelect");
+    if (!modelSelect) return "";
+    if (modelSelect.value === MODEL_OTHER) return val("modelCustom");
+    return val("modelSelect");
+  }
+
+  function syncModelUI(){
+    const modelInput = document.getElementById("model");
+    const modelSelect = document.getElementById("modelSelect");
+    const modelCustom = document.getElementById("modelCustom");
+    const showDuotoneModels = val("brand") === DUOTONE_BRAND;
+
+    if (!modelInput || !modelSelect || !modelCustom) return;
+
+    if (showDuotoneModels) {
+      const typedModel = String(modelInput.value || "").trim();
+      modelInput.hidden = true;
+      modelSelect.hidden = false;
+
+      if (!modelSelect.value && typedModel) {
+        const availableModels = Array.from(modelSelect.options).map((option) => option.value);
+        if (availableModels.includes(typedModel)) modelSelect.value = typedModel;
+        else {
+          modelSelect.value = MODEL_OTHER;
+          modelCustom.value = typedModel;
+        }
+      }
+
+      const showCustom = modelSelect.value === MODEL_OTHER;
+      if (!showCustom) modelCustom.value = "";
+      modelCustom.hidden = !showCustom;
+      return;
+    }
+
+    const selectedModel = getDuotoneModelValue();
+    if (selectedModel) modelInput.value = selectedModel;
+
+    modelInput.hidden = false;
+    modelSelect.hidden = true;
+    modelSelect.value = "";
+    modelCustom.hidden = true;
+    modelCustom.value = "";
+  }
+
   function syncBoardSizeOptions(){
     const boardVal = val("board");
     const sel = document.getElementById("boardSize");
@@ -243,6 +290,11 @@
     const brand = val("brand");
     if (brand === BRAND_OTHER) return val("brandCustom");
     return brand;
+  }
+
+  function getModelValue(){
+    if (val("brand") === DUOTONE_BRAND) return getDuotoneModelValue();
+    return val("model");
   }
 
   function validateNumericField(id){
@@ -371,7 +423,7 @@
     const level = val("level");
     const kite = val("kite");
     const brand = getBrandValue();
-    const model = val("model");
+    const model = getModelValue();
     const wind = val("wind");
     const location = val("location");
     const water = val("water");
@@ -470,7 +522,7 @@
     });
   });
 
-  ["board", "boardSize", "boardSizeCustom", "brand", "brandCustom", "level", "model", "location", "water", "result", "note"].forEach(bindPreviewField);
+  ["board", "boardSize", "boardSizeCustom", "brand", "brandCustom", "level", "model", "modelSelect", "modelCustom", "location", "water", "result", "note"].forEach(bindPreviewField);
 
   document.getElementById("board")?.addEventListener("change", () => {
     syncBoardSizeOptions();
@@ -484,6 +536,12 @@
 
   document.getElementById("brand")?.addEventListener("change", () => {
     syncBrandCustomUI();
+    syncModelUI();
+    refreshPreview();
+  });
+
+  document.getElementById("modelSelect")?.addEventListener("change", () => {
+    syncModelUI();
     refreshPreview();
   });
 
@@ -525,6 +583,7 @@
     setValidationNotice("");
     syncBoardSizeOptions();
     syncBrandCustomUI();
+    syncModelUI();
     refreshPreview();
   });
 
@@ -536,4 +595,5 @@
 
   applyTranslations(translations[currentLang] ? currentLang : "it");
   syncBrandCustomUI();
+  syncModelUI();
 })();
