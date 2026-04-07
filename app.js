@@ -12,59 +12,58 @@
   const CORE_BRAND = "Core Kiteboarding";
   const LS_FIRST_SUBMIT = "rdk_first_submit";
 
-  const MODEL_OPTIONS_BY_BRAND = {
-    [DUOTONE_BRAND]: [
-      "Evo",
-      "Evo SLS",
-      "Evo D/Lab",
-      "Evo Concept Blue",
-      "Rebel",
-      "Rebel SLS",
-      "Rebel D/Lab",
-      "Neo",
-      "Neo SLS",
-      "Neo D/Lab",
-      "Juice",
-      "Juice D/Lab",
-      "Vegas",
-      "Vegas Concept Blue",
-      "Vegas D/Lab",
-      "Volt",
-      "Volt D/Lab"
-    ],
-    [CORE_BRAND]: [
-      "XR5",
-      "XR6",
-      "XR7",
-      "XR8",
-      "XR8 LW",
-      "XR Pro",
-      "XR Pro 2",
-      "Nexus",
-      "Nexus 2",
-      "Nexus 3",
-      "Nexus 4",
-      "Nexus LW",
-      "Pace",
-      "Pace Pro",
-      "Section",
-      "Section 2",
-      "Section 3",
-      "Section 4",
-      "Section 5",
-      "Section LW",
-      "GTS5",
-      "GTS6",
-      "GTS6 LW",
-      "Xlite",
-      "Xlite 2",
-      "Impact",
-      "Impact 2",
-      "Xperience",
-      "Air",
-      "Air Pro"
-    ]
-  };
+  const DUOTONE_MODELS = [
+    "Evo",
+    "Evo SLS",
+    "Evo D/Lab",
+    "Evo Concept Blue",
+    "Rebel",
+    "Rebel SLS",
+    "Rebel D/Lab",
+    "Neo",
+    "Neo SLS",
+    "Neo D/Lab",
+    "Juice",
+    "Juice D/Lab",
+    "Vegas",
+    "Vegas Concept Blue",
+    "Vegas D/Lab",
+    "Volt",
+    "Volt D/Lab"
+  ];
+
+  const CORE_MODELS = [
+    "XR5",
+    "XR6",
+    "XR7",
+    "XR8",
+    "XR8 LW",
+    "XR Pro",
+    "XR Pro 2",
+    "Nexus",
+    "Nexus 2",
+    "Nexus 3",
+    "Nexus 4",
+    "Nexus LW",
+    "Pace",
+    "Pace Pro",
+    "Section",
+    "Section 2",
+    "Section 3",
+    "Section 4",
+    "Section 5",
+    "Section LW",
+    "GTS5",
+    "GTS6",
+    "GTS6 LW",
+    "Xlite",
+    "Xlite 2",
+    "Impact",
+    "Impact 2",
+    "Xperience",
+    "Air",
+    "Air Pro"
+  ];
 
   const BOARD_SIZE_BY_TYPE = {
     twintip: [
@@ -251,11 +250,17 @@
     return val("modelSelect");
   }
 
+  function getPresetModelsForBrand(brand){
+    if (brand === DUOTONE_BRAND) return DUOTONE_MODELS;
+    else if (brand === CORE_BRAND) return CORE_MODELS;
+    return null;
+  }
+
   function populateModelOptions(brand){
     const modelSelect = document.getElementById("modelSelect");
     if (!modelSelect) return;
 
-    const models = MODEL_OPTIONS_BY_BRAND[brand] || [];
+    const models = getPresetModelsForBrand(brand) || [];
     const previousBrand = modelSelect.getAttribute("data-model-brand") || "";
     const previousValue = previousBrand === brand ? modelSelect.value : "";
 
@@ -290,11 +295,11 @@
     const modelSelect = document.getElementById("modelSelect");
     const modelCustom = document.getElementById("modelCustom");
     const brand = val("brand");
-    const showPresetModels = Boolean(MODEL_OPTIONS_BY_BRAND[brand]);
+    const presetModels = getPresetModelsForBrand(brand);
 
     if (!modelInput || !modelSelect || !modelCustom) return;
 
-    if (showPresetModels) {
+    if (brand === DUOTONE_BRAND) {
       const typedModel = String(modelInput.value || "").trim();
       populateModelOptions(brand);
       modelInput.hidden = true;
@@ -313,17 +318,35 @@
       if (!showCustom) modelCustom.value = "";
       modelCustom.hidden = !showCustom;
       return;
+    } else if (brand === CORE_BRAND) {
+      const typedModel = String(modelInput.value || "").trim();
+      populateModelOptions(brand);
+      modelInput.hidden = true;
+      modelSelect.hidden = false;
+
+      if (!modelSelect.value && typedModel) {
+        if (presetModels.includes(typedModel)) modelSelect.value = typedModel;
+        else {
+          modelSelect.value = MODEL_OTHER;
+          modelCustom.value = typedModel;
+        }
+      }
+
+      const showCustom = modelSelect.value === MODEL_OTHER;
+      if (!showCustom) modelCustom.value = "";
+      modelCustom.hidden = !showCustom;
+      return;
+    } else {
+      const selectedModel = getFilteredModelValue();
+      if (selectedModel) modelInput.value = selectedModel;
+
+      modelInput.hidden = false;
+      modelSelect.hidden = true;
+      modelSelect.value = "";
+      modelSelect.setAttribute("data-model-brand", "");
+      modelCustom.hidden = true;
+      modelCustom.value = "";
     }
-
-    const selectedModel = getFilteredModelValue();
-    if (selectedModel) modelInput.value = selectedModel;
-
-    modelInput.hidden = false;
-    modelSelect.hidden = true;
-    modelSelect.value = "";
-    modelSelect.setAttribute("data-model-brand", "");
-    modelCustom.hidden = true;
-    modelCustom.value = "";
   }
 
   function syncBoardSizeOptions(){
@@ -385,7 +408,9 @@
   }
 
   function getModelValue(){
-    if (MODEL_OPTIONS_BY_BRAND[val("brand")]) return getFilteredModelValue();
+    const brand = val("brand");
+    if (brand === DUOTONE_BRAND) return getFilteredModelValue();
+    else if (brand === CORE_BRAND) return getFilteredModelValue();
     return val("model");
   }
 
