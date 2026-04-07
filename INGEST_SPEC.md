@@ -1,4 +1,4 @@
-# Ingest passivo — specifica layer trasporto
+# Ingest passivo - specifica layer trasporto
 
 Questo file documenta il comportamento del layer di ingest **passivo**: estrazione senza interpretazione.
 
@@ -8,59 +8,77 @@ Questo file documenta il comportamento del layer di ingest **passivo**: estrazio
 
 ## Filtro di accettazione messaggi WhatsApp (pre-ingest)
 
-**Obiettivo:** accettare **solo** messaggi generati dal sistema ufficiale (form RDK + blocco tecnico). WhatsApp è solo canale di trasporto; il **gate** è il filtro di ingest.
+**Obiettivo:** accettare **solo** messaggi conformi al formato emesso dal form ufficiale. WhatsApp resta un semplice canale di trasporto; il **gate** è il filtro di ingest.
 
-**Principio:** un messaggio è **valido solo se** soddisfa **tutte** le condizioni sotto. In caso contrario → **ignorato completamente** (nessuna correzione, nessun recupero, nessun parsing del corpo).
+**Nota di trust:** il form può emettere una `SIG` client-side come mitigazione minima, ma **non garantisce autenticità crittografica reale**. La chiusura del trust gap richiede una firma server-side futura.
 
-### 1. Presenza blocco tecnico
+**Principio:** un messaggio è **valido solo se** soddisfa **tutte** le condizioni sotto. In caso contrario -> **ignorato completamente** (nessuna correzione, nessun recupero, nessun parsing del corpo).
 
-Il messaggio deve contenere un blocco finale conforme al formato prodotto dal form (nessuna riga vuota extra tra delimitatori e righe chiave):
+### 1. Presenza blocco tecnico finale
+
+Il messaggio deve terminare con un blocco conforme al formato prodotto dal form:
 
 ```text
 ---
 ID: <10 caratteri>
-TS: <timestamp>
+TS: <RFC3339 con timezone>
 SRC: rdk_v1
+SIG: <10 caratteri hex>
 ---
 ```
 
-*(Il testo libero dell’utente precede il primo `---` del blocco.)*
+Il testo libero dell'utente precede il primo `---` del blocco.
 
 ### 2. Validazione `ID`
 
 - lunghezza **esattamente** `10`
 - charset: **`[a-z0-9]`** (solo minuscolo e cifre)
 
-Se non valido → **SCARTA**
+Se non valido -> **SCARTA**
 
-### 3. Validazione `SRC`
+### 3. Validazione `TS`
 
-- valore **esattamente** `rdk_v1` (nessuna variante, case-sensitive come da emissione)
+- formato **RFC3339 con timezone**
+- esempio valido: `2026-04-07T18:30:00+02:00`
 
-Se diverso → **SCARTA**
+Se non valido -> **SCARTA**
 
-### 4. Struttura completa
+### 4. Validazione `SRC`
+
+- valore **esattamente** `rdk_v1`
+
+Se diverso -> **SCARTA**
+
+### 5. Validazione `SIG`
+
+- lunghezza **esattamente** `10`
+- charset: **`[a-f0-9]`**
+
+Se non valida -> **SCARTA**
+
+**Importante:** `SIG` client-side e' una mitigazione leggera contro modifiche banali, **non** una prova di autenticita'. La soluzione corretta resta una firma server-side.
+
+### 6. Struttura completa
 
 Il blocco deve includere **tutte** le righe:
 
 - `ID: ...`
 - `TS: ...`
 - `SRC: ...`
+- `SIG: ...`
 
-Se manca anche una → **SCARTA**
+Se manca anche una -> **SCARTA**
 
-*(Opzionale implementativo: rifiutare più di un blocco tecnico valido nello stesso testo, per evitare concatenazioni ambigue.)*
+### 7. Deduplicazione
 
-### 5. Deduplicazione
-
-- se **`ID` già presente** nello store ingest (stesso invio / copia duplicata) → **SCARTA**
+- se **`ID` gia' presente** nello store ingest (stesso invio / copia duplicata) -> **SCARTA**
 
 ### Comportamento
 
-| Esito        | Azione                          |
-|-------------|----------------------------------|
-| Non valido  | Ignorato; nessuna elaborazione   |
-| Valido      | Procede allo STEP 5 (parse minimo) |
+| Esito       | Azione                         |
+|------------|---------------------------------|
+| Non valido | Ignorato; nessuna elaborazione |
+| Valido     | Procede allo STEP 5            |
 
 ### Vincoli del filtro
 
@@ -70,60 +88,59 @@ Se manca anche una → **SCARTA**
 
 ### Risultato atteso
 
-- Ingest sicuro e dataset protetto da input esterni non firmati dal canale ufficiale
-- Base per automazione futura senza contaminazione
+- Ingest piu' difendibile
+- Dataset meno contaminato
+- Base pronta per evoluzione backend
 
 ---
 
-## STEP 5 — PARSE MINIMO (NO LOGICA)
+## STEP 5 - PARSE MINIMO (NO LOGICA)
 
-**Obiettivo:** estrarre i dati dal messaggio **senza** interpretazione.
+**Obiettivo:** estrarre i dati dal messaggio **senza** interpretarli.
 
-**Regole:**
+### Regole
 
 - split riga su `:` (prima occorrenza)
 - trim spazi
-- associare chiave → valore
+- associare chiave -> valore
 
-**Esempi:**
+### Canonicalizzazione lingua
 
-| Riga nel messaggio       | Chiave payload   | Valore        |
-|--------------------------|------------------|---------------|
-| `⚖️ Peso (kg): 75`       | `weight_kg`      | `"75"`        |
-| `🪁 Kite (m²): 9`       | `kite_size_m2`   | `"9"`         |
-| `🌬️ Vento (kts): 18`   | `wind_kts`       | `"18"`        |
-| `📍 Spot: Punta Trettu`  | `location`       | `"Punta Trettu"` |
-| `🏷️ Marca: Duotone`    | `brand_raw`      | `"Duotone"`   |
-| `🪵 Misura tavola: 140x42` | `board_size_raw` | `"140x42"`  |
-| `🪵 Board size: 140x42` | `board_size_raw` | `"140x42"`  |
-| `🎯 Livello: Independent` | `level`        | `"Independent"` |
-| `🎯 Level: Independent` | `level`          | `"Independent"` |
+Il form puo' restare multilingua a livello UI, ma il payload trasportato su WhatsApp deve essere **sempre canonico in inglese**.
 
-**Compatibilità lingue (etichetta → stesse chiavi payload):**
+Quindi il parser ingest:
 
-Il form è multilingua: la parte **prima** del primo `:` (dopo trim) può comparire in italiano o in inglese. Per il parse minimo, mappare sullo stesso campo di output indipendentemente dalla variante:
+- **NON** gestisce piu' varianti lingua
+- **SI** aspetta etichette payload canoniche EN
 
-| Concetto     | Varianti etichetta accettate (testo dopo emoji / sul lato chiave) | Chiave payload   |
-|-------------|-------------------------------------------------------------------|------------------|
-| Board size  | `Misura tavola`, `Board size`                                     | `board_size_raw` |
-| Level       | `Livello`, `Level`                                                | `level`          |
+### Esempi canonici
 
-Il **valore** (dopo `:`) resta stringa grezza, senza normalizzazione.
+| Riga nel messaggio        | Chiave payload   | Valore         |
+|---------------------------|------------------|----------------|
+| `⚖️ Weight (kg): 75`      | `weight_kg`      | `"75"`         |
+| `🪁 Kite (m²): 9`         | `kite_size_m2`   | `"9"`          |
+| `🌬️ Wind (kts): 18`      | `wind_kts`       | `"18"`         |
+| `📍 Spot: Punta Trettu`   | `location`       | `"Punta Trettu"` |
+| `🏷️ Brand: Duotone`      | `brand_raw`      | `"Duotone"`    |
+| `🪵 Board size: 140x42`   | `board_size_raw` | `"140x42"`     |
+| `🎯 Level: Advanced`      | `level`          | `"Advanced"`   |
 
-**Chiavi payload (grezze):** `board_size_raw`, `level` — valori stringa identici al testo dopo `:`, senza conversione.
+Il **valore** (dopo `:`) resta stringa grezza, senza normalizzazione ingest.
 
-Se la riga è assente nel messaggio, la relativa chiave non compare nel payload (retrocompatibilità con messaggi precedenti all’estensione form; `level` obbligatorio solo su invii nuovi dal form).
+Se la riga e' assente nel messaggio, la relativa chiave non compare nel payload.
 
-**Vincoli:**
+### Vincoli
 
 - **NON** convertire numeri
-- **NON** validare valori
+- **NON** validare valori in ingest
 - **NON** correggere dati
 - **NON** dedurre nulla
 
+**Nota:** le validazioni leggere su `weight`, `wind` e `kite` avvengono **solo nel form**, per ridurre input sporchi senza introdurre logica nell'ingest.
+
 ---
 
-## STEP 6 — OUTPUT GREZZO (PASS-THROUGH)
+## STEP 6 - OUTPUT GREZZO (PASS-THROUGH)
 
 Output diretto senza modifiche:
 
@@ -143,35 +160,35 @@ Output diretto senza modifiche:
 }
 ```
 
-*(Il payload contiene tutte le coppie chiave/valore estratte dal parse minimo; i campi sopra sono solo esempio.)*
+Il payload contiene tutte le coppie chiave/valore estratte dal parse minimo; i campi sopra sono solo esempio.
 
 ---
 
-## STEP 7 — NESSUNA CLASSIFICAZIONE
+## STEP 7 - NESSUNA CLASSIFICAZIONE
 
 **Esplicitamente vietato:**
 
 - NO L1 / L2 / L3
 - NO GOLD / SILVER
-- NO valutazioni qualità
+- NO valutazioni qualita'
 - NO controlli coerenza
 
 ---
 
 ## Principio
 
-Questo layer è un **trasporto dati**.
+Questo layer e' un **trasporto dati**.
 
-- NON è una fabbrica
-- NON è un validatore
-- NON è un sistema intelligente
+- NON e' una fabbrica
+- NON e' un validatore
+- NON e' un sistema intelligente
 
-## Responsabilità
+## Responsabilita'
 
-| Layer        | Ruolo                                      |
-|-------------|---------------------------------------------|
-| Questo layer | Estrae e passa                             |
-| Fabbrica     | Interpreta, pulisce, classifica            |
+| Layer         | Ruolo                           |
+|--------------|----------------------------------|
+| Questo layer | Estrae e passa                  |
+| Fabbrica     | Interpreta, pulisce, classifica |
 
 ## Risultato
 
