@@ -9,7 +9,62 @@
   const BRAND_OTHER = "__brand_other__";
   const MODEL_OTHER = "__model_other__";
   const DUOTONE_BRAND = "Duotone Kiteboarding";
+  const CORE_BRAND = "Core Kiteboarding";
   const LS_FIRST_SUBMIT = "rdk_first_submit";
+
+  const MODEL_OPTIONS_BY_BRAND = {
+    [DUOTONE_BRAND]: [
+      "Evo",
+      "Evo SLS",
+      "Evo D/Lab",
+      "Evo Concept Blue",
+      "Rebel",
+      "Rebel SLS",
+      "Rebel D/Lab",
+      "Neo",
+      "Neo SLS",
+      "Neo D/Lab",
+      "Juice",
+      "Juice D/Lab",
+      "Vegas",
+      "Vegas Concept Blue",
+      "Vegas D/Lab",
+      "Volt",
+      "Volt D/Lab"
+    ],
+    [CORE_BRAND]: [
+      "XR5",
+      "XR6",
+      "XR7",
+      "XR8",
+      "XR8 LW",
+      "XR Pro",
+      "XR Pro 2",
+      "Nexus",
+      "Nexus 2",
+      "Nexus 3",
+      "Nexus 4",
+      "Nexus LW",
+      "Pace",
+      "Pace Pro",
+      "Section",
+      "Section 2",
+      "Section 3",
+      "Section 4",
+      "Section 5",
+      "Section LW",
+      "GTS5",
+      "GTS6",
+      "GTS6 LW",
+      "Xlite",
+      "Xlite 2",
+      "Impact",
+      "Impact 2",
+      "Xperience",
+      "Air",
+      "Air Pro"
+    ]
+  };
 
   const BOARD_SIZE_BY_TYPE = {
     twintip: [
@@ -189,23 +244,59 @@
     custom.hidden = !show;
   }
 
-  function getDuotoneModelValue(){
+  function getFilteredModelValue(){
     const modelSelect = document.getElementById("modelSelect");
     if (!modelSelect) return "";
     if (modelSelect.value === MODEL_OTHER) return val("modelCustom");
     return val("modelSelect");
   }
 
+  function populateModelOptions(brand){
+    const modelSelect = document.getElementById("modelSelect");
+    if (!modelSelect) return;
+
+    const models = MODEL_OPTIONS_BY_BRAND[brand] || [];
+    const previousBrand = modelSelect.getAttribute("data-model-brand") || "";
+    const previousValue = previousBrand === brand ? modelSelect.value : "";
+
+    modelSelect.innerHTML = "";
+
+    const prompt = document.createElement("option");
+    prompt.value = "";
+    prompt.textContent = t("opt_model_prompt");
+    modelSelect.appendChild(prompt);
+
+    models.forEach((model) => {
+      const option = document.createElement("option");
+      option.value = model;
+      option.textContent = model;
+      modelSelect.appendChild(option);
+    });
+
+    const other = document.createElement("option");
+    other.value = MODEL_OTHER;
+    other.textContent = t("opt_model_other");
+    modelSelect.appendChild(other);
+
+    if (models.includes(previousValue)) modelSelect.value = previousValue;
+    else if (previousValue === MODEL_OTHER) modelSelect.value = MODEL_OTHER;
+    else modelSelect.value = "";
+
+    modelSelect.setAttribute("data-model-brand", brand);
+  }
+
   function syncModelUI(){
     const modelInput = document.getElementById("model");
     const modelSelect = document.getElementById("modelSelect");
     const modelCustom = document.getElementById("modelCustom");
-    const showDuotoneModels = val("brand") === DUOTONE_BRAND;
+    const brand = val("brand");
+    const showPresetModels = Boolean(MODEL_OPTIONS_BY_BRAND[brand]);
 
     if (!modelInput || !modelSelect || !modelCustom) return;
 
-    if (showDuotoneModels) {
+    if (showPresetModels) {
       const typedModel = String(modelInput.value || "").trim();
+      populateModelOptions(brand);
       modelInput.hidden = true;
       modelSelect.hidden = false;
 
@@ -224,12 +315,13 @@
       return;
     }
 
-    const selectedModel = getDuotoneModelValue();
+    const selectedModel = getFilteredModelValue();
     if (selectedModel) modelInput.value = selectedModel;
 
     modelInput.hidden = false;
     modelSelect.hidden = true;
     modelSelect.value = "";
+    modelSelect.setAttribute("data-model-brand", "");
     modelCustom.hidden = true;
     modelCustom.value = "";
   }
@@ -293,7 +385,7 @@
   }
 
   function getModelValue(){
-    if (val("brand") === DUOTONE_BRAND) return getDuotoneModelValue();
+    if (MODEL_OPTIONS_BY_BRAND[val("brand")]) return getFilteredModelValue();
     return val("model");
   }
 
