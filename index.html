@@ -32,7 +32,7 @@
       <div class="card">
         <div class="card-inner">
           <form id="kiteForm" autocomplete="on" novalidate>
-            <p class="section-label" data-i18n="section_core">Core</p>
+            <p class="section-label" data-i18n="section_core">Sessione</p>
             <p class="form-field-legend" data-i18n="form_field_legend">* Obbligatorio. Tutti gli altri campi sono opzionali.</p>
             <p class="form-field-border-hint" data-i18n="form_field_border_hint">Contorno: rosso = obbligatorio · giallo = opzionale utile · azzurro = altri opzionali.</p>
 
@@ -122,7 +122,7 @@
                     placeholder="es. 18"
                     data-i18n-placeholder="ph_wind"
                     required
-                    class="input-numeric-compact field-tier-important"
+                    class="input-numeric-compact"
                   />
                 </div>
               </div>
@@ -132,7 +132,57 @@
             <div class="row two">
               <div>
                 <label for="brand"><span data-i18n="label_brand">Marca kite</span></label>
-                <input id="brand" name="brand" type="text" inputmode="text" placeholder="Duotone, Core, North, Cabrinha..." data-i18n-placeholder="ph_brand" class="field-tier-important" />
+                <select id="brand" name="brand" class="field-tier-important">
+                  <option value="" data-i18n="opt_brand_prompt">Seleziona marca</option>
+                  <option value="Airush">Airush</option>
+                  <option value="Ben Wilson Surf">Ben Wilson Surf</option>
+                  <option value="Best">Best</option>
+                  <option value="Blade">Blade</option>
+                  <option value="Brunotti">Brunotti</option>
+                  <option value="Cabrinha">Cabrinha</option>
+                  <option value="Calibro 9">Calibro 9</option>
+                  <option value="Cali">Cali</option>
+                  <option value="Core Kiteboarding">Core Kiteboarding</option>
+                  <option value="CrazyFly">CrazyFly</option>
+                  <option value="Dakine">Dakine</option>
+                  <option value="Duotone Kiteboarding">Duotone Kiteboarding</option>
+                  <option value="Eleveight">Eleveight</option>
+                  <option value="Epic Kiteboarding">Epic Kiteboarding</option>
+                  <option value="F-One">F-One</option>
+                  <option value="Flexifoil">Flexifoil</option>
+                  <option value="Flysurfer">Flysurfer</option>
+                  <option value="Gaastra Kiteboarding">Gaastra Kiteboarding</option>
+                  <option value="Genetrix Kiteboarding">Genetrix Kiteboarding</option>
+                  <option value="GUNSAILS">GUNSAILS</option>
+                  <option value="HQ Powerkites">HQ Powerkites</option>
+                  <option value="ION">ION</option>
+                  <option value="Jimmy Lewis">Jimmy Lewis</option>
+                  <option value="Kaack">Kaack</option>
+                  <option value="Kazuma">Kazuma</option>
+                  <option value="KSP Sports">KSP Sports</option>
+                  <option value="Liquid Force">Liquid Force</option>
+                  <option value="Mystic">Mystic</option>
+                  <option value="Naish Kiteboarding">Naish Kiteboarding</option>
+                  <option value="NeilPryde">NeilPryde</option>
+                  <option value="Nobile Kiteboarding">Nobile Kiteboarding</option>
+                  <option value="North Kiteboarding">North Kiteboarding</option>
+                  <option value="Ocean Rodeo">Ocean Rodeo</option>
+                  <option value="Ozone">Ozone</option>
+                  <option value="Peter Lynn">Peter Lynn</option>
+                  <option value="Prolimit">Prolimit</option>
+                  <option value="Red Bull">Red Bull</option>
+                  <option value="Ride Engine">Ride Engine</option>
+                  <option value="RRD">RRD</option>
+                  <option value="Slingshot">Slingshot</option>
+                  <option value="Star Kiteboarding">Star Kiteboarding</option>
+                  <option value="Switch Kiteboarding">Switch Kiteboarding</option>
+                  <option value="Takoon">Takoon</option>
+                  <option value="Ultimate Kiteboarding">Ultimate Kiteboarding</option>
+                  <option value="Underwave">Underwave</option>
+                  <option value="Wainman Hawaii">Wainman Hawaii</option>
+                  <option value="__brand_other__" data-i18n="opt_brand_other">Other</option>
+                </select>
+                <input id="brandCustom" name="brandCustom" type="text" inputmode="text" hidden data-i18n-placeholder="ph_brand_custom" placeholder="Insert brand" class="field-tier-important" />
                 <div class="hint" data-i18n="hint_brand">Usa il nome ufficiale (senza abbreviazioni)</div>
               </div>
               <div>
@@ -198,8 +248,6 @@
               Ultimo step: quando si apre WhatsApp, premi Invia.
             </p>
 
-            <p class="hint" id="payloadHint" data-i18n="payload_hint">Il messaggio viene inviato in inglese per mantenere il dataset coerente.</p>
-
             <p class="thank-you-note" data-i18n="thank_you_note" id="thankYouNote">Grazie davvero 🙏
 Stai aiutando a migliorare il kite per tutti.</p>
 
@@ -211,10 +259,6 @@ Stai aiutando a migliorare il kite per tutti.</p>
         </div>
       </div>
 
-      <footer>
-        <span data-i18n="footer_prefix">Imposta il numero operatore in</span> <code>WHATSAPP_NUMBER</code>
-        <span data-i18n="footer_suffix">(formato internazionale, solo cifre; es. 393331112233).</span>
-      </footer>
     </div>
   </body>
 </html>

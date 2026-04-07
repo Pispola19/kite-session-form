@@ -6,6 +6,7 @@
 
   const WHATSAPP_NUMBER = "393345280521";
   const BOARD_SIZE_OTHER = "__rdk_other__";
+  const BRAND_OTHER = "__brand_other__";
   const LS_FIRST_SUBMIT = "rdk_first_submit";
 
   const BOARD_SIZE_BY_TYPE = {
@@ -16,7 +17,10 @@
       "142x42", "144x41.5", "144x44", "145x43", "146x43", "147x44",
       "148x45", "160x45", "160x46"
     ],
-    surfboard: ["5'4", "5'6", "5'8", "6'0", "6'2"],
+    surfboard: [
+      "5'0", "5'1", "5'2", "5'3", "5'4", "5'5", "5'6", "5'7", "5'8",
+      "5'9", "5'10", "5'11", "6'0", "6'1", "6'2", "6'3", "6'4"
+    ],
     foil: ["120", "130", "140", "150"]
   };
 
@@ -51,7 +55,7 @@
 
   const CANONICAL_LABELS = {
     weight: "Weight (kg)",
-    board: "Board",
+    board: "Board type",
     boardSize: "Board size",
     level: "Level",
     kite: "Kite (m²)",
@@ -59,8 +63,8 @@
     model: "Model",
     wind: "Wind (kts)",
     location: "Spot",
-    water: "Water",
-    result: "Result",
+    water: "Water conditions",
+    result: "Session result",
     notes: "Notes"
   };
 
@@ -156,12 +160,29 @@
     return String(document.getElementById(id)?.value || "").trim();
   }
 
+  function selectedText(id){
+    const el = document.getElementById(id);
+    if (!el || !("selectedIndex" in el)) return "";
+    const option = el.options[el.selectedIndex];
+    return String(option?.textContent || "").trim();
+  }
+
   function syncBoardSizeCustomUI(){
     const sel = document.getElementById("boardSize");
     const custom = document.getElementById("boardSizeCustom");
     if (!sel || !custom) return;
 
     const show = !sel.disabled && sel.value === BOARD_SIZE_OTHER;
+    if (!show) custom.value = "";
+    custom.hidden = !show;
+  }
+
+  function syncBrandCustomUI(){
+    const select = document.getElementById("brand");
+    const custom = document.getElementById("brandCustom");
+    if (!select || !custom) return;
+
+    const show = select.value === BRAND_OTHER;
     if (!show) custom.value = "";
     custom.hidden = !show;
   }
@@ -218,6 +239,12 @@
     el.value = String(el.value || "").replace(/[^\d]/g, "").slice(0, rule.maxLength);
   }
 
+  function getBrandValue(){
+    const brand = val("brand");
+    if (brand === BRAND_OTHER) return val("brandCustom");
+    return brand;
+  }
+
   function validateNumericField(id){
     const el = document.getElementById(id);
     const rule = NUMERIC_RULES[id];
@@ -228,7 +255,8 @@
 
     if (!raw) {
       if (el.required) {
-        message = interpolate(t("validation_required"), { field: t(rule.labelKey) });
+        const requiredKey = id === "wind" ? "validation_required_wind" : "validation_required";
+        message = interpolate(t(requiredKey), { field: t(rule.labelKey) });
       }
     } else if (!/^\d+$/.test(raw)) {
       message = interpolate(t("validation_integer"), { field: t(rule.labelKey) });
@@ -342,7 +370,7 @@
     const boardSize = boardSizeSelection === BOARD_SIZE_OTHER ? val("boardSizeCustom") : boardSizeSelection;
     const level = val("level");
     const kite = val("kite");
-    const brand = val("brand");
+    const brand = getBrandValue();
     const model = val("model");
     const wind = val("wind");
     const location = val("location");
@@ -352,16 +380,16 @@
 
     const lines = [];
     if (weight) lines.push(`⚖️ ${CANONICAL_LABELS.weight}: ${weight}`);
-    if (board) lines.push(`🪵 ${CANONICAL_LABELS.board}: ${canonicalValue("board", board)}`);
+    if (board) lines.push(`🪵 ${CANONICAL_LABELS.board}: ${selectedText("board") || board}`);
     if (boardSize) lines.push(`🪵 ${CANONICAL_LABELS.boardSize}: ${boardSize}`);
-    if (level) lines.push(`🎯 ${CANONICAL_LABELS.level}: ${canonicalValue("level", level)}`);
+    if (level) lines.push(`🎯 ${CANONICAL_LABELS.level}: ${selectedText("level") || level}`);
     if (kite) lines.push(`🪁 ${CANONICAL_LABELS.kite}: ${kite}`);
     if (brand) lines.push(`🏷️ ${CANONICAL_LABELS.brand}: ${brand}`);
     if (model) lines.push(`🪁 ${CANONICAL_LABELS.model}: ${model}`);
     if (wind) lines.push(`🌬️ ${CANONICAL_LABELS.wind}: ${wind}`);
     if (location) lines.push(`📍 ${CANONICAL_LABELS.location}: ${location}`);
-    if (water) lines.push(`🌊 ${CANONICAL_LABELS.water}: ${canonicalValue("water", water)}`);
-    if (result) lines.push(`✅ ${CANONICAL_LABELS.result}: ${canonicalValue("result", result)}`);
+    if (water) lines.push(`🌊 ${CANONICAL_LABELS.water}: ${selectedText("water") || water}`);
+    if (result) lines.push(`✅ ${CANONICAL_LABELS.result}: ${selectedText("result") || result}`);
     if (note) lines.push(`${CANONICAL_LABELS.notes}: ${note}`);
 
     return lines.join("\n");
@@ -442,7 +470,7 @@
     });
   });
 
-  ["board", "boardSize", "boardSizeCustom", "level", "brand", "model", "location", "water", "result", "note"].forEach(bindPreviewField);
+  ["board", "boardSize", "boardSizeCustom", "brand", "brandCustom", "level", "model", "location", "water", "result", "note"].forEach(bindPreviewField);
 
   document.getElementById("board")?.addEventListener("change", () => {
     syncBoardSizeOptions();
@@ -451,6 +479,11 @@
 
   document.getElementById("boardSize")?.addEventListener("change", () => {
     syncBoardSizeCustomUI();
+    refreshPreview();
+  });
+
+  document.getElementById("brand")?.addEventListener("change", () => {
+    syncBrandCustomUI();
     refreshPreview();
   });
 
@@ -491,6 +524,7 @@
     });
     setValidationNotice("");
     syncBoardSizeOptions();
+    syncBrandCustomUI();
     refreshPreview();
   });
 
@@ -501,4 +535,5 @@
   }
 
   applyTranslations(translations[currentLang] ? currentLang : "it");
+  syncBrandCustomUI();
 })();
