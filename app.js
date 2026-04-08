@@ -20,6 +20,7 @@
   const NAISH_BRAND = "Naish Kiteboarding";
   const NORTH_BRAND = "North Kiteboarding";
   const OZONE_BRAND = "Ozone";
+  const RRD_BRAND = "RRD";
   const SLINGSHOT_BRAND = "Slingshot";
   const LS_FIRST_SUBMIT = "rdk_first_submit";
 
@@ -184,6 +185,13 @@
     "Zephyr Ultra-X",
     "Chrono",
     "Chrono V5"
+  ];
+
+  const RRD_MODELS = [
+    "Passion Y30",
+    "Passion LW Y30",
+    "Vision Y27",
+    "Religion Y30"
   ];
 
   const SLINGSHOT_MODELS = [
@@ -395,6 +403,7 @@
     else if (brand === NAISH_BRAND) return NAISH_MODELS;
     else if (brand === NORTH_BRAND) return NORTH_MODELS;
     else if (brand === OZONE_BRAND) return OZONE_MODELS;
+    else if (brand === RRD_BRAND) return RRD_MODELS;
     else if (brand === SLINGSHOT_BRAND) return SLINGSHOT_MODELS;
     return null;
   }
@@ -659,6 +668,24 @@
       if (!showCustom) modelCustom.value = "";
       modelCustom.hidden = !showCustom;
       return;
+    } else if (brand === RRD_BRAND) {
+      const typedModel = String(modelInput.value || "").trim();
+      populateModelOptions(brand);
+      modelInput.hidden = true;
+      modelSelect.hidden = false;
+
+      if (!modelSelect.value && typedModel) {
+        if (presetModels.includes(typedModel)) modelSelect.value = typedModel;
+        else {
+          modelSelect.value = MODEL_OTHER;
+          modelCustom.value = typedModel;
+        }
+      }
+
+      const showCustom = modelSelect.value === MODEL_OTHER;
+      if (!showCustom) modelCustom.value = "";
+      modelCustom.hidden = !showCustom;
+      return;
     } else if (brand === SLINGSHOT_BRAND) {
       const typedModel = String(modelInput.value || "").trim();
       populateModelOptions(brand);
@@ -762,6 +789,7 @@
     else if (brand === NAISH_BRAND) return getFilteredModelValue();
     else if (brand === NORTH_BRAND) return getFilteredModelValue();
     else if (brand === OZONE_BRAND) return getFilteredModelValue();
+    else if (brand === RRD_BRAND) return getFilteredModelValue();
     else if (brand === SLINGSHOT_BRAND) return getFilteredModelValue();
     return val("model");
   }
