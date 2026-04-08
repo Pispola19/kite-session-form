@@ -8,10 +8,26 @@
   const BOARD_SIZE_OTHER = "__rdk_other__";
   const BRAND_OTHER = "__brand_other__";
   const MODEL_OTHER = "__model_other__";
+  const AIRUSH_BRAND = "Airush";
   const DUOTONE_BRAND = "Duotone Kiteboarding";
   const CORE_BRAND = "Core Kiteboarding";
   const NAISH_BRAND = "Naish Kiteboarding";
   const LS_FIRST_SUBMIT = "rdk_first_submit";
+
+  const AIRUSH_MODELS = [
+    "Ultra v5",
+    "Ultra Team DS v5",
+    "Lithium v14",
+    "Lithium Team v14",
+    "Lift v3",
+    "Lift Kite v4",
+    "Lift Team v4",
+    "Razor v10",
+    "Session v2",
+    "Session Team v2",
+    "Lithium v13",
+    "Lithium Team v13"
+  ];
 
   const DUOTONE_MODELS = [
     "Evo",
@@ -262,7 +278,8 @@
   }
 
   function getPresetModelsForBrand(brand){
-    if (brand === DUOTONE_BRAND) return DUOTONE_MODELS;
+    if (brand === AIRUSH_BRAND) return AIRUSH_MODELS;
+    else if (brand === DUOTONE_BRAND) return DUOTONE_MODELS;
     else if (brand === CORE_BRAND) return CORE_MODELS;
     else if (brand === NAISH_BRAND) return NAISH_MODELS;
     return null;
@@ -311,7 +328,25 @@
 
     if (!modelInput || !modelSelect || !modelCustom) return;
 
-    if (brand === DUOTONE_BRAND) {
+    if (brand === AIRUSH_BRAND) {
+      const typedModel = String(modelInput.value || "").trim();
+      populateModelOptions(brand);
+      modelInput.hidden = true;
+      modelSelect.hidden = false;
+
+      if (!modelSelect.value && typedModel) {
+        if (presetModels.includes(typedModel)) modelSelect.value = typedModel;
+        else {
+          modelSelect.value = MODEL_OTHER;
+          modelCustom.value = typedModel;
+        }
+      }
+
+      const showCustom = modelSelect.value === MODEL_OTHER;
+      if (!showCustom) modelCustom.value = "";
+      modelCustom.hidden = !showCustom;
+      return;
+    } else if (brand === DUOTONE_BRAND) {
       const typedModel = String(modelInput.value || "").trim();
       populateModelOptions(brand);
       modelInput.hidden = true;
@@ -439,7 +474,8 @@
 
   function getModelValue(){
     const brand = val("brand");
-    if (brand === DUOTONE_BRAND) return getFilteredModelValue();
+    if (brand === AIRUSH_BRAND) return getFilteredModelValue();
+    else if (brand === DUOTONE_BRAND) return getFilteredModelValue();
     else if (brand === CORE_BRAND) return getFilteredModelValue();
     else if (brand === NAISH_BRAND) return getFilteredModelValue();
     return val("model");
