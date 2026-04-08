@@ -15,6 +15,7 @@
   const ELEVEIGHT_BRAND = "Eleveight";
   const CORE_BRAND = "Core Kiteboarding";
   const F_ONE_BRAND = "F-One";
+  const FLYSURFER_BRAND = "Flysurfer";
   const GAASTRA_BRAND = "Gaastra Kiteboarding";
   const HARLEM_BRAND = "Harlem Kitesurfing";
   const LIQUID_FORCE_BRAND = "Liquid Force";
@@ -133,6 +134,17 @@
     "Trax Foil",
     "Cobra Foil",
     "Kyankka Foil"
+  ];
+
+  const FLYSURFER_MODELS = [
+    "Era",
+    "Era 2",
+    "Speed3",
+    "Peak3",
+    "Soul3",
+    "Hybrid",
+    "Hybrid²",
+    "Indie"
   ];
 
   const GAASTRA_MODELS = [
@@ -421,6 +433,7 @@
     else if (brand === ELEVEIGHT_BRAND) return ELEVEIGHT_MODELS;
     else if (brand === CORE_BRAND) return CORE_MODELS;
     else if (brand === F_ONE_BRAND) return F_ONE_MODELS;
+    else if (brand === FLYSURFER_BRAND) return FLYSURFER_MODELS;
     else if (brand === GAASTRA_BRAND) return GAASTRA_MODELS;
     else if (brand === HARLEM_BRAND) return HARLEM_MODELS;
     else if (brand === LIQUID_FORCE_BRAND) return LIQUID_FORCE_MODELS;
@@ -586,6 +599,24 @@
       modelCustom.hidden = !showCustom;
       return;
     } else if (brand === F_ONE_BRAND) {
+      const typedModel = String(modelInput.value || "").trim();
+      populateModelOptions(brand);
+      modelInput.hidden = true;
+      modelSelect.hidden = false;
+
+      if (!modelSelect.value && typedModel) {
+        if (presetModels.includes(typedModel)) modelSelect.value = typedModel;
+        else {
+          modelSelect.value = MODEL_OTHER;
+          modelCustom.value = typedModel;
+        }
+      }
+
+      const showCustom = modelSelect.value === MODEL_OTHER;
+      if (!showCustom) modelCustom.value = "";
+      modelCustom.hidden = !showCustom;
+      return;
+    } else if (brand === FLYSURFER_BRAND) {
       const typedModel = String(modelInput.value || "").trim();
       populateModelOptions(brand);
       modelInput.hidden = true;
@@ -845,6 +876,7 @@
     else if (brand === ELEVEIGHT_BRAND) return getFilteredModelValue();
     else if (brand === CORE_BRAND) return getFilteredModelValue();
     else if (brand === F_ONE_BRAND) return getFilteredModelValue();
+    else if (brand === FLYSURFER_BRAND) return getFilteredModelValue();
     else if (brand === GAASTRA_BRAND) return getFilteredModelValue();
     else if (brand === HARLEM_BRAND) return getFilteredModelValue();
     else if (brand === LIQUID_FORCE_BRAND) return getFilteredModelValue();
