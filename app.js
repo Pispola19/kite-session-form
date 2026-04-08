@@ -1119,8 +1119,14 @@
   function openWhatsAppWithMessage(message){
     const number = String(WHATSAPP_NUMBER).replace(/\D/g, "");
     const encoded = encodeURIComponent(message);
-    const url = `https://wa.me/${number}?text=${encoded}`;
-    window.location.href = url;
+    const deepLink = `whatsapp://send?phone=${number}&text=${encoded}`;
+    const fallback = `https://wa.me/${number}?text=${encoded}`;
+
+    window.location.href = deepLink;
+
+    window.setTimeout(() => {
+      window.location.href = fallback;
+    }, 500);
   }
 
   function bindPreviewField(id){
