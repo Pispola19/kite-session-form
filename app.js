@@ -21,6 +21,7 @@
   const LIQUID_FORCE_BRAND = "Liquid Force";
   const NAISH_BRAND = "Naish Kiteboarding";
   const NOBILE_BRAND = "Nobile Kiteboarding";
+  const OCEAN_RODEO_BRAND = "Ocean Rodeo";
   const NORTH_BRAND = "North Kiteboarding";
   const OZONE_BRAND = "Ozone";
   const RRD_BRAND = "RRD";
@@ -196,6 +197,15 @@
     "Step",
     "Squirt",
     "Squirt Light"
+  ];
+
+  const OCEAN_RODEO_MODELS = [
+    "Flite A-Series",
+    "Prodigy",
+    "Razor",
+    "Roam",
+    "Crave",
+    "Rise 5"
   ];
 
   const NORTH_MODELS = [
@@ -439,6 +449,7 @@
     else if (brand === LIQUID_FORCE_BRAND) return LIQUID_FORCE_MODELS;
     else if (brand === NAISH_BRAND) return NAISH_MODELS;
     else if (brand === NOBILE_BRAND) return NOBILE_MODELS;
+    else if (brand === OCEAN_RODEO_BRAND) return OCEAN_RODEO_MODELS;
     else if (brand === NORTH_BRAND) return NORTH_MODELS;
     else if (brand === OZONE_BRAND) return OZONE_MODELS;
     else if (brand === RRD_BRAND) return RRD_MODELS;
@@ -724,6 +735,24 @@
       if (!showCustom) modelCustom.value = "";
       modelCustom.hidden = !showCustom;
       return;
+    } else if (brand === OCEAN_RODEO_BRAND) {
+      const typedModel = String(modelInput.value || "").trim();
+      populateModelOptions(brand);
+      modelInput.hidden = true;
+      modelSelect.hidden = false;
+
+      if (!modelSelect.value && typedModel) {
+        if (presetModels.includes(typedModel)) modelSelect.value = typedModel;
+        else {
+          modelSelect.value = MODEL_OTHER;
+          modelCustom.value = typedModel;
+        }
+      }
+
+      const showCustom = modelSelect.value === MODEL_OTHER;
+      if (!showCustom) modelCustom.value = "";
+      modelCustom.hidden = !showCustom;
+      return;
     } else if (brand === NORTH_BRAND) {
       const typedModel = String(modelInput.value || "").trim();
       populateModelOptions(brand);
@@ -882,6 +911,7 @@
     else if (brand === LIQUID_FORCE_BRAND) return getFilteredModelValue();
     else if (brand === NAISH_BRAND) return getFilteredModelValue();
     else if (brand === NOBILE_BRAND) return getFilteredModelValue();
+    else if (brand === OCEAN_RODEO_BRAND) return getFilteredModelValue();
     else if (brand === NORTH_BRAND) return getFilteredModelValue();
     else if (brand === OZONE_BRAND) return getFilteredModelValue();
     else if (brand === RRD_BRAND) return getFilteredModelValue();
