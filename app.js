@@ -1122,8 +1122,14 @@
       .replace(/[^\x00-\x7F]/g, "")
       .replace(/\uFFFD/g, "");
     const encoded = encodeURIComponent(cleanMessage);
-    const url = `https://wa.me/${number}?text=${encoded}`;
-    window.location.href = url;
+    const deepLink = `whatsapp://send?phone=${number}&text=${encoded}`;
+    window.location.href = deepLink;
+
+    if (!/Android|iPhone|iPad|iPod/i.test(window.navigator.userAgent)) {
+      window.setTimeout(() => {
+        window.location.href = `https://wa.me/${number}?text=${encoded}`;
+      }, 800);
+    }
   }
 
   function bindPreviewField(id){
