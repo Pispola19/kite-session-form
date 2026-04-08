@@ -1120,7 +1120,7 @@
     const number = String(WHATSAPP_NUMBER).replace(/\D/g, "");
     const encoded = encodeURIComponent(message);
     const url = `https://wa.me/${number}?text=${encoded}`;
-    window.open(url, "_blank");
+    window.location.href = url;
   }
 
   function bindPreviewField(id){
