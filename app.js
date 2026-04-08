@@ -5,6 +5,7 @@
   if (!translations.en) return;
 
   const WHATSAPP_NUMBER = "393345280521";
+  const BACKEND_WEBHOOK_URL = "https://YOUR_WEBHOOK_URL";
   const BOARD_SIZE_OTHER = "__rdk_other__";
   const BRAND_OTHER = "__brand_other__";
   const MODEL_OTHER = "__model_other__";
@@ -27,6 +28,8 @@
   const OZONE_BRAND = "Ozone";
   const RRD_BRAND = "RRD";
   const SLINGSHOT_BRAND = "Slingshot";
+  const LS_DRAFT_SESSION = "draft_kite_session";
+  const LS_LAST_SESSION = "last_kite_session";
   const LS_FIRST_SUBMIT = "rdk_first_submit";
 
   const AIRUSH_MODELS = [
@@ -335,12 +338,15 @@
   const preview = document.getElementById("previewText");
   const resetBtn = document.getElementById("resetBtn");
   const sendBtn = document.getElementById("sendBtn");
+  const copyMessageBtn = document.getElementById("copyMessageBtn");
   const sendNotice = document.getElementById("sendNotice");
+  const copyNotice = document.getElementById("copyNotice");
   const validationNotice = document.getElementById("validationNotice");
   const flagButtons = Array.from(document.querySelectorAll(".flag-btn[data-lang]"));
 
   let currentLang = "it";
   let sendAudioCtx = null;
+  let lastPreparedMessage = "";
 
   function t(key){
     const pack = translations[currentLang] || translations.en;
@@ -363,6 +369,62 @@
     try {
       localStorage.setItem(LS_FIRST_SUBMIT, "true");
     } catch (_) {}
+  }
+
+  function loadStoredJson(key){
+    try {
+      const raw = localStorage.getItem(key);
+      if (!raw) return null;
+      return JSON.parse(raw);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function storeJson(key, value){
+    try {
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function removeStoredValue(key){
+    try {
+      localStorage.removeItem(key);
+    } catch (_) {}
+  }
+
+  function isBackendWebhookConfigured(){
+    return Boolean(BACKEND_WEBHOOK_URL) && !BACKEND_WEBHOOK_URL.includes("YOUR_WEBHOOK_URL");
+  }
+
+  function setPreparedMessage(message){
+    lastPreparedMessage = String(message || "");
+  }
+
+  function invalidatePreparedMessage(){
+    lastPreparedMessage = "";
+  }
+
+  function hideTransientNotice(el){
+    if (!el) return;
+    const timerId = Number(el.dataset.hideTimer || 0);
+    if (timerId) window.clearTimeout(timerId);
+    delete el.dataset.hideTimer;
+    el.style.display = "none";
+    el.textContent = "";
+  }
+
+  function showTransientNotice(el, message){
+    if (!el) return;
+    hideTransientNotice(el);
+    el.textContent = message;
+    el.style.display = "block";
+    el.dataset.hideTimer = String(window.setTimeout(() => {
+      hideTransientNotice(el);
+    }, 2600));
   }
 
   function setValidationNotice(message){
@@ -415,6 +477,12 @@
 
   function val(id){
     return String(document.getElementById(id)?.value || "").trim();
+  }
+
+  function setFieldValue(id, value){
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.value = String(value || "");
   }
 
   function selectedText(id){
@@ -1073,6 +1141,93 @@
     return CANONICAL_VALUES[group]?.[value] || value;
   }
 
+  function buildSessionData(){
+    const boardSizeSelection = val("boardSize");
+
+    return {
+      weight: val("weight"),
+      board: val("board"),
+      boardSize: boardSizeSelection === BOARD_SIZE_OTHER ? val("boardSizeCustom") : boardSizeSelection,
+      level: val("level"),
+      kite: val("kite"),
+      wind: val("wind"),
+      brand: getBrandValue(),
+      model: getModelValue(),
+      location: val("location"),
+      water: val("water"),
+      result: val("result"),
+      note: val("note"),
+      ts: new Date().toISOString()
+    };
+  }
+
+  function buildDraftData(){
+    return {
+      weight: val("weight"),
+      board: val("board"),
+      boardSize: val("boardSize"),
+      boardSizeCustom: val("boardSizeCustom"),
+      level: val("level"),
+      kite: val("kite"),
+      wind: val("wind"),
+      brand: val("brand"),
+      brandCustom: val("brandCustom"),
+      model: val("model"),
+      modelSelect: val("modelSelect"),
+      modelCustom: val("modelCustom"),
+      location: val("location"),
+      water: val("water"),
+      result: val("result"),
+      note: val("note"),
+      ts: new Date().toISOString()
+    };
+  }
+
+  function saveLastSession(sessionData = buildSessionData()){
+    return storeJson(LS_LAST_SESSION, sessionData);
+  }
+
+  function saveDraftSession(){
+    return storeJson(LS_DRAFT_SESSION, buildDraftData());
+  }
+
+  function clearDraftSession(){
+    removeStoredValue(LS_DRAFT_SESSION);
+  }
+
+  function restoreDraftSession(){
+    const draft = loadStoredJson(LS_DRAFT_SESSION);
+    if (!draft || typeof draft !== "object") return false;
+
+    setFieldValue("weight", draft.weight);
+    setFieldValue("board", draft.board);
+    setFieldValue("level", draft.level);
+    setFieldValue("kite", draft.kite);
+    setFieldValue("wind", draft.wind);
+    setFieldValue("brand", draft.brand);
+    setFieldValue("brandCustom", draft.brandCustom);
+    setFieldValue("location", draft.location);
+    setFieldValue("water", draft.water);
+    setFieldValue("result", draft.result);
+    setFieldValue("note", draft.note);
+
+    syncBoardSizeOptions();
+    setFieldValue("boardSize", draft.boardSize);
+    setFieldValue("boardSizeCustom", draft.boardSizeCustom);
+    syncBoardSizeCustomUI();
+
+    syncBrandCustomUI();
+    syncModelUI();
+    setFieldValue("model", draft.model);
+    setFieldValue("modelSelect", draft.modelSelect);
+    setFieldValue("modelCustom", draft.modelCustom);
+    syncModelUI();
+
+    Object.keys(NUMERIC_RULES).forEach(validateNumericField);
+    refreshPreview();
+    return true;
+  }
+
   function buildCoreMessage(){
     const weight = val("weight");
     const board = val("board");
@@ -1112,6 +1267,37 @@
     return `${t("first_submit_prefix")}\n\n${core}`;
   }
 
+  async function buildOutgoingMessage(){
+    const body = buildOutgoingBody();
+    if (!body) return "";
+    return appendTechnicalBlock(body);
+  }
+
+  async function sendSessionToBackend(sessionData){
+    if (!isBackendWebhookConfigured()) return false;
+
+    try {
+      const response = await fetch(BACKEND_WEBHOOK_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(sessionData),
+        keepalive: true
+      });
+
+      if (!response.ok) {
+        console.warn("Backend save failed", response.status);
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.warn("Backend save failed", error);
+      return false;
+    }
+  }
+
   function refreshPreview(){
     const body = buildOutgoingBody();
     preview.textContent = body || t("preview_empty");
@@ -1144,12 +1330,7 @@
   }
 
   function showSendNotice(){
-    if (!sendNotice) return;
-    sendNotice.textContent = t("send_notice");
-    sendNotice.style.display = "block";
-    window.setTimeout(() => {
-      sendNotice.style.display = "none";
-    }, 2600);
+    showTransientNotice(sendNotice, t("send_notice"));
   }
 
   function openWhatsAppWithMessage(message){
@@ -1173,6 +1354,46 @@
     if (!el) return;
     el.addEventListener("input", refreshPreview);
     el.addEventListener("change", refreshPreview);
+  }
+
+  function bindDraftField(id){
+    const el = document.getElementById(id);
+    if (!el) return;
+
+    const persistDraft = () => {
+      invalidatePreparedMessage();
+      saveDraftSession();
+    };
+
+    el.addEventListener("input", persistDraft);
+    el.addEventListener("change", persistDraft);
+  }
+
+  async function copyTextToClipboard(text){
+    if (window.navigator?.clipboard?.writeText) {
+      await window.navigator.clipboard.writeText(text);
+      return true;
+    }
+
+    const helper = document.createElement("textarea");
+    helper.value = text;
+    helper.setAttribute("readonly", "");
+    helper.style.position = "fixed";
+    helper.style.opacity = "0";
+    helper.style.pointerEvents = "none";
+    document.body.appendChild(helper);
+    helper.select();
+    helper.setSelectionRange(0, helper.value.length);
+
+    let copied = false;
+    try {
+      copied = document.execCommand("copy");
+    } catch (_) {
+      copied = false;
+    }
+
+    helper.remove();
+    return copied;
   }
 
   Object.keys(NUMERIC_RULES).forEach((id) => {
@@ -1213,6 +1434,8 @@
     refreshPreview();
   });
 
+  ["weight", "board", "boardSize", "boardSizeCustom", "level", "kite", "wind", "brand", "brandCustom", "model", "modelSelect", "modelCustom", "location", "water", "result", "note"].forEach(bindDraftField);
+
   flagButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
       applyTranslations(btn.getAttribute("data-lang") || "en");
@@ -1228,9 +1451,14 @@
     sendBtn.disabled = true;
 
     try {
-      const body = buildOutgoingBody();
-      const message = await appendTechnicalBlock(body);
+      const sessionData = buildSessionData();
+      saveLastSession(sessionData);
+      saveDraftSession();
+      const message = await buildOutgoingMessage();
+      if (!message) return;
 
+      setPreparedMessage(message);
+      void sendSessionToBackend(sessionData);
       markFirstSubmitDone();
       refreshPreview();
       playSendFeedback();
@@ -1244,15 +1472,37 @@
 
   resetBtn?.addEventListener("click", () => {
     form?.reset();
+    clearDraftSession();
+    invalidatePreparedMessage();
     Object.keys(NUMERIC_RULES).forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.setCustomValidity("");
     });
     setValidationNotice("");
+    hideTransientNotice(sendNotice);
+    hideTransientNotice(copyNotice);
     syncBoardSizeOptions();
     syncBrandCustomUI();
     syncModelUI();
     refreshPreview();
+  });
+
+  copyMessageBtn?.addEventListener("click", async () => {
+    try {
+      const message = lastPreparedMessage || await buildOutgoingMessage();
+      if (!message) {
+        showTransientNotice(copyNotice, t("copy_notice_empty"));
+        return;
+      }
+
+      const copied = await copyTextToClipboard(message);
+      if (!copied) throw new Error("copy_failed");
+
+      setPreparedMessage(message);
+      showTransientNotice(copyNotice, t("copy_notice_success"));
+    } catch (_) {
+      showTransientNotice(copyNotice, t("copy_notice_failure"));
+    }
   });
 
   try {
@@ -1262,6 +1512,9 @@
   }
 
   applyTranslations(translations[currentLang] ? currentLang : "it");
-  syncBrandCustomUI();
-  syncModelUI();
+  if (!restoreDraftSession()) {
+    syncBrandCustomUI();
+    syncModelUI();
+    refreshPreview();
+  }
 })();
