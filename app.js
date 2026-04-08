@@ -10,6 +10,7 @@
   const MODEL_OTHER = "__model_other__";
   const DUOTONE_BRAND = "Duotone Kiteboarding";
   const CORE_BRAND = "Core Kiteboarding";
+  const NAISH_BRAND = "Naish Kiteboarding";
   const LS_FIRST_SUBMIT = "rdk_first_submit";
 
   const DUOTONE_MODELS = [
@@ -63,6 +64,16 @@
     "Xperience",
     "Air",
     "Air Pro"
+  ];
+
+  const NAISH_MODELS = [
+    "Pivot",
+    "Pivot Nvision",
+    "Psycho",
+    "Dash",
+    "Ride",
+    "Slash",
+    "Torch"
   ];
 
   const BOARD_SIZE_BY_TYPE = {
@@ -253,6 +264,7 @@
   function getPresetModelsForBrand(brand){
     if (brand === DUOTONE_BRAND) return DUOTONE_MODELS;
     else if (brand === CORE_BRAND) return CORE_MODELS;
+    else if (brand === NAISH_BRAND) return NAISH_MODELS;
     return null;
   }
 
@@ -319,6 +331,24 @@
       modelCustom.hidden = !showCustom;
       return;
     } else if (brand === CORE_BRAND) {
+      const typedModel = String(modelInput.value || "").trim();
+      populateModelOptions(brand);
+      modelInput.hidden = true;
+      modelSelect.hidden = false;
+
+      if (!modelSelect.value && typedModel) {
+        if (presetModels.includes(typedModel)) modelSelect.value = typedModel;
+        else {
+          modelSelect.value = MODEL_OTHER;
+          modelCustom.value = typedModel;
+        }
+      }
+
+      const showCustom = modelSelect.value === MODEL_OTHER;
+      if (!showCustom) modelCustom.value = "";
+      modelCustom.hidden = !showCustom;
+      return;
+    } else if (brand === NAISH_BRAND) {
       const typedModel = String(modelInput.value || "").trim();
       populateModelOptions(brand);
       modelInput.hidden = true;
@@ -411,6 +441,7 @@
     const brand = val("brand");
     if (brand === DUOTONE_BRAND) return getFilteredModelValue();
     else if (brand === CORE_BRAND) return getFilteredModelValue();
+    else if (brand === NAISH_BRAND) return getFilteredModelValue();
     return val("model");
   }
 
