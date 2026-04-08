@@ -10,6 +10,7 @@
   const MODEL_OTHER = "__model_other__";
   const AIRUSH_BRAND = "Airush";
   const BEST_BRAND = "Best";
+  const CABRINHA_BRAND = "Cabrinha";
   const CRAZYFLY_BRAND = "CrazyFly";
   const DUOTONE_BRAND = "Duotone Kiteboarding";
   const ELEVEIGHT_BRAND = "Eleveight";
@@ -53,6 +54,21 @@
     "ZEPHYR",
     "TRIO",
     "AYRA Ultralight"
+  ];
+
+  const CABRINHA_MODELS = [
+    "Switchblade",
+    "Switchblade Apex",
+    "Nitro",
+    "Nitro Apex",
+    "Drifter",
+    "Drifter Apex",
+    "Moto X",
+    "Moto X Lite",
+    "Moto XL",
+    "Moto XL Apex",
+    "FX",
+    "FX2"
   ];
 
   const CRAZYFLY_MODELS = [
@@ -438,6 +454,7 @@
   function getPresetModelsForBrand(brand){
     if (brand === AIRUSH_BRAND) return AIRUSH_MODELS;
     else if (brand === BEST_BRAND) return BEST_MODELS;
+    else if (brand === CABRINHA_BRAND) return CABRINHA_MODELS;
     else if (brand === CRAZYFLY_BRAND) return CRAZYFLY_MODELS;
     else if (brand === DUOTONE_BRAND) return DUOTONE_MODELS;
     else if (brand === ELEVEIGHT_BRAND) return ELEVEIGHT_MODELS;
@@ -501,6 +518,24 @@
     if (!modelInput || !modelSelect || !modelCustom) return;
 
     if (brand === AIRUSH_BRAND) {
+      const typedModel = String(modelInput.value || "").trim();
+      populateModelOptions(brand);
+      modelInput.hidden = true;
+      modelSelect.hidden = false;
+
+      if (!modelSelect.value && typedModel) {
+        if (presetModels.includes(typedModel)) modelSelect.value = typedModel;
+        else {
+          modelSelect.value = MODEL_OTHER;
+          modelCustom.value = typedModel;
+        }
+      }
+
+      const showCustom = modelSelect.value === MODEL_OTHER;
+      if (!showCustom) modelCustom.value = "";
+      modelCustom.hidden = !showCustom;
+      return;
+    } else if (brand === CABRINHA_BRAND) {
       const typedModel = String(modelInput.value || "").trim();
       populateModelOptions(brand);
       modelInput.hidden = true;
@@ -900,6 +935,7 @@
     const brand = val("brand");
     if (brand === AIRUSH_BRAND) return getFilteredModelValue();
     else if (brand === BEST_BRAND) return getFilteredModelValue();
+    else if (brand === CABRINHA_BRAND) return getFilteredModelValue();
     else if (brand === CRAZYFLY_BRAND) return getFilteredModelValue();
     else if (brand === DUOTONE_BRAND) return getFilteredModelValue();
     else if (brand === ELEVEIGHT_BRAND) return getFilteredModelValue();
