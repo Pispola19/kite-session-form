@@ -16,6 +16,7 @@
   const CORE_BRAND = "Core Kiteboarding";
   const F_ONE_BRAND = "F-One";
   const HARLEM_BRAND = "Harlem Kitesurfing";
+  const LIQUID_FORCE_BRAND = "Liquid Force";
   const NAISH_BRAND = "Naish Kiteboarding";
   const NORTH_BRAND = "North Kiteboarding";
   const OZONE_BRAND = "Ozone";
@@ -136,6 +137,19 @@
     "Peak",
     "Hadlow Pro",
     "Force"
+  ];
+
+  const LIQUID_FORCE_MODELS = [
+    "NV",
+    "NV V8",
+    "NV V9",
+    "Solo",
+    "WOW V3",
+    "WOW V4",
+    "Recon",
+    "Momentum",
+    "Testament",
+    "Trinity"
   ];
 
   const NAISH_MODELS = [
@@ -377,6 +391,7 @@
     else if (brand === CORE_BRAND) return CORE_MODELS;
     else if (brand === F_ONE_BRAND) return F_ONE_MODELS;
     else if (brand === HARLEM_BRAND) return HARLEM_MODELS;
+    else if (brand === LIQUID_FORCE_BRAND) return LIQUID_FORCE_MODELS;
     else if (brand === NAISH_BRAND) return NAISH_MODELS;
     else if (brand === NORTH_BRAND) return NORTH_MODELS;
     else if (brand === OZONE_BRAND) return OZONE_MODELS;
@@ -572,6 +587,24 @@
       if (!showCustom) modelCustom.value = "";
       modelCustom.hidden = !showCustom;
       return;
+    } else if (brand === LIQUID_FORCE_BRAND) {
+      const typedModel = String(modelInput.value || "").trim();
+      populateModelOptions(brand);
+      modelInput.hidden = true;
+      modelSelect.hidden = false;
+
+      if (!modelSelect.value && typedModel) {
+        if (presetModels.includes(typedModel)) modelSelect.value = typedModel;
+        else {
+          modelSelect.value = MODEL_OTHER;
+          modelCustom.value = typedModel;
+        }
+      }
+
+      const showCustom = modelSelect.value === MODEL_OTHER;
+      if (!showCustom) modelCustom.value = "";
+      modelCustom.hidden = !showCustom;
+      return;
     } else if (brand === NAISH_BRAND) {
       const typedModel = String(modelInput.value || "").trim();
       populateModelOptions(brand);
@@ -725,6 +758,7 @@
     else if (brand === CORE_BRAND) return getFilteredModelValue();
     else if (brand === F_ONE_BRAND) return getFilteredModelValue();
     else if (brand === HARLEM_BRAND) return getFilteredModelValue();
+    else if (brand === LIQUID_FORCE_BRAND) return getFilteredModelValue();
     else if (brand === NAISH_BRAND) return getFilteredModelValue();
     else if (brand === NORTH_BRAND) return getFilteredModelValue();
     else if (brand === OZONE_BRAND) return getFilteredModelValue();
