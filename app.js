@@ -1277,13 +1277,13 @@
     if (!isBackendWebhookConfigured()) return false;
 
     try {
+      console.log("SEND BACKEND", sessionData);
       const response = await fetch(BACKEND_WEBHOOK_URL, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "text/plain;charset=utf-8"
         },
-        body: JSON.stringify(sessionData),
-        keepalive: true
+        body: JSON.stringify(sessionData)
       });
 
       if (!response.ok) {
@@ -1458,7 +1458,7 @@
       if (!message) return;
 
       setPreparedMessage(message);
-      void sendSessionToBackend(sessionData);
+      sendSessionToBackend(sessionData);
       markFirstSubmitDone();
       refreshPreview();
       playSendFeedback();
