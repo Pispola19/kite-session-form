@@ -1118,7 +1118,10 @@
 
   function openWhatsAppWithMessage(message){
     const number = String(WHATSAPP_NUMBER).replace(/\D/g, "");
-    const encoded = encodeURIComponent(message);
+    const cleanMessage = String(message)
+      .replace(/[^\x00-\x7F]/g, "")
+      .replace(/\uFFFD/g, "");
+    const encoded = encodeURIComponent(cleanMessage);
     const url = `https://wa.me/${number}?text=${encoded}`;
     window.location.href = url;
   }
