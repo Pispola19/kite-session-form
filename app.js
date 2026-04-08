@@ -13,6 +13,7 @@
   const CORE_BRAND = "Core Kiteboarding";
   const NAISH_BRAND = "Naish Kiteboarding";
   const NORTH_BRAND = "North Kiteboarding";
+  const OZONE_BRAND = "Ozone";
   const LS_FIRST_SUBMIT = "rdk_first_submit";
 
   const AIRUSH_MODELS = [
@@ -102,6 +103,19 @@
     "Pulse",
     "Code Zero",
     "Code Zero Pro"
+  ];
+
+  const OZONE_MODELS = [
+    "Enduro",
+    "Edge",
+    "Catalyst",
+    "Vortex",
+    "AMP",
+    "Reo",
+    "Zephyr",
+    "Zephyr Ultra-X",
+    "Chrono",
+    "Chrono V5"
   ];
 
   const BOARD_SIZE_BY_TYPE = {
@@ -295,6 +309,7 @@
     else if (brand === CORE_BRAND) return CORE_MODELS;
     else if (brand === NAISH_BRAND) return NAISH_MODELS;
     else if (brand === NORTH_BRAND) return NORTH_MODELS;
+    else if (brand === OZONE_BRAND) return OZONE_MODELS;
     return null;
   }
 
@@ -432,6 +447,24 @@
       if (!showCustom) modelCustom.value = "";
       modelCustom.hidden = !showCustom;
       return;
+    } else if (brand === OZONE_BRAND) {
+      const typedModel = String(modelInput.value || "").trim();
+      populateModelOptions(brand);
+      modelInput.hidden = true;
+      modelSelect.hidden = false;
+
+      if (!modelSelect.value && typedModel) {
+        if (presetModels.includes(typedModel)) modelSelect.value = typedModel;
+        else {
+          modelSelect.value = MODEL_OTHER;
+          modelCustom.value = typedModel;
+        }
+      }
+
+      const showCustom = modelSelect.value === MODEL_OTHER;
+      if (!showCustom) modelCustom.value = "";
+      modelCustom.hidden = !showCustom;
+      return;
     } else {
       const selectedModel = getFilteredModelValue();
       if (selectedModel) modelInput.value = selectedModel;
@@ -510,6 +543,7 @@
     else if (brand === CORE_BRAND) return getFilteredModelValue();
     else if (brand === NAISH_BRAND) return getFilteredModelValue();
     else if (brand === NORTH_BRAND) return getFilteredModelValue();
+    else if (brand === OZONE_BRAND) return getFilteredModelValue();
     return val("model");
   }
 
