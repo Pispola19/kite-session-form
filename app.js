@@ -9,6 +9,7 @@
   const BRAND_OTHER = "__brand_other__";
   const MODEL_OTHER = "__model_other__";
   const AIRUSH_BRAND = "Airush";
+  const BEST_BRAND = "Best";
   const CRAZYFLY_BRAND = "CrazyFly";
   const DUOTONE_BRAND = "Duotone Kiteboarding";
   const CORE_BRAND = "Core Kiteboarding";
@@ -32,6 +33,18 @@
     "Session Team v2",
     "Lithium v13",
     "Lithium Team v13"
+  ];
+
+  const BEST_MODELS = [
+    "AYRA",
+    "ROCA",
+    "HEX",
+    "SWOX",
+    "JET",
+    "STORM",
+    "ZEPHYR",
+    "TRIO",
+    "AYRA Ultralight"
   ];
 
   const CRAZYFLY_MODELS = [
@@ -334,6 +347,7 @@
 
   function getPresetModelsForBrand(brand){
     if (brand === AIRUSH_BRAND) return AIRUSH_MODELS;
+    else if (brand === BEST_BRAND) return BEST_MODELS;
     else if (brand === CRAZYFLY_BRAND) return CRAZYFLY_MODELS;
     else if (brand === DUOTONE_BRAND) return DUOTONE_MODELS;
     else if (brand === CORE_BRAND) return CORE_MODELS;
@@ -389,6 +403,24 @@
     if (!modelInput || !modelSelect || !modelCustom) return;
 
     if (brand === AIRUSH_BRAND) {
+      const typedModel = String(modelInput.value || "").trim();
+      populateModelOptions(brand);
+      modelInput.hidden = true;
+      modelSelect.hidden = false;
+
+      if (!modelSelect.value && typedModel) {
+        if (presetModels.includes(typedModel)) modelSelect.value = typedModel;
+        else {
+          modelSelect.value = MODEL_OTHER;
+          modelCustom.value = typedModel;
+        }
+      }
+
+      const showCustom = modelSelect.value === MODEL_OTHER;
+      if (!showCustom) modelCustom.value = "";
+      modelCustom.hidden = !showCustom;
+      return;
+    } else if (brand === BEST_BRAND) {
       const typedModel = String(modelInput.value || "").trim();
       populateModelOptions(brand);
       modelInput.hidden = true;
@@ -625,6 +657,7 @@
   function getModelValue(){
     const brand = val("brand");
     if (brand === AIRUSH_BRAND) return getFilteredModelValue();
+    else if (brand === BEST_BRAND) return getFilteredModelValue();
     else if (brand === CRAZYFLY_BRAND) return getFilteredModelValue();
     else if (brand === DUOTONE_BRAND) return getFilteredModelValue();
     else if (brand === CORE_BRAND) return getFilteredModelValue();
