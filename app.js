@@ -1396,10 +1396,7 @@
 
   function openWhatsAppWithMessage(message){
     const number = String(WHATSAPP_NUMBER).replace(/\D/g, "");
-    const cleanMessage = String(message)
-      .replace(/[^\x00-\x7F]/g, "")
-      .replace(/\uFFFD/g, "");
-    const encoded = encodeURIComponent(cleanMessage);
+    const encoded = encodeURIComponent(String(message || ""));
     const deepLink = `whatsapp://send?phone=${number}&text=${encoded}`;
     window.location.href = deepLink;
 
