@@ -31,6 +31,7 @@
   const LS_DRAFT_SESSION = "draft_kite_session";
   const LS_LAST_SESSION = "last_kite_session";
   const LS_FIRST_SUBMIT = "rdk_first_submit";
+  const LS_PENDING_GOOGLE_SUBMIT = "pending_google_submit";
   let pendingGoogleSubmit = null;
 
   const AIRUSH_MODELS = [
@@ -1152,10 +1153,16 @@
     return CANONICAL_VALUES[group]?.[value] || value;
   }
 
+  // ADDED: session id
+  function generateSessionId() {
+    return Date.now().toString(36) + Math.random().toString(36).slice(2);
+  }
+
   function buildSessionData(){
     const boardSizeSelection = val("boardSize");
 
     return {
+      session_id: generateSessionId(),
       weight: val("weight"),
       gender: getGenderValue(),
       board: val("board"),
@@ -1173,6 +1180,50 @@
     };
   }
 
+  // ADDED: retry support
+  function savePendingGoogleSubmit(sessionData){
+    try {
+      window.localStorage.setItem(LS_PENDING_GOOGLE_SUBMIT, JSON.stringify(sessionData));
+    } catch (_) {}
+  }
+
+  function loadPendingGoogleSubmit(){
+    try {
+      const raw = window.localStorage.getItem(LS_PENDING_GOOGLE_SUBMIT);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed === "object" ? parsed : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function clearPendingGoogleSubmit(){
+    try {
+      window.localStorage.removeItem(LS_PENDING_GOOGLE_SUBMIT);
+    } catch (_) {}
+  }
+
+  function getRetryComparablePayload(sessionData){
+    if (!sessionData || typeof sessionData !== "object") return "";
+    const comparable = {
+      weight: sessionData.weight || "",
+      gender: sessionData.gender || "",
+      board: sessionData.board || "",
+      boardSize: sessionData.boardSize || "",
+      level: sessionData.level || "",
+      kite: sessionData.kite || "",
+      wind: sessionData.wind || "",
+      brand: sessionData.brand || "",
+      model: sessionData.model || "",
+      location: sessionData.location || "",
+      water: sessionData.water || "",
+      result: sessionData.result || "",
+      note: sessionData.note || ""
+    };
+    return JSON.stringify(comparable);
+  }
+
   // ADDED: postMessage confirmation
   window.addEventListener("message", function(event) {
     if (!(event.data && event.data.ok === true)) return;
@@ -1180,10 +1231,14 @@
     if (pendingGoogleSubmit.frameWindow && event.source !== pendingGoogleSubmit.frameWindow) return;
     if (pendingGoogleSubmit.settled) return;
 
-    console.log("Google saved");
+    if (event.data.duplicate) {
+      console.log("Duplicate ignored");
+    } else {
+      console.log("Saved");
+    }
     pendingGoogleSubmit.settled = true;
     pendingGoogleSubmit.cleanup();
-    pendingGoogleSubmit.resolve(true);
+    pendingGoogleSubmit.resolve(event.data);
     pendingGoogleSubmit = null;
   });
 
@@ -1194,6 +1249,7 @@
     const iframe = document.createElement("iframe");
     const postForm = document.createElement("form");
     const payload = {
+      session_id: sessionData.session_id,
       peso_kg: sessionData.weight,
       gender: sessionData.gender,
       tavola_tipo: sessionData.board,
@@ -1523,15 +1579,32 @@
 
     sendBtn.disabled = true;
 
+    let sessionDataToSend = null;
+
     try {
       const sessionData = buildSessionData();
+      const pendingRetry = loadPendingGoogleSubmit();
+      const shouldReusePending = pendingRetry && getRetryComparablePayload(pendingRetry) === getRetryComparablePayload(sessionData);
+      sessionDataToSend = shouldReusePending ? pendingRetry : sessionData;
       saveLastSession(sessionData);
       saveDraftSession();
       const message = buildOutgoingMessageSync();
       if (!message) return;
 
+      if (pendingRetry && !shouldReusePending) {
+        try {
+          await submitSessionToGoogleSheets(pendingRetry);
+          clearPendingGoogleSubmit();
+        } catch (retryError) {
+          if (retryError?.message === "google_submit_timeout") {
+            savePendingGoogleSubmit(pendingRetry);
+          }
+        }
+      }
+
       setPreparedMessage(message);
-      await submitSessionToGoogleSheets(sessionData);
+      await submitSessionToGoogleSheets(sessionDataToSend);
+      clearPendingGoogleSubmit();
       openWhatsAppWithMessage(message);
       markFirstSubmitDone();
       refreshPreview();
@@ -1540,6 +1613,9 @@
       setValidationNotice("");
     } catch (error) {
       console.error(error);
+      if (error?.message === "google_submit_timeout" && sessionDataToSend) {
+        savePendingGoogleSubmit(sessionDataToSend);
+      }
       window.alert("Errore salvataggio Google, invio WhatsApp bloccato.");
     } finally {
       sendBtn.disabled = false;

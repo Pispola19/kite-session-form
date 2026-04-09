@@ -1,5 +1,6 @@
 var FIXED_SCHEMA = [
   "timestamp",
+  "session_id",
   "weight",
   "gender",
   "board",
@@ -36,6 +37,8 @@ var LABEL_TO_FIELD = {
 
 var HEADER_ALIASES = {
   "timestamp": "timestamp",
+  "session_id": "session_id",
+  "session id": "session_id",
   "weight": "weight",
   "gender": "gender",
   "board": "board",
@@ -57,6 +60,7 @@ var HEADER_ALIASES = {
 var FRONTEND_TO_FIELD = {
   "ts": "timestamp",
   "timestamp": "timestamp",
+  "session_id": "session_id",
   "weight": "weight",
   "gender": "gender",
   "board": "board",
@@ -91,14 +95,19 @@ function doPost(e) {
     record.timestamp = formatRomeDate_(new Date());
     var sheet = getTargetSheet_();
     var headers = getSheetHeaders_(sheet);
+    var sessionId = cleanValue_(record.session_id);
+
+    // ADDED: deduplication
+    if (isDuplicateSessionId_(sheet, headers, sessionId)) {
+      return postMessageHtmlResponse_(true);
+    }
+
     var row = buildSheetRow_(record, headers);
 
     sheet.getRange(sheet.getLastRow() + 1, 1, 1, row.length).setValues([row]);
 
     // ADDED: postMessage confirmation
-    return HtmlService
-      .createHtmlOutput('<!doctype html><html><body><script>window.parent.postMessage({ ok: true }, "*");</script></body></html>')
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+    return postMessageHtmlResponse_(false);
   } catch (error) {
     return jsonResponse_(500, {
       ok: false,
@@ -183,6 +192,7 @@ function normalizeFrontendPayload_(payload) {
 
   // ADDED: ITALIAN KEYS SUPPORT
   var fallbackValues = {
+    session_id: cleanValue_(payload.session_id),
     weight: cleanValue_(payload.weight || payload.peso_kg),
     gender: cleanValue_(payload.gender),
     board: cleanValue_(payload.board || payload.tavola_tipo),
@@ -284,10 +294,40 @@ function buildSheetRow_(record, headers) {
   });
 }
 
+function getHeaderIndex_(headers, targetKey) {
+  for (var i = 0; i < headers.length; i += 1) {
+    if (normalizeHeader_(headers[i]) === targetKey) return i;
+  }
+  return -1;
+}
+
+// ADDED: deduplication
+function isDuplicateSessionId_(sheet, headers, sessionId) {
+  if (!sessionId) return false;
+
+  var sessionColumnIndex = getHeaderIndex_(headers, "session_id");
+  if (sessionColumnIndex === -1) return false;
+
+  var lastRow = sheet.getLastRow();
+  if (lastRow <= 1) return false;
+
+  var values = sheet.getRange(2, sessionColumnIndex + 1, lastRow - 1, 1).getValues();
+  return values.some(function(row) {
+    return cleanValue_(row[0]) === sessionId;
+  });
+}
+
 function jsonResponse_(status, payload) {
   return ContentService
     .createTextOutput(JSON.stringify(payload))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+function postMessageHtmlResponse_(isDuplicate) {
+  var duplicateFlag = isDuplicate ? ", duplicate: true" : "";
+  return HtmlService
+    .createHtmlOutput('<!doctype html><html><body><script>window.parent.postMessage({ ok: true' + duplicateFlag + ' }, "*");</script></body></html>')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
 function formatRomeDate_(date) {
