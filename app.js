@@ -498,17 +498,13 @@
   }
 
   function getGenderValue(){
-    const checked = document.querySelector('input[name="gender"]:checked');
-    const value = String(checked?.value || "").trim().toUpperCase();
+    const value = val("gender").toUpperCase();
     if (value === "M" || value === "F") return value;
     return null;
   }
 
   function setGenderValue(value){
-    const normalized = String(value || "").trim().toUpperCase();
-    document.querySelectorAll('input[name="gender"]').forEach((input) => {
-      input.checked = input.value === normalized;
-    });
+    setFieldValue("gender", String(value || "").trim().toUpperCase());
   }
 
   function selectedText(id){
@@ -1456,12 +1452,7 @@
   });
 
   ["weight", "board", "boardSize", "boardSizeCustom", "level", "kite", "wind", "brand", "brandCustom", "model", "modelSelect", "modelCustom", "location", "water", "result", "note"].forEach(bindDraftField);
-  document.querySelectorAll('input[name="gender"]').forEach((input) => {
-    input.addEventListener("change", () => {
-      invalidatePreparedMessage();
-      saveDraftSession();
-    });
-  });
+  bindDraftField("gender");
 
   flagButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
