@@ -164,6 +164,57 @@ Il payload contiene tutte le coppie chiave/valore estratte dal parse minimo; i c
 
 ---
 
+## STEP 6B - PROIEZIONE SICURA SU GOOGLE SHEET
+
+Quando il payload viene materializzato su Google Sheet, la scrittura deve essere **a chiave** e mai per posizione.
+
+### Regole obbligatorie
+
+- **NON** usare indice colonna fisso
+- leggere sempre gli header correnti del foglio
+- mappare ogni valore per **nome colonna**
+- se una colonna attesa manca -> **saltare**
+- se esiste una colonna extra -> **lasciare vuota**
+- nessun campo mancante deve shiftare i successivi
+
+### Schema fisso riga
+
+```text
+timestamp | weight | gender | board | board_size | level | kite_size | wind | brand | model | location | water | result | note
+```
+
+### Mapping esplicito
+
+| Etichetta payload EN     | Colonna Sheet |
+|--------------------------|---------------|
+| `Weight (kg)`            | `weight`      |
+| `Gender`                 | `gender`      |
+| `Board type`             | `board`       |
+| `Board size`             | `board_size`  |
+| `Level`                  | `level`       |
+| `Kite (m²)`              | `kite_size`   |
+| `Wind (kts)`             | `wind`        |
+| `Brand`                  | `brand`       |
+| `Model`                  | `model`       |
+| `Spot`                   | `location`    |
+| `Water conditions`       | `water`       |
+| `Session result`         | `result`      |
+| `Notes`                  | `note`        |
+
+### Gestione campi opzionali
+
+- `gender` se assente -> `null`
+- ogni altro campo assente -> `null`
+- nessuna correzione posizionale
+
+### Compatibilita'
+
+- messaggi vecchi senza `Gender` restano validi
+- aggiunte future di colonne non devono rompere il mapping esistente
+- la proiezione Sheet e' downstream del parse minimo e non modifica il `raw_text`
+
+---
+
 ## STEP 7 - NESSUNA CLASSIFICAZIONE
 
 **Esplicitamente vietato:**
