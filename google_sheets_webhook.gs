@@ -88,6 +88,7 @@ function doPost(e) {
     var record = parsedInput.kind === "json" || parsedInput.kind === "form"
       ? normalizeFrontendPayload_(parsedInput.data)
       : parseWhatsAppMessage_(parsedInput.data);
+    record.timestamp = formatRomeDate_(new Date());
     var sheet = getTargetSheet_();
     var headers = getSheetHeaders_(sheet);
     var row = buildSheetRow_(record, headers);
@@ -264,4 +265,8 @@ function jsonResponse_(status, payload) {
   return ContentService
     .createTextOutput(JSON.stringify(payload))
     .setMimeType(ContentService.MimeType.JSON);
+}
+
+function formatRomeDate_(date) {
+  return Utilities.formatDate(date, "Europe/Rome", "yyyy-MM-dd");
 }
