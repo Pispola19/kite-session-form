@@ -1105,15 +1105,7 @@
     ].join("");
   }
 
-  async function sha256Hex(text){
-    if (window.crypto?.subtle) {
-      const data = new TextEncoder().encode(text);
-      const digest = await window.crypto.subtle.digest("SHA-256", data);
-      return Array.from(new Uint8Array(digest))
-        .map((byte) => byte.toString(16).padStart(2, "0"))
-        .join("");
-    }
-
+  function signatureDigestHex(text){
     let hash = 2166136261;
     for (let i = 0; i < text.length; i += 1) {
       hash ^= text.charCodeAt(i);
@@ -1122,17 +1114,17 @@
     return (hash >>> 0).toString(16).padStart(8, "0");
   }
 
-  async function generateSignature(text){
-    const digest = await sha256Hex(text);
+  function generateSignatureSync(text){
+    const digest = signatureDigestHex(text);
     return digest.slice(0, 10);
   }
 
-  async function appendTechnicalBlock(body){
+  function appendTechnicalBlockSync(body){
     const id = randomRdkId();
     const ts = rdkTimestampRfc3339();
 
     let block = `${body}\n---\nID: ${id}\nTS: ${ts}\nSRC: rdk_v1`;
-    const sig = await generateSignature(block);
+    const sig = generateSignatureSync(block);
     block += `\nSIG: ${sig}\n---`;
     return block;
   }
@@ -1267,10 +1259,10 @@
     return `${t("first_submit_prefix")}\n\n${core}`;
   }
 
-  async function buildOutgoingMessage(){
+  function buildOutgoingMessageSync(){
     const body = buildOutgoingBody();
     if (!body) return "";
-    return appendTechnicalBlock(body);
+    return appendTechnicalBlockSync(body);
   }
 
   async function sendSessionToBackend(sessionData){
@@ -1454,7 +1446,7 @@
       const sessionData = buildSessionData();
       saveLastSession(sessionData);
       saveDraftSession();
-      const message = await buildOutgoingMessage();
+      const message = buildOutgoingMessageSync();
       if (!message) return;
 
       setPreparedMessage(message);
@@ -1489,7 +1481,7 @@
 
   copyMessageBtn?.addEventListener("click", async () => {
     try {
-      const message = lastPreparedMessage || await buildOutgoingMessage();
+      const message = lastPreparedMessage || buildOutgoingMessageSync();
       if (!message) {
         showTransientNotice(copyNotice, t("copy_notice_empty"));
         return;
