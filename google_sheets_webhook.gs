@@ -1,6 +1,7 @@
 var FIXED_SCHEMA = [
   "timestamp",
-  "session_id",
+  "id",
+  "src",
   "weight",
   "gender",
   "board",
@@ -37,8 +38,10 @@ var LABEL_TO_FIELD = {
 
 var HEADER_ALIASES = {
   "timestamp": "timestamp",
-  "session_id": "session_id",
-  "session id": "session_id",
+  "id": "id",
+  "session_id": "id",
+  "session id": "id",
+  "src": "src",
   "weight": "weight",
   "gender": "gender",
   "board": "board",
@@ -60,7 +63,10 @@ var HEADER_ALIASES = {
 var FRONTEND_TO_FIELD = {
   "ts": "timestamp",
   "timestamp": "timestamp",
-  "session_id": "session_id",
+  "ID": "id",
+  "id": "id",
+  "session_id": "id",
+  "src": "src",
   "weight": "weight",
   "gender": "gender",
   "board": "board",
@@ -95,7 +101,7 @@ function doPost(e) {
     record.timestamp = formatRomeDate_(new Date());
     var sheet = getTargetSheet_();
     var headers = getSheetHeaders_(sheet);
-    var sessionId = cleanValue_(record.session_id);
+    var sessionId = cleanValue_(record.id);
 
     // ADDED: deduplication
     if (isDuplicateSessionId_(sheet, headers, sessionId)) {
@@ -117,10 +123,50 @@ function doPost(e) {
 }
 
 function parseIncomingRequest_(e) {
-  if (e && e.parameter && hasKnownFrontendKeys_(e.parameter)) {
+  // ADDED: robust parameter parsing (form + JSON)
+  var data = e && e.parameter ? e.parameter : {};
+  var body = {};
+
+  if (e && e.postData && e.postData.contents) {
+    try {
+      body = JSON.parse(e.postData.contents);
+    } catch (err) {}
+  }
+
+  function getValue(key) {
+    return data[key] || body[key] || "";
+  }
+
+  var mergedPayload = {};
+  Object.keys(FRONTEND_TO_FIELD).forEach(function(key) {
+    var value = getValue(key);
+    if (value !== "") {
+      mergedPayload[key] = value;
+    }
+  });
+
+  // ADDED: ID and src support
+  if (getValue("ID") !== "") mergedPayload.ID = getValue("ID");
+  if (getValue("id") !== "") mergedPayload.id = getValue("id");
+  if (getValue("session_id") !== "") mergedPayload.session_id = getValue("session_id");
+  if (getValue("src") !== "") mergedPayload.src = getValue("src");
+  if (getValue("peso_kg") !== "") mergedPayload.peso_kg = getValue("peso_kg");
+  if (getValue("tavola_tipo") !== "") mergedPayload.tavola_tipo = getValue("tavola_tipo");
+  if (getValue("tavola_misura") !== "") mergedPayload.tavola_misura = getValue("tavola_misura");
+  if (getValue("livello") !== "") mergedPayload.livello = getValue("livello");
+  if (getValue("kite_m2") !== "") mergedPayload.kite_m2 = getValue("kite_m2");
+  if (getValue("marca") !== "") mergedPayload.marca = getValue("marca");
+  if (getValue("modello") !== "") mergedPayload.modello = getValue("modello");
+  if (getValue("vento_kn") !== "") mergedPayload.vento_kn = getValue("vento_kn");
+  if (getValue("spot") !== "") mergedPayload.spot = getValue("spot");
+  if (getValue("acqua") !== "") mergedPayload.acqua = getValue("acqua");
+  if (getValue("risultato") !== "") mergedPayload.risultato = getValue("risultato");
+  if (getValue("note") !== "") mergedPayload.note = getValue("note");
+
+  if (hasKnownFrontendKeys_(mergedPayload)) {
     return {
       kind: "form",
-      data: e.parameter
+      data: mergedPayload
     };
   }
 
@@ -192,7 +238,9 @@ function normalizeFrontendPayload_(payload) {
 
   // ADDED: ITALIAN KEYS SUPPORT
   var fallbackValues = {
-    session_id: cleanValue_(payload.session_id),
+    // ADDED: ID and src support
+    id: cleanValue_(payload.ID || payload.id || payload.session_id),
+    src: cleanValue_(payload.src),
     weight: cleanValue_(payload.weight || payload.peso_kg),
     gender: cleanValue_(payload.gender),
     board: cleanValue_(payload.board || payload.tavola_tipo),
@@ -305,7 +353,7 @@ function getHeaderIndex_(headers, targetKey) {
 function isDuplicateSessionId_(sheet, headers, sessionId) {
   if (!sessionId) return false;
 
-  var sessionColumnIndex = getHeaderIndex_(headers, "session_id");
+  var sessionColumnIndex = getHeaderIndex_(headers, "id");
   if (sessionColumnIndex === -1) return false;
 
   var lastRow = sheet.getLastRow();
