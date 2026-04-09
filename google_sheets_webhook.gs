@@ -96,12 +96,25 @@ function doGet() {
 
 function doPost(e) {
   try {
+    var sheet = getTargetSheet_();
+    Logger.log("FULL EVENT: " + JSON.stringify(e));
+    Logger.log("PARAMETER: " + JSON.stringify(e.parameter));
+
+    if (e.postData) {
+      Logger.log("POSTDATA: " + e.postData.contents);
+    }
+
+    sheet.appendRow([
+      "DEBUG",
+      JSON.stringify(e.parameter),
+      e.postData ? e.postData.contents : "NO_POSTDATA"
+    ]);
+
     var parsedInput = parseIncomingRequest_(e);
     var record = parsedInput.kind === "json" || parsedInput.kind === "form"
       ? normalizeFrontendPayload_(parsedInput.data)
       : parseWhatsAppMessage_(parsedInput.data);
     record.timestamp = formatRomeDate_(new Date());
-    var sheet = getTargetSheet_();
     var headers = getSheetHeaders_(sheet);
     var sessionId = cleanValue_(record.ID);
 
