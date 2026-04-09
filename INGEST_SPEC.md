@@ -213,6 +213,19 @@ timestamp | weight | gender | board | board_size | level | kite_size | wind | br
 - aggiunte future di colonne non devono rompere il mapping esistente
 - la proiezione Sheet e' downstream del parse minimo e non modifica il `raw_text`
 
+### Ingresso webhook reale
+
+Il webhook Google Apps Script puo' ricevere:
+
+- payload JSON dal frontend (`ts`, `weight`, `gender`, `board`, `boardSize`, `kite`, ...)
+- testo canonico WhatsApp completo di blocco tecnico finale
+
+Entrambi i formati devono convergere nello stesso record canonico:
+
+```text
+timestamp | weight | gender | board | board_size | level | kite_size | wind | brand | model | location | water | result | note
+```
+
 ---
 
 ## STEP 7 - NESSUNA CLASSIFICAZIONE

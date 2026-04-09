@@ -4,6 +4,7 @@ from google_sheet_ingest_reference import (
     FIXED_SCHEMA,
     build_fixed_schema_row,
     build_sheet_row,
+    normalize_frontend_payload,
     parse_whatsapp_message,
 )
 
@@ -60,6 +61,47 @@ SIG: 012345abcd
 
 
 class IngestReferenceTests(unittest.TestCase):
+    def test_frontend_json_without_gender_keeps_board_aligned(self):
+        payload = {
+            "ts": "2026-04-09T20:10:00+02:00",
+            "weight": "80",
+            "board": "twintip",
+            "boardSize": "137x41",
+            "level": "Advanced",
+            "kite": "10",
+            "wind": "21",
+        }
+
+        record = normalize_frontend_payload(payload)
+        row = build_sheet_row(record, FIXED_SCHEMA)
+
+        self.assertEqual(row[0], "2026-04-09T20:10:00+02:00")
+        self.assertEqual(row[1], "80")
+        self.assertIsNone(row[2])
+        self.assertEqual(row[3], "twintip")
+        self.assertEqual(row[4], "137x41")
+
+    def test_frontend_json_with_gender_maps_correctly(self):
+        payload = {
+            "ts": "2026-04-09T20:12:00+02:00",
+            "weight": "60",
+            "gender": "f",
+            "board": "surfboard",
+            "boardSize": "5'6",
+            "level": "Independent",
+            "kite": "8",
+            "wind": "26",
+            "brand": "Core",
+        }
+
+        record = normalize_frontend_payload(payload)
+
+        self.assertEqual(record["timestamp"], "2026-04-09T20:12:00+02:00")
+        self.assertEqual(record["gender"], "F")
+        self.assertEqual(record["board"], "surfboard")
+        self.assertEqual(record["board_size"], "5'6")
+        self.assertEqual(record["kite_size"], "8")
+
     def test_message_without_gender_keeps_null_and_does_not_shift(self):
         record = parse_whatsapp_message(RAW_WITHOUT_GENDER)
 

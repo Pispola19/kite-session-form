@@ -65,6 +65,26 @@ HEADER_ALIASES: Dict[str, str] = {
     "notes": "note",
 }
 
+FRONTEND_TO_FIELD: Dict[str, str] = {
+    "ts": "timestamp",
+    "timestamp": "timestamp",
+    "weight": "weight",
+    "gender": "gender",
+    "board": "board",
+    "boardSize": "board_size",
+    "board_size": "board_size",
+    "level": "level",
+    "kite": "kite_size",
+    "kite_size": "kite_size",
+    "wind": "wind",
+    "brand": "brand",
+    "model": "model",
+    "location": "location",
+    "water": "water",
+    "result": "result",
+    "note": "note",
+}
+
 TECHNICAL_BLOCK_RE = re.compile(
     r"\n---\nID:\s*(?P<id>[a-z0-9]{10})\nTS:\s*(?P<ts>[^\n]+)\nSRC:\s*(?P<src>[^\n]+)\nSIG:\s*(?P<sig>[a-f0-9]{10})\n---\s*\Z"
 )
@@ -102,6 +122,32 @@ def _normalize_gender(value: str) -> Optional[str]:
     if normalized == "FEMALE":
         return "F"
     return None
+
+
+def _clean_value(value: object) -> Optional[str]:
+    if value is None:
+        return None
+    normalized = str(value).strip()
+    return normalized or None
+
+
+def normalize_frontend_payload(payload: Dict[str, object]) -> Dict[str, Optional[str]]:
+    """Normalize the JSON payload currently posted by the frontend webhook."""
+
+    record = _blank_record()
+
+    for source_key, target_key in FRONTEND_TO_FIELD.items():
+        if source_key not in payload:
+            continue
+        value = _clean_value(payload.get(source_key))
+        if value is None:
+            continue
+        if target_key == "gender":
+            record[target_key] = _normalize_gender(value)
+        else:
+            record[target_key] = value
+
+    return record
 
 
 def parse_whatsapp_message(raw_text: str) -> Dict[str, Optional[str]]:
