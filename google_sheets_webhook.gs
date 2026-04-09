@@ -181,6 +181,30 @@ function normalizeFrontendPayload_(payload) {
     if (value === null) return;
     record[targetKey] = targetKey === "gender" ? normalizeGender_(value) : value;
   });
+
+  // ADDED: ITALIAN KEYS SUPPORT
+  var fallbackValues = {
+    weight: cleanValue_(payload.weight || payload.peso_kg),
+    gender: cleanValue_(payload.gender),
+    board: cleanValue_(payload.board || payload.tavola_tipo),
+    board_size: cleanValue_(payload.boardSize || payload.board_size || payload.tavola_misura),
+    level: cleanValue_(payload.level || payload.livello),
+    kite_size: cleanValue_(payload.kite || payload.kite_size || payload.kite_m2),
+    wind: cleanValue_(payload.wind || payload.vento_kn),
+    brand: cleanValue_(payload.brand || payload.marca),
+    model: cleanValue_(payload.model || payload.modello),
+    location: cleanValue_(payload.location || payload.spot),
+    water: cleanValue_(payload.water || payload.acqua),
+    result: cleanValue_(payload.result || payload.risultato),
+    note: cleanValue_(payload.note || payload.notes)
+  };
+
+  Object.keys(fallbackValues).forEach(function(targetKey) {
+    var value = fallbackValues[targetKey];
+    if (value === null) return;
+    record[targetKey] = targetKey === "gender" ? normalizeGender_(value) : value;
+  });
+
   return record;
 }
 
