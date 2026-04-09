@@ -31,6 +31,7 @@
   const LS_DRAFT_SESSION = "draft_kite_session";
   const LS_LAST_SESSION = "last_kite_session";
   const LS_FIRST_SUBMIT = "rdk_first_submit";
+  let pendingGoogleSubmit = null;
 
   const AIRUSH_MODELS = [
     "Ultra v5",
@@ -1172,6 +1173,20 @@
     };
   }
 
+  // ADDED: postMessage confirmation
+  window.addEventListener("message", function(event) {
+    if (!(event.data && event.data.ok === true)) return;
+    if (!pendingGoogleSubmit) return;
+    if (pendingGoogleSubmit.frameWindow && event.source !== pendingGoogleSubmit.frameWindow) return;
+    if (pendingGoogleSubmit.settled) return;
+
+    console.log("Google saved");
+    pendingGoogleSubmit.settled = true;
+    pendingGoogleSubmit.cleanup();
+    pendingGoogleSubmit.resolve(true);
+    pendingGoogleSubmit = null;
+  });
+
   async function submitSessionToGoogleSheets(sessionData){
     if (!GOOGLE_SHEETS_WEBHOOK_URL) return false;
 
@@ -1196,34 +1211,32 @@
 
     return await new Promise((resolve, reject) => {
       const timeoutMs = 12000;
-      let settled = false;
-      let submitted = false;
-
       const cleanup = () => {
-        iframe.removeEventListener("load", handleLoad);
         window.clearTimeout(timeoutId);
         postForm.remove();
         iframe.remove();
       };
 
-      const handleLoad = () => {
-        if (!submitted || settled) return;
-        settled = true;
-        cleanup();
-        resolve(true);
+      const requestState = {
+        cleanup,
+        frameWindow: null,
+        resolve,
+        settled: false
       };
 
       const timeoutId = window.setTimeout(() => {
-        if (settled) return;
-        settled = true;
+        if (requestState.settled) return;
+        requestState.settled = true;
         cleanup();
+        if (pendingGoogleSubmit === requestState) {
+          pendingGoogleSubmit = null;
+        }
         reject(new Error("google_submit_timeout"));
       }, timeoutMs);
 
       iframe.hidden = true;
       iframe.name = targetName;
       iframe.setAttribute("aria-hidden", "true");
-      iframe.addEventListener("load", handleLoad);
 
       postForm.method = "POST";
       postForm.action = GOOGLE_SHEETS_WEBHOOK_URL;
@@ -1240,7 +1253,8 @@
 
       document.body.appendChild(iframe);
       document.body.appendChild(postForm);
-      submitted = true;
+      requestState.frameWindow = iframe.contentWindow;
+      pendingGoogleSubmit = requestState;
       postForm.submit();
     });
   }

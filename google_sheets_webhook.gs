@@ -95,11 +95,10 @@ function doPost(e) {
 
     sheet.getRange(sheet.getLastRow() + 1, 1, 1, row.length).setValues([row]);
 
-    return jsonResponse_(200, {
-      ok: true,
-      mode: parsedInput.kind,
-      written_fields: headers.length
-    });
+    // ADDED: postMessage confirmation
+    return HtmlService
+      .createHtmlOutput('<!doctype html><html><body><script>window.parent.postMessage({ ok: true }, "*");</script></body></html>')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   } catch (error) {
     return jsonResponse_(500, {
       ok: false,
