@@ -5,7 +5,6 @@
   if (!translations.en) return;
 
   const WHATSAPP_NUMBER = "393345280521";
-  const BACKEND_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbx5BMOiQ_pH1gOFbV7FRRpaagK0ujnKPfmi6N8XQDKOVzj4MLNcIWmLj78M_OYzNUTA/exec";
   const BOARD_SIZE_OTHER = "__rdk_other__";
   const BRAND_OTHER = "__brand_other__";
   const MODEL_OTHER = "__model_other__";
@@ -395,10 +394,6 @@
     try {
       localStorage.removeItem(key);
     } catch (_) {}
-  }
-
-  function isBackendWebhookConfigured(){
-    return Boolean(BACKEND_WEBHOOK_URL) && !BACKEND_WEBHOOK_URL.includes("YOUR_WEBHOOK_URL");
   }
 
   function setPreparedMessage(message){
@@ -1290,69 +1285,6 @@
     return appendTechnicalBlockSync(body);
   }
 
-  async function sendSessionToBackend(sessionData){
-    if (!isBackendWebhookConfigured()) return false;
-
-    console.log("invio iniziato");
-
-    await new Promise((resolve, reject) => {
-      const targetName = `rdk-submit-${Date.now()}`;
-      const iframe = document.createElement("iframe");
-      const postForm = document.createElement("form");
-      const timeoutMs = 12000;
-      let submitted = false;
-      let settled = false;
-
-      const cleanup = () => {
-        iframe.removeEventListener("load", handleLoad);
-        window.clearTimeout(timeoutId);
-        postForm.remove();
-        iframe.remove();
-      };
-
-      const handleLoad = () => {
-        if (!submitted || settled) return;
-        settled = true;
-        cleanup();
-        console.log("invio completato");
-        resolve(true);
-      };
-
-      const timeoutId = window.setTimeout(() => {
-        if (settled) return;
-        settled = true;
-        cleanup();
-        reject(new Error("Errore webhook"));
-      }, timeoutMs);
-
-      iframe.hidden = true;
-      iframe.name = targetName;
-      iframe.setAttribute("aria-hidden", "true");
-      iframe.addEventListener("load", handleLoad);
-
-      postForm.method = "POST";
-      postForm.action = BACKEND_WEBHOOK_URL;
-      postForm.target = targetName;
-      postForm.hidden = true;
-
-      Object.entries(sessionData).forEach(([key, value]) => {
-        const input = document.createElement("input");
-        input.type = "hidden";
-        input.name = key;
-        input.value = value == null ? "" : String(value);
-        postForm.appendChild(input);
-      });
-
-      document.body.appendChild(iframe);
-      document.body.appendChild(postForm);
-
-      submitted = true;
-      postForm.submit();
-    });
-
-    return true;
-  }
-
   function refreshPreview(){
     const body = buildOutgoingBody();
     preview.textContent = body || t("preview_empty");
@@ -1514,7 +1446,6 @@
       if (!message) return;
 
       setPreparedMessage(message);
-      await sendSessionToBackend(sessionData);
       openWhatsAppWithMessage(message);
       markFirstSubmitDone();
       refreshPreview();
@@ -1523,7 +1454,6 @@
       setValidationNotice("");
     } catch (error) {
       console.error(error);
-      window.alert("Errore invio dati, riprova");
     } finally {
       sendBtn.disabled = false;
     }
