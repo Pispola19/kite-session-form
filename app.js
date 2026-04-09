@@ -1293,35 +1293,25 @@
   async function sendSessionToBackend(sessionData){
     if (!isBackendWebhookConfigured()) return false;
 
-    try {
-      const payload = JSON.stringify(sessionData);
-      console.log("SEND BACKEND", sessionData);
+    const payload = JSON.stringify(sessionData);
+    console.log("invio iniziato");
 
-      if (window.navigator?.sendBeacon) {
-        const blob = new Blob([payload], { type: "application/json" });
-        const queued = window.navigator.sendBeacon(BACKEND_WEBHOOK_URL, blob);
-        if (queued) return true;
-      }
+    const response = await fetch(BACKEND_WEBHOOK_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: payload
+    });
 
-      const response = await fetch(BACKEND_WEBHOOK_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: payload,
-        keepalive: true
-      });
+    console.log("invio completato");
 
-      if (!response.ok) {
-        console.warn("Backend save failed", response.status);
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.warn("Backend save failed", error);
-      return false;
+    if (!response.ok) {
+      console.warn("Backend save failed", response.status);
+      throw new Error("Errore webhook");
     }
+
+    return true;
   }
 
   function refreshPreview(){
@@ -1492,6 +1482,9 @@
       playSendFeedback();
       showSendNotice();
       setValidationNotice("");
+    } catch (error) {
+      console.error(error);
+      window.alert("Errore invio dati, riprova");
     } finally {
       sendBtn.disabled = false;
     }
