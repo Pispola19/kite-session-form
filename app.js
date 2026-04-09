@@ -1293,23 +1293,62 @@
   async function sendSessionToBackend(sessionData){
     if (!isBackendWebhookConfigured()) return false;
 
-    const payload = JSON.stringify(sessionData);
     console.log("invio iniziato");
 
-    const response = await fetch(BACKEND_WEBHOOK_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: payload
+    await new Promise((resolve, reject) => {
+      const targetName = `rdk-submit-${Date.now()}`;
+      const iframe = document.createElement("iframe");
+      const postForm = document.createElement("form");
+      const timeoutMs = 12000;
+      let submitted = false;
+      let settled = false;
+
+      const cleanup = () => {
+        iframe.removeEventListener("load", handleLoad);
+        window.clearTimeout(timeoutId);
+        postForm.remove();
+        iframe.remove();
+      };
+
+      const handleLoad = () => {
+        if (!submitted || settled) return;
+        settled = true;
+        cleanup();
+        console.log("invio completato");
+        resolve(true);
+      };
+
+      const timeoutId = window.setTimeout(() => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        reject(new Error("Errore webhook"));
+      }, timeoutMs);
+
+      iframe.hidden = true;
+      iframe.name = targetName;
+      iframe.setAttribute("aria-hidden", "true");
+      iframe.addEventListener("load", handleLoad);
+
+      postForm.method = "POST";
+      postForm.action = BACKEND_WEBHOOK_URL;
+      postForm.target = targetName;
+      postForm.hidden = true;
+
+      Object.entries(sessionData).forEach(([key, value]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = value == null ? "" : String(value);
+        postForm.appendChild(input);
+      });
+
+      document.body.appendChild(iframe);
+      document.body.appendChild(postForm);
+
+      submitted = true;
+      postForm.submit();
     });
-
-    console.log("invio completato");
-
-    if (!response.ok) {
-      console.warn("Backend save failed", response.status);
-      throw new Error("Errore webhook");
-    }
 
     return true;
   }

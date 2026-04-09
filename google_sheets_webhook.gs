@@ -76,11 +76,16 @@ var FRONTEND_TO_FIELD = {
 
 var TECHNICAL_BLOCK_RE = /\n---\nID:\s*([a-z0-9]{10})\nTS:\s*([^\n]+)\nSRC:\s*([^\n]+)\nSIG:\s*([a-f0-9]{10})\n---\s*$/;
 
+function doGet() {
+  return ContentService
+    .createTextOutput("WEBHOOK OK")
+    .setMimeType(ContentService.MimeType.TEXT);
+}
+
 function doPost(e) {
   try {
-    var body = extractRequestBody_(e);
-    var parsedInput = parseIncomingBody_(body);
-    var record = parsedInput.kind === "json"
+    var parsedInput = parseIncomingRequest_(e);
+    var record = parsedInput.kind === "json" || parsedInput.kind === "form"
       ? normalizeFrontendPayload_(parsedInput.data)
       : parseWhatsAppMessage_(parsedInput.data);
     var sheet = getTargetSheet_();
@@ -102,14 +107,15 @@ function doPost(e) {
   }
 }
 
-function extractRequestBody_(e) {
-  if (!e || !e.postData || typeof e.postData.contents !== "string") {
-    throw new Error("Missing request body");
+function parseIncomingRequest_(e) {
+  if (e && e.parameter && hasKnownFrontendKeys_(e.parameter)) {
+    return {
+      kind: "form",
+      data: e.parameter
+    };
   }
-  return e.postData.contents;
-}
 
-function parseIncomingBody_(body) {
+  var body = extractRequestBody_(e);
   var trimmed = String(body || "").trim();
   if (!trimmed) throw new Error("Empty request body");
 
@@ -124,6 +130,19 @@ function parseIncomingBody_(body) {
     kind: "whatsapp",
     data: trimmed
   };
+}
+
+function extractRequestBody_(e) {
+  if (!e || !e.postData || typeof e.postData.contents !== "string") {
+    throw new Error("Missing request body");
+  }
+  return e.postData.contents;
+}
+
+function hasKnownFrontendKeys_(payload) {
+  return Object.keys(FRONTEND_TO_FIELD).some(function(key) {
+    return Object.prototype.hasOwnProperty.call(payload, key);
+  });
 }
 
 function blankRecord_() {
