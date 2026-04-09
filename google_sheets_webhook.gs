@@ -86,7 +86,8 @@ var FRONTEND_TO_FIELD = {
   "note": "note"
 };
 
-var TECHNICAL_BLOCK_RE = /\n---\nID:\s*([a-z0-9]{10})\nTS:\s*([^\n]+)\nSRC:\s*([^\n]+)\nSIG:\s*([a-f0-9]{10})\n---\s*$/;
+var TECHNICAL_BLOCK_RE = /\n---\nTS:\s*([^\n]+)\nSIG:\s*([a-f0-9]{8,10})\n---\s*$/i;
+var LEGACY_TECHNICAL_BLOCK_RE = /\n---\nID:\s*([a-z0-9]{10})\nTS:\s*([^\n]+)\nSRC:\s*([^\n]+)\nSIG:\s*([a-f0-9]{8,10})\n---\s*$/i;
 
 function doGet() {
   return ContentService
@@ -97,19 +98,6 @@ function doGet() {
 function doPost(e) {
   try {
     var sheet = getTargetSheet_();
-    Logger.log("FULL EVENT: " + JSON.stringify(e));
-    Logger.log("PARAMETER: " + JSON.stringify(e.parameter));
-
-    if (e.postData) {
-      Logger.log("POSTDATA: " + e.postData.contents);
-    }
-
-    sheet.appendRow([
-      "DEBUG",
-      JSON.stringify(e.parameter),
-      e.postData ? e.postData.contents : "NO_POSTDATA"
-    ]);
-
     var parsedInput = parseIncomingRequest_(e);
     var record = parsedInput.kind === "json" || parsedInput.kind === "form"
       ? normalizeFrontendPayload_(parsedInput.data)
@@ -285,13 +273,17 @@ function parseWhatsAppMessage_(rawText) {
   var record = blankRecord_();
   var coreText = text;
   var technicalMatch = text.match(TECHNICAL_BLOCK_RE);
+  var legacyTechnicalMatch = null;
 
-  // ADDED: extract ID and SRC from WhatsApp technical block
   if (technicalMatch) {
-    record.ID = String(technicalMatch[1] || "").trim() || null;
-    record.timestamp = String(technicalMatch[2] || "").trim() || null;
-    record.src = String(technicalMatch[3] || "").trim() || null;
+    record.timestamp = String(technicalMatch[1] || "").trim() || null;
     coreText = text.slice(0, technicalMatch.index).replace(/\s+$/, "");
+  } else {
+    legacyTechnicalMatch = text.match(LEGACY_TECHNICAL_BLOCK_RE);
+    if (legacyTechnicalMatch) {
+      record.timestamp = String(legacyTechnicalMatch[2] || "").trim() || null;
+      coreText = text.slice(0, legacyTechnicalMatch.index).replace(/\s+$/, "");
+    }
   }
 
   coreText.split(/\r?\n/).forEach(function(line) {

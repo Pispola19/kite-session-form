@@ -1140,10 +1140,9 @@
   }
 
   function appendTechnicalBlockSync(body){
-    const id = randomRdkId();
     const ts = rdkTimestampRfc3339();
 
-    let block = `${body}\n---\nID: ${id}\nTS: ${ts}\nSRC: rdk_v1`;
+    let block = `${body}\n---\nTS: ${ts}`;
     const sig = generateSignatureSync(block);
     block += `\nSIG: ${sig}\n---`;
     return block;
