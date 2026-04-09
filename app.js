@@ -1294,13 +1294,22 @@
     if (!isBackendWebhookConfigured()) return false;
 
     try {
+      const payload = JSON.stringify(sessionData);
       console.log("SEND BACKEND", sessionData);
+
+      if (window.navigator?.sendBeacon) {
+        const blob = new Blob([payload], { type: "text/plain;charset=utf-8" });
+        const queued = window.navigator.sendBeacon(BACKEND_WEBHOOK_URL, blob);
+        if (queued) return true;
+      }
+
       const response = await fetch(BACKEND_WEBHOOK_URL, {
         method: "POST",
         headers: {
           "Content-Type": "text/plain;charset=utf-8"
         },
-        body: JSON.stringify(sessionData)
+        body: payload,
+        keepalive: true
       });
 
       if (!response.ok) {
@@ -1476,8 +1485,8 @@
       if (!message) return;
 
       setPreparedMessage(message);
+      await sendSessionToBackend(sessionData);
       openWhatsAppWithMessage(message);
-      sendSessionToBackend(sessionData);
       markFirstSubmitDone();
       refreshPreview();
       playSendFeedback();
