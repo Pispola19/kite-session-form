@@ -5,7 +5,7 @@
   if (!translations.en) return;
 
   const WHATSAPP_NUMBER = "393345280521";
-  const BACKEND_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwwyp3LMuGvklIYIGmC7SsbfgiBPlXazDSWhYOPcH4QXpg_vsC8v1QtzceLHOXMXAnn/exec";
+  const BACKEND_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbxxQp-bQwJnYQWZpyJ1jxpuMlYpMuOXGbB9avv8B2pMCjwD4LUYynSYJTe9-vrqVPA/exec";
   const BOARD_SIZE_OTHER = "__rdk_other__";
   const BRAND_OTHER = "__brand_other__";
   const MODEL_OTHER = "__model_other__";
