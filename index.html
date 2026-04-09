@@ -53,6 +53,20 @@
                   />
                 </div>
 
+                <div class="cell-gender-compact">
+                  <span id="genderLabel" class="gender-group-label" data-i18n="label_gender">Gender</span>
+                  <div class="gender-radio-group" role="radiogroup" aria-labelledby="genderLabel">
+                    <label class="gender-option" for="genderMale">
+                      <input id="genderMale" name="gender" type="radio" value="M" />
+                      <span data-i18n="opt_gender_male">Male</span>
+                    </label>
+                    <label class="gender-option" for="genderFemale">
+                      <input id="genderFemale" name="gender" type="radio" value="F" />
+                      <span data-i18n="opt_gender_female">Female</span>
+                    </label>
+                  </div>
+                </div>
+
                 <div class="cell-board-type">
                   <label for="board"><span data-i18n="label_board">Tipo tavola</span><span class="req-mark" aria-hidden="true">*</span></label>
                   <select id="board" name="board" required>

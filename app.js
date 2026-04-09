@@ -497,6 +497,20 @@
     el.value = String(value || "");
   }
 
+  function getGenderValue(){
+    const checked = document.querySelector('input[name="gender"]:checked');
+    const value = String(checked?.value || "").trim().toUpperCase();
+    if (value === "M" || value === "F") return value;
+    return null;
+  }
+
+  function setGenderValue(value){
+    const normalized = String(value || "").trim().toUpperCase();
+    document.querySelectorAll('input[name="gender"]').forEach((input) => {
+      input.checked = input.value === normalized;
+    });
+  }
+
   function selectedText(id){
     const el = document.getElementById(id);
     if (!el || !("selectedIndex" in el)) return "";
@@ -1150,6 +1164,7 @@
 
     return {
       weight: val("weight"),
+      gender: getGenderValue(),
       board: val("board"),
       boardSize: boardSizeSelection === BOARD_SIZE_OTHER ? val("boardSizeCustom") : boardSizeSelection,
       level: val("level"),
@@ -1168,6 +1183,7 @@
   function buildDraftData(){
     return {
       weight: val("weight"),
+      gender: getGenderValue(),
       board: val("board"),
       boardSize: val("boardSize"),
       boardSizeCustom: val("boardSizeCustom"),
@@ -1204,6 +1220,7 @@
     if (!draft || typeof draft !== "object") return false;
 
     setFieldValue("weight", draft.weight);
+    setGenderValue(draft.gender);
     setFieldValue("board", draft.board);
     setFieldValue("level", draft.level);
     setFieldValue("kite", draft.kite);
@@ -1439,6 +1456,12 @@
   });
 
   ["weight", "board", "boardSize", "boardSizeCustom", "level", "kite", "wind", "brand", "brandCustom", "model", "modelSelect", "modelCustom", "location", "water", "result", "note"].forEach(bindDraftField);
+  document.querySelectorAll('input[name="gender"]').forEach((input) => {
+    input.addEventListener("change", () => {
+      invalidatePreparedMessage();
+      saveDraftSession();
+    });
+  });
 
   flagButtons.forEach((btn) => {
     btn.addEventListener("click", () => {
