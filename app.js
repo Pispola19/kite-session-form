@@ -1458,12 +1458,12 @@
       if (!message) return;
 
       setPreparedMessage(message);
+      openWhatsAppWithMessage(message);
       sendSessionToBackend(sessionData);
       markFirstSubmitDone();
       refreshPreview();
       playSendFeedback();
       showSendNotice();
-      openWhatsAppWithMessage(message);
       setValidationNotice("");
     } finally {
       sendBtn.disabled = false;
