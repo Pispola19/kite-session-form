@@ -341,6 +341,7 @@
   const copyMessageBtn = document.getElementById("copyMessageBtn");
   const sendNotice = document.getElementById("sendNotice");
   const copyNotice = document.getElementById("copyNotice");
+  const safariSuggestion = document.getElementById("safariSuggestion");
   const validationNotice = document.getElementById("validationNotice");
   const flagButtons = Array.from(document.querySelectorAll(".flag-btn[data-lang]"));
 
@@ -441,6 +442,16 @@
     validationNotice.setAttribute("aria-hidden", "false");
   }
 
+  function isIphoneChromeIos(){
+    const ua = String(window.navigator.userAgent || "");
+    return /iPhone/i.test(ua) && /CriOS/i.test(ua);
+  }
+
+  function syncSafariSuggestion(){
+    if (!safariSuggestion) return;
+    safariSuggestion.hidden = !isIphoneChromeIos();
+  }
+
   function applyTranslations(lang){
     if (!translations[lang]) lang = "en";
     currentLang = lang;
@@ -463,6 +474,7 @@
     });
 
     syncFlagUI();
+    syncSafariSuggestion();
     syncBoardSizeOptions();
     validateFormFields({ showNotice: Boolean(validationNotice?.textContent) });
     refreshPreview();
