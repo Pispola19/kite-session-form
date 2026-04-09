@@ -1,6 +1,6 @@
 var FIXED_SCHEMA = [
   "timestamp",
-  "id",
+  "ID",
   "src",
   "weight",
   "gender",
@@ -18,6 +18,8 @@ var FIXED_SCHEMA = [
 ];
 
 var LABEL_TO_FIELD = {
+  "ID": "ID",
+  "SRC": "src",
   "Weight (kg)": "weight",
   "Gender": "gender",
   "Board type": "board",
@@ -38,9 +40,9 @@ var LABEL_TO_FIELD = {
 
 var HEADER_ALIASES = {
   "timestamp": "timestamp",
-  "id": "id",
-  "session_id": "id",
-  "session id": "id",
+  "id": "ID",
+  "session_id": "ID",
+  "session id": "ID",
   "src": "src",
   "weight": "weight",
   "gender": "gender",
@@ -63,9 +65,9 @@ var HEADER_ALIASES = {
 var FRONTEND_TO_FIELD = {
   "ts": "timestamp",
   "timestamp": "timestamp",
-  "ID": "id",
-  "id": "id",
-  "session_id": "id",
+  "ID": "ID",
+  "id": "ID",
+  "session_id": "ID",
   "src": "src",
   "weight": "weight",
   "gender": "gender",
@@ -101,7 +103,7 @@ function doPost(e) {
     record.timestamp = formatRomeDate_(new Date());
     var sheet = getTargetSheet_();
     var headers = getSheetHeaders_(sheet);
-    var sessionId = cleanValue_(record.id);
+    var sessionId = cleanValue_(record.ID);
 
     // ADDED: deduplication
     if (isDuplicateSessionId_(sheet, headers, sessionId)) {
@@ -239,7 +241,7 @@ function normalizeFrontendPayload_(payload) {
   // ADDED: ITALIAN KEYS SUPPORT
   var fallbackValues = {
     // ADDED: ID and src support
-    id: cleanValue_(payload.ID || payload.id || payload.session_id),
+    ID: cleanValue_(payload.ID || payload.id || payload.session_id),
     src: cleanValue_(payload.src),
     weight: cleanValue_(payload.weight || payload.peso_kg),
     gender: cleanValue_(payload.gender),
@@ -271,8 +273,11 @@ function parseWhatsAppMessage_(rawText) {
   var coreText = text;
   var technicalMatch = text.match(TECHNICAL_BLOCK_RE);
 
+  // ADDED: extract ID and SRC from WhatsApp technical block
   if (technicalMatch) {
+    record.ID = String(technicalMatch[1] || "").trim() || null;
     record.timestamp = String(technicalMatch[2] || "").trim() || null;
+    record.src = String(technicalMatch[3] || "").trim() || null;
     coreText = text.slice(0, technicalMatch.index).replace(/\s+$/, "");
   }
 
@@ -353,7 +358,7 @@ function getHeaderIndex_(headers, targetKey) {
 function isDuplicateSessionId_(sheet, headers, sessionId) {
   if (!sessionId) return false;
 
-  var sessionColumnIndex = getHeaderIndex_(headers, "id");
+  var sessionColumnIndex = getHeaderIndex_(headers, "ID");
   if (sessionColumnIndex === -1) return false;
 
   var lastRow = sheet.getLastRow();
