@@ -1162,7 +1162,10 @@
     const boardSizeSelection = val("boardSize");
 
     return {
+      // ADDED: session_id propagation
       session_id: generateSessionId(),
+      // ADDED: src tracking
+      src: "form_v1",
       weight: val("weight"),
       gender: getGenderValue(),
       board: val("board"),
@@ -1249,7 +1252,10 @@
     const iframe = document.createElement("iframe");
     const postForm = document.createElement("form");
     const payload = {
+      // ADDED: session_id propagation
       session_id: sessionData.session_id,
+      // ADDED: src tracking
+      src: sessionData.src,
       peso_kg: sessionData.weight,
       gender: sessionData.gender,
       tavola_tipo: sessionData.board,
@@ -1602,8 +1608,10 @@
         }
       }
 
+      console.log("Submitting:", sessionDataToSend);
       setPreparedMessage(message);
       await submitSessionToGoogleSheets(sessionDataToSend);
+      console.log("Sent session_id:", sessionDataToSend.session_id);
       clearPendingGoogleSubmit();
       openWhatsAppWithMessage(message);
       markFirstSubmitDone();
