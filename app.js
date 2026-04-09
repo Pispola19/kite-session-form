@@ -5,7 +5,7 @@
   if (!translations.en) return;
 
   const WHATSAPP_NUMBER = "393345280521";
-  const BACKEND_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbz1XcFkqp6LTeLEhe8nhMuv5F8ArXeX65gAY_HpmCjXDOtgCcYNoqWbPl46gDh-NNNQ/exec";
+  const BACKEND_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbwwyp3LMuGvklIYIGmC7SsbfgiBPlXazDSWhYOPcH4QXpg_vsC8v1QtzceLHOXMXAnn/exec";
   const BOARD_SIZE_OTHER = "__rdk_other__";
   const BRAND_OTHER = "__brand_other__";
   const MODEL_OTHER = "__model_other__";
@@ -1298,7 +1298,7 @@
       console.log("SEND BACKEND", sessionData);
 
       if (window.navigator?.sendBeacon) {
-        const blob = new Blob([payload], { type: "text/plain;charset=utf-8" });
+        const blob = new Blob([payload], { type: "application/json" });
         const queued = window.navigator.sendBeacon(BACKEND_WEBHOOK_URL, blob);
         if (queued) return true;
       }
@@ -1306,7 +1306,7 @@
       const response = await fetch(BACKEND_WEBHOOK_URL, {
         method: "POST",
         headers: {
-          "Content-Type": "text/plain;charset=utf-8"
+          "Content-Type": "application/json"
         },
         body: payload,
         keepalive: true
