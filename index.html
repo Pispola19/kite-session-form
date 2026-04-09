@@ -256,15 +256,21 @@
             </div>
 
             <div class="actions">
-              <button type="submit" class="primary" id="sendBtn" data-i18n="btn_send">Invia su WhatsApp</button>
+              <button type="submit" class="primary" id="sendBtn" data-i18n="btn_send">Invia (10 sec)</button>
               <button type="button" class="secondary" id="resetBtn" data-i18n="btn_reset">Reset</button>
             </div>
             <div class="fallback-actions">
               <button type="button" class="secondary" id="copyMessageBtn" data-i18n="btn_copy_message">Copia messaggio</button>
             </div>
+            <p class="hint safari-suggestion" data-i18n="submit_boost_hint">
+              Nessuna registrazione • 10 secondi • Aiuti a migliorare il kite per tutti
+            </p>
+            <p class="hint safari-suggestion" data-i18n="trust_hint">
+              I tuoi dati sono anonimi e usati solo per migliorare le misure consigliate
+            </p>
 
             <div class="error" id="validationNotice" role="alert" aria-live="assertive" aria-hidden="true"></div>
-            <div class="send-notice" id="sendNotice">Si apre WhatsApp: controlla il messaggio e premi Invia.</div>
+            <div class="send-notice" id="sendNotice">✔️ Dati salvati — grazie 🙏</div>
             <div class="send-notice" id="copyNotice" aria-live="polite"></div>
             <p class="hint safari-suggestion" id="safariSuggestion" data-i18n="safari_suggestion" hidden>
               Per un'apertura più veloce di WhatsApp, usa Safari

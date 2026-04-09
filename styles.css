@@ -370,6 +370,10 @@ button:disabled{
   color: rgba(159,178,214,.85);
 }
 
+.safari-suggestion{
+  text-align: center;
+}
+
 .hint-strong{
   margin: 8px 2px 0;
   padding: 12px 14px;
@@ -410,6 +414,11 @@ button:disabled{
   flex-wrap: wrap;
   align-items:center;
   margin-top: 6px;
+}
+
+.fallback-actions{
+  display:flex;
+  margin-top: -2px;
 }
 
 .thank-you-note{
