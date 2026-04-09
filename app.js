@@ -1172,8 +1172,8 @@
     };
   }
 
-  function submitSessionToGoogleSheets(sessionData){
-    if (!GOOGLE_SHEETS_WEBHOOK_URL) return;
+  async function submitSessionToGoogleSheets(sessionData){
+    if (!GOOGLE_SHEETS_WEBHOOK_URL) return false;
 
     const targetName = `rdk-google-submit-${Date.now()}`;
     const iframe = document.createElement("iframe");
@@ -1194,31 +1194,55 @@
       note: sessionData.note
     };
 
-    iframe.hidden = true;
-    iframe.name = targetName;
-    iframe.setAttribute("aria-hidden", "true");
+    return await new Promise((resolve, reject) => {
+      const timeoutMs = 12000;
+      let settled = false;
+      let submitted = false;
 
-    postForm.method = "POST";
-    postForm.action = GOOGLE_SHEETS_WEBHOOK_URL;
-    postForm.target = targetName;
-    postForm.hidden = true;
+      const cleanup = () => {
+        iframe.removeEventListener("load", handleLoad);
+        window.clearTimeout(timeoutId);
+        postForm.remove();
+        iframe.remove();
+      };
 
-    Object.entries(payload).forEach(([key, value]) => {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = key;
-      input.value = value == null ? "" : String(value);
-      postForm.appendChild(input);
+      const handleLoad = () => {
+        if (!submitted || settled) return;
+        settled = true;
+        cleanup();
+        resolve(true);
+      };
+
+      const timeoutId = window.setTimeout(() => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        reject(new Error("google_submit_timeout"));
+      }, timeoutMs);
+
+      iframe.hidden = true;
+      iframe.name = targetName;
+      iframe.setAttribute("aria-hidden", "true");
+      iframe.addEventListener("load", handleLoad);
+
+      postForm.method = "POST";
+      postForm.action = GOOGLE_SHEETS_WEBHOOK_URL;
+      postForm.target = targetName;
+      postForm.hidden = true;
+
+      Object.entries(payload).forEach(([key, value]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = value == null ? "" : String(value);
+        postForm.appendChild(input);
+      });
+
+      document.body.appendChild(iframe);
+      document.body.appendChild(postForm);
+      submitted = true;
+      postForm.submit();
     });
-
-    document.body.appendChild(iframe);
-    document.body.appendChild(postForm);
-    postForm.submit();
-
-    window.setTimeout(() => {
-      postForm.remove();
-      iframe.remove();
-    }, 15000);
   }
 
   function buildDraftData(){
@@ -1496,7 +1520,7 @@
       if (!message) return;
 
       setPreparedMessage(message);
-      submitSessionToGoogleSheets(sessionData);
+      await submitSessionToGoogleSheets(sessionData);
       openWhatsAppWithMessage(message);
       markFirstSubmitDone();
       refreshPreview();
@@ -1505,6 +1529,7 @@
       setValidationNotice("");
     } catch (error) {
       console.error(error);
+      window.alert("Errore salvataggio Google, invio WhatsApp bloccato.");
     } finally {
       sendBtn.disabled = false;
     }
