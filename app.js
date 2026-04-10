@@ -1456,6 +1456,22 @@
     return true;
   }
 
+  function resetFormAfterSuccessfulSubmit(){
+    form?.reset();
+    clearDraftSession();
+    invalidatePreparedMessage();
+    Object.keys(NUMERIC_RULES).forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.setCustomValidity("");
+    });
+    setValidationNotice("");
+    hideTransientNotice(copyNotice);
+    syncBoardSizeOptions();
+    syncBrandCustomUI();
+    syncModelUI();
+    refreshPreview();
+  }
+
   function buildCoreMessage(){
     const weight = val("weight");
     const board = val("board");
@@ -1681,7 +1697,7 @@
       clearPendingGoogleSubmit();
       openWhatsAppWithMessage(message);
       markFirstSubmitDone();
-      refreshPreview();
+      resetFormAfterSuccessfulSubmit();
       playSendFeedback();
       showSendNotice();
       setValidationNotice("");
