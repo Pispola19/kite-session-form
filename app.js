@@ -1244,6 +1244,10 @@
     pendingGoogleSubmit = null;
   });
 
+  window.addEventListener("pageshow", function() {
+    pendingGoogleSubmit = null;
+  });
+
   async function submitSessionToGoogleSheets(sessionData){
     if (!GOOGLE_SHEETS_WEBHOOK_URL) return false;
 
@@ -1271,7 +1275,7 @@
     };
 
     return await new Promise((resolve, reject) => {
-      const timeoutMs = 12000;
+      const timeoutMs = 25000;
       let submitted = false;
       const cleanup = () => {
         iframe.removeEventListener("load", handleLoad);
@@ -1282,6 +1286,11 @@
 
       const handleLoad = () => {
         if (!submitted || requestState.settled) return;
+        try {
+          if (iframe.contentWindow?.location?.href === "about:blank") return;
+        } catch (_) {
+          // Cross-origin iframe after a real submit: treat as successful load.
+        }
         requestState.settled = true;
         cleanup();
         if (pendingGoogleSubmit === requestState) {
