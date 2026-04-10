@@ -34,6 +34,8 @@
   const LS_PENDING_GOOGLE_SUBMIT = "pending_google_submit";
   const SESSION_ID_MONTH_CODES = ["ge", "fe", "ma", "ap", "mg", "gi", "lu", "ag", "se", "ot", "no", "di"];
   let pendingGoogleSubmit = null;
+  let sendNoticeState = "";
+  let sendCooldownTimerId = 0;
 
   const AIRUSH_MODELS = [
     "Ultra v5",
@@ -341,6 +343,8 @@
   const preview = document.getElementById("previewText");
   const sendBtn = document.getElementById("sendBtn");
   const sendNotice = document.getElementById("sendNotice");
+  const sendNoticeTitle = document.getElementById("sendNoticeTitle");
+  const sendNoticeBody = document.getElementById("sendNoticeBody");
   const validationNotice = document.getElementById("validationNotice");
   const flagButtons = Array.from(document.querySelectorAll(".flag-btn[data-lang]"));
 
@@ -368,6 +372,7 @@
     try {
       localStorage.setItem(LS_FIRST_SUBMIT, "true");
     } catch (_) {}
+    window.dispatchEvent(new CustomEvent("rdk:first-submit-done"));
   }
 
   function loadStoredJson(key){
@@ -397,13 +402,58 @@
 
   function hideSendNotice(){
     if (!sendNotice) return;
+    sendNoticeState = "";
+    sendNotice.classList.remove("send-notice--success", "send-notice--probable", "send-notice--error");
+    sendNotice.setAttribute("aria-live", "polite");
     sendNotice.hidden = true;
   }
 
-  function showSendNotice(){
+  function showSendNotice(state = "success"){
     if (!sendNotice) return;
-    sendNotice.textContent = t("send_notice");
+    const noticeCopyByState = {
+      success: {
+        title: "send_notice_success_title",
+        body: "send_notice_success_body",
+        className: "send-notice--success"
+      },
+      probable: {
+        title: "send_notice_success_title",
+        body: "send_notice_success_body",
+        className: "send-notice--success"
+      },
+      error: {
+        title: "send_notice_error_title",
+        body: "send_notice_error_body",
+        className: "send-notice--error"
+      }
+    };
+    const normalizedState = noticeCopyByState[state] ? state : "success";
+    const noticeCopy = noticeCopyByState[normalizedState];
+
+    sendNoticeState = normalizedState;
+    sendNotice.classList.remove("send-notice--success", "send-notice--probable", "send-notice--error");
+    sendNotice.classList.add(noticeCopy.className);
+    sendNotice.setAttribute("aria-live", normalizedState === "error" ? "assertive" : "polite");
+    if (sendNoticeTitle) {
+      sendNoticeTitle.textContent = t(noticeCopy.title);
+    }
+    if (sendNoticeBody) {
+      sendNoticeBody.textContent = t(noticeCopy.body);
+    }
+    if (!sendNoticeTitle || !sendNoticeBody) {
+      sendNotice.textContent = `${t(noticeCopy.title)}\n${t(noticeCopy.body)}`.trim();
+    }
     sendNotice.hidden = false;
+  }
+
+  function startSendCooldown(durationMs = 2500){
+    if (!sendBtn) return;
+    window.clearTimeout(sendCooldownTimerId);
+    sendBtn.disabled = true;
+    sendCooldownTimerId = window.setTimeout(() => {
+      sendBtn.disabled = false;
+      sendCooldownTimerId = 0;
+    }, durationMs);
   }
 
   function setValidationNotice(message){
@@ -442,7 +492,7 @@
     });
 
     if (sendNotice && !sendNotice.hidden) {
-      sendNotice.textContent = t("send_notice");
+      showSendNotice(sendNoticeState || "success");
     }
 
     syncFlagUI();
@@ -1259,10 +1309,20 @@
 
   // ADDED: postMessage confirmation
   window.addEventListener("message", function(event) {
-    if (!(event.data && event.data.ok === true)) return;
     if (!pendingGoogleSubmit) return;
     if (pendingGoogleSubmit.frameWindow && event.source !== pendingGoogleSubmit.frameWindow) return;
     if (pendingGoogleSubmit.settled) return;
+    if (!event.data) return;
+
+    if (event.data.ok === false) {
+      pendingGoogleSubmit.settled = true;
+      pendingGoogleSubmit.cleanup();
+      pendingGoogleSubmit.reject(new Error("google_submit_error"));
+      pendingGoogleSubmit = null;
+      return;
+    }
+
+    if (event.data.ok !== true) return;
 
     if (event.data.duplicate) {
       console.log("Duplicate ignored");
@@ -1332,13 +1392,14 @@
           if (pendingGoogleSubmit === requestState) {
             pendingGoogleSubmit = null;
           }
-          reject(new Error("google_submit_unconfirmed"));
+          resolve({ ok: false, probable: true, source: "iframe_load" });
         }, loadGraceMs);
       };
 
       const requestState = {
         cleanup,
         frameWindow: null,
+        reject,
         resolve,
         settled: false
       };
@@ -1626,9 +1687,13 @@
     const valid = validateFormFields({ showNotice: true });
     if (!valid || !form.reportValidity()) return;
 
+    hideSendNotice();
+    setValidationNotice("");
     sendBtn.disabled = true;
 
     let sessionDataToSend = null;
+    let pendingRecordToPersist = null;
+    let shouldApplyCooldown = false;
 
     try {
       const sessionData = buildSessionData();
@@ -1643,12 +1708,17 @@
       if (pendingRetry && !shouldReusePending) {
         try {
           const retryResult = await submitSessionToGoogleSheets(pendingRetry);
-          if (!(retryResult && retryResult.ok === true)) {
-            throw new Error("google_submit_unconfirmed");
+          if (retryResult?.ok === true) {
+            clearPendingGoogleSubmit();
+          } else if (retryResult?.probable === true) {
+            pendingRecordToPersist = pendingRetry;
+            savePendingGoogleSubmit(pendingRetry);
+          } else {
+            throw new Error("google_submit_error");
           }
-          clearPendingGoogleSubmit();
         } catch (retryError) {
-          if (retryError?.message === "google_submit_timeout" || retryError?.message === "google_submit_unconfirmed") {
+          if (retryError?.message === "google_submit_timeout" || retryError?.message === "google_submit_error") {
+            pendingRecordToPersist = pendingRetry;
             savePendingGoogleSubmit(pendingRetry);
           }
         }
@@ -1656,31 +1726,43 @@
 
       console.log("Submitting:", sessionDataToSend);
       const submitResult = await submitSessionToGoogleSheets(sessionDataToSend);
-      if (!(submitResult && submitResult.ok === true)) {
-        throw new Error("google_submit_unconfirmed");
+      const isCertainSuccess = submitResult?.ok === true;
+      const isProbableSuccess = submitResult?.probable === true;
+
+      if (!isCertainSuccess && !isProbableSuccess) {
+        throw new Error("google_submit_error");
       }
+
       console.log("Sent session_id:", sessionDataToSend.session_id);
-      clearPendingGoogleSubmit();
+      if (isCertainSuccess) {
+        if (pendingRecordToPersist) {
+          savePendingGoogleSubmit(pendingRecordToPersist);
+        } else {
+          clearPendingGoogleSubmit();
+        }
+      } else {
+        savePendingGoogleSubmit(sessionDataToSend);
+      }
       openWhatsAppWithMessage(message);
       markFirstSubmitDone();
       resetFormAfterSuccessfulSubmit();
       playSendFeedback();
-      showSendNotice();
+      showSendNotice(isCertainSuccess ? "success" : "probable");
       setValidationNotice("");
+      shouldApplyCooldown = true;
     } catch (error) {
       console.error(error);
-      if ((error?.message === "google_submit_timeout" || error?.message === "google_submit_unconfirmed") && sessionDataToSend) {
+      if ((error?.message === "google_submit_timeout" || error?.message === "google_submit_error") && sessionDataToSend) {
         savePendingGoogleSubmit(sessionDataToSend);
       }
-      if (error?.message === "google_submit_timeout") {
-        setValidationNotice("Google non ha risposto in tempo. Dati conservati, riprova.");
-      } else if (error?.message === "google_submit_unconfirmed") {
-        setValidationNotice("Google non ha confermato il salvataggio. Invio WhatsApp bloccato.");
-      } else {
-        setValidationNotice("Errore salvataggio Google, invio WhatsApp bloccato.");
-      }
+      setValidationNotice("");
+      showSendNotice("error");
     } finally {
-      sendBtn.disabled = false;
+      if (shouldApplyCooldown) {
+        startSendCooldown();
+      } else if (!sendCooldownTimerId) {
+        sendBtn.disabled = false;
+      }
     }
   });
 

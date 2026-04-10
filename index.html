@@ -276,8 +276,10 @@
             </div>
 
             <div class="error" id="validationNotice" role="alert" aria-live="assertive" aria-hidden="true"></div>
-            <div class="send-notice" id="sendNotice" aria-live="polite" hidden>✔️ Dati salvati — grazie 🙏
-Stai aiutando a migliorare le misure reali</div>
+            <div class="send-notice" id="sendNotice" aria-live="polite" hidden>
+              <div class="send-notice-title" id="sendNoticeTitle">✔️ DATI INVIATI</div>
+              <div class="send-notice-body" id="sendNoticeBody">Grazie 🙏</div>
+            </div>
 
             <div class="preview" aria-live="polite">
               <h2 data-i18n="preview_title">Anteprima payload</h2>
@@ -290,19 +292,19 @@ Stai aiutando a migliorare le misure reali</div>
       <section id="installBanner" class="install-banner" hidden aria-live="polite">
         <div class="install-banner-copy">
           <strong data-i18n="install_banner_title">Installa questa app (10 sec)</strong>
-          <p id="installBannerGeneric" class="install-banner-text" data-i18n="install_banner_generic" hidden>
-            Aggiungila alla schermata Home per riaprirla più velocemente dopo ogni sessione.
-          </p>
-          <p id="installBannerIos" class="install-banner-text" data-i18n="install_banner_ios" hidden>
-            iPhone/iPad: tocca Condividi e poi Aggiungi a Home.
-          </p>
+          <div id="installBannerIos" hidden>
+            <p class="install-banner-text install-banner-text--intro" data-i18n="install_banner_ios_intro">
+              Su iPhone:
+            </p>
+            <ol class="install-banner-steps">
+              <li data-i18n="install_banner_ios_step_1">Tocca il pulsante Condividi ⬇️</li>
+              <li data-i18n="install_banner_ios_step_2">Poi 'Aggiungi a Home'</li>
+            </ol>
+          </div>
           <p id="installBannerAndroid" class="install-banner-text" data-i18n="install_banner_android" hidden>
-            Android: se il browser mostra Installa, conferma. In alternativa usa il menu del browser.
+            Su Android: apri il menu del browser e scegli 'Installa app' se disponibile.
           </p>
         </div>
-        <button type="button" id="installBannerDismiss" class="install-banner-dismiss" data-i18n="install_banner_close" aria-label="Close install hint">
-          Chiudi
-        </button>
       </section>
 
     </div>

@@ -39,18 +39,15 @@ body{
 }
 
 .install-banner{
-  display:flex;
-  align-items:flex-start;
-  justify-content:space-between;
-  gap:14px;
+  display:block;
   margin: 18px 0 0;
   padding: 14px 16px;
-  border: 1px solid rgba(96,165,250,.32);
+  border: 1px solid rgba(96,165,250,.24);
   border-radius: var(--radius);
   background:
-    linear-gradient(135deg, rgba(96,165,250,.14), rgba(52,211,153,.10)),
+    linear-gradient(135deg, rgba(96,165,250,.10), rgba(52,211,153,.06)),
     rgba(15,27,50,.9);
-  box-shadow: var(--shadow);
+  box-shadow: 0 8px 22px rgba(0,0,0,.18);
 }
 
 .install-banner-copy{
@@ -59,37 +56,30 @@ body{
 
 .install-banner-copy strong{
   display:block;
-  margin-bottom: 4px;
-  font-size: 14px;
+  margin-bottom: 8px;
+  font-size: 16px;
   line-height: 1.35;
 }
 
 .install-banner-text{
   margin: 0;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.45;
   color: rgba(233,240,255,.84);
 }
 
-.install-banner-dismiss{
-  flex: 0 0 auto;
-  border: 1px solid rgba(159,178,214,.26);
-  background: rgba(11,18,32,.5);
-  color: var(--text);
-  border-radius: 999px;
-  padding: 7px 10px;
-  font-size: 12px;
-  cursor: pointer;
+.install-banner-text--intro{
+  margin-bottom: 6px;
+  font-weight: 700;
+  color: rgba(233,240,255,.96);
 }
 
-@media (max-width: 640px){
-  .install-banner{
-    flex-direction: column;
-  }
-
-  .install-banner-dismiss{
-    align-self: flex-start;
-  }
+.install-banner-steps{
+  margin: 0;
+  padding-left: 20px;
+  color: rgba(233,240,255,.92);
+  font-size: 13px;
+  line-height: 1.5;
 }
 
 header{
@@ -451,18 +441,52 @@ button:disabled{
 
 .send-notice{
   margin: 10px 0 0;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid var(--success-border);
-  background: var(--success-bg);
+  padding: 18px 16px;
+  border-radius: 16px;
   color: rgba(233,240,255,.98);
-  font-size: 14px;
-  line-height: 1.45;
-  white-space: pre-line;
+  text-align: center;
+  box-shadow: 0 12px 26px rgba(0,0,0,.22);
+  animation: sendNoticeEnter .28s ease-out;
+}
+
+.send-notice--success{
+  border: 1px solid var(--success-border);
+  background: linear-gradient(180deg, rgba(52,211,153,.18), rgba(52,211,153,.10));
+}
+
+.send-notice--error{
+  border: 1px solid rgba(251,113,133,.35);
+  background: linear-gradient(180deg, rgba(251,113,133,.18), rgba(251,113,133,.10));
+  color: rgba(255,235,240,.95);
+}
+
+.send-notice-title{
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  line-height: 1.1;
+}
+
+.send-notice-body{
+  margin-top: 8px;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.25;
 }
 
 .send-notice[hidden]{
   display:none;
+}
+
+@keyframes sendNoticeEnter{
+  from{
+    opacity: 0;
+    transform: translateY(6px) scale(.98);
+  }
+  to{
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .actions{
