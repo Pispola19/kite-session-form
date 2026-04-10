@@ -86,6 +86,30 @@ body.modal-open{
   line-height: 1.5;
 }
 
+.install-banner-platform + .install-banner-platform{
+  margin-top: 10px;
+}
+
+.install-banner-actions{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.install-banner-share{
+  background: linear-gradient(90deg, var(--accent2), var(--accent));
+  color: #06111f;
+  min-width: 138px;
+}
+
+.install-banner-share-status{
+  margin: 0;
+  font-size: 12px;
+  color: rgba(233,240,255,.86);
+}
+
 header{
   padding: 10px 4px 16px;
 }

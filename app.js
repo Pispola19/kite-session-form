@@ -343,6 +343,9 @@
   const preview = document.getElementById("previewText");
   const sendBtn = document.getElementById("sendBtn");
   const validationNotice = document.getElementById("validationNotice");
+  const installBanner = document.getElementById("installBanner");
+  const shareAppBtn = document.getElementById("shareAppBtn");
+  const shareAppStatus = document.getElementById("shareAppStatus");
   const statusModal = document.getElementById("statusModal");
   const statusModalTitle = document.getElementById("statusModalTitle");
   const statusModalBody = document.getElementById("statusModalBody");
@@ -491,6 +494,82 @@
     }, delayMs);
   }
 
+  function hidePostSubmitPanel(){
+    if (!installBanner) return;
+    installBanner.hidden = true;
+    if (shareAppStatus) {
+      shareAppStatus.textContent = "";
+      shareAppStatus.hidden = true;
+    }
+  }
+
+  function showPostSubmitPanel(){
+    if (!installBanner) return;
+    installBanner.hidden = false;
+  }
+
+  function setShareAppStatus(message, translationKey = ""){
+    if (!shareAppStatus) return;
+    if (!message) {
+      shareAppStatus.textContent = "";
+      shareAppStatus.removeAttribute("data-i18n-status");
+      shareAppStatus.hidden = true;
+      return;
+    }
+    shareAppStatus.textContent = message;
+    if (translationKey) {
+      shareAppStatus.setAttribute("data-i18n-status", translationKey);
+    } else {
+      shareAppStatus.removeAttribute("data-i18n-status");
+    }
+    shareAppStatus.hidden = false;
+  }
+
+  async function copyTextFallback(text){
+    const helper = document.createElement("textarea");
+    helper.value = text;
+    helper.setAttribute("readonly", "true");
+    helper.style.position = "absolute";
+    helper.style.left = "-9999px";
+    document.body.appendChild(helper);
+    helper.select();
+    helper.setSelectionRange(0, helper.value.length);
+    const copied = document.execCommand("copy");
+    helper.remove();
+    if (!copied) {
+      throw new Error("share_copy_failed");
+    }
+  }
+
+  async function handleShareApp(){
+    const shareUrl = window.location.href;
+    const shareData = {
+      title: document.title || t("pageTitle"),
+      text: t("share_app_text"),
+      url: shareUrl
+    };
+
+    try {
+      if (typeof window.navigator.share === "function") {
+        await window.navigator.share(shareData);
+        setShareAppStatus(t("share_app_status_shared"), "share_app_status_shared");
+        return;
+      }
+
+      if (window.navigator.clipboard?.writeText) {
+        await window.navigator.clipboard.writeText(shareUrl);
+        setShareAppStatus(t("share_app_status_copied"), "share_app_status_copied");
+        return;
+      }
+
+      await copyTextFallback(shareUrl);
+      setShareAppStatus(t("share_app_status_copied"), "share_app_status_copied");
+    } catch (error) {
+      if (error?.name === "AbortError") return;
+      setShareAppStatus(t("share_app_status_failed"), "share_app_status_failed");
+    }
+  }
+
   function setValidationNotice(message){
     if (!validationNotice) return;
     if (!message) {
@@ -528,6 +607,9 @@
 
     if (statusModal && !statusModal.hidden) {
       renderStatusModal(statusModalState || "pending");
+    }
+    if (shareAppStatus && !shareAppStatus.hidden) {
+      setShareAppStatus(shareAppStatus.getAttribute("data-i18n-status") ? t(shareAppStatus.getAttribute("data-i18n-status")) : shareAppStatus.textContent);
     }
 
     syncFlagUI();
@@ -1661,6 +1743,7 @@
 
     const persistDraft = () => {
       hideStatusModal();
+      hidePostSubmitPanel();
       saveDraftSession();
     };
 
@@ -1674,6 +1757,7 @@
 
     el.addEventListener("input", () => {
       hideStatusModal();
+      hidePostSubmitPanel();
       sanitizeNumericField(id);
       validateFormFields({ showNotice: false });
       refreshPreview();
@@ -1720,6 +1804,10 @@
     hideStatusModal({ enableSend: true });
   });
 
+  shareAppBtn?.addEventListener("click", () => {
+    handleShareApp();
+  });
+
   form?.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -1727,6 +1815,7 @@
     if (!valid || !form.reportValidity()) return;
 
     hideStatusModal({ enableSend: false });
+    hidePostSubmitPanel();
     setValidationNotice("");
     sendBtn.disabled = true;
     showStatusModal("pending");
@@ -1789,6 +1878,7 @@
       openWhatsAppWithMessage(message);
       markFirstSubmitDone();
       resetFormAfterSuccessfulSubmit();
+      showPostSubmitPanel();
       playSendFeedback();
       showStatusModal(isCertainSuccess ? "success" : "probable");
       setValidationNotice("");
@@ -1802,7 +1892,7 @@
       showStatusModal("error");
     } finally {
       if (shouldAutoCloseModal) {
-        scheduleStatusModalClose(1800);
+        scheduleStatusModalClose(2200);
       }
     }
   });
