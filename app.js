@@ -1170,16 +1170,31 @@
   // ADDED: session id
   function generateSessionId() {
     const parts = getRomeSessionIdParts();
-    return `${parts.day}${parts.monthCode}${parts.hour}${parts.minute}${randomRdkId(2)}`;
+    return `${parts.day}${parts.monthCode}${parts.hour}${parts.minute}${randomRdkId(4)}`;
+  }
+
+  function generateTechnicalId() {
+    if (window.crypto?.randomUUID) {
+      return window.crypto.randomUUID().replace(/-/g, "");
+    }
+
+    if (window.crypto?.getRandomValues) {
+      const buffer = new Uint8Array(16);
+      window.crypto.getRandomValues(buffer);
+      return Array.from(buffer, (byte) => byte.toString(16).padStart(2, "0")).join("");
+    }
+
+    return `${Date.now().toString(36)}${randomRdkId(20)}`;
   }
 
   function buildSessionData(){
     const boardSizeSelection = val("boardSize");
+    const eventTimestamp = new Date().toISOString();
 
     return {
-      // ADDED: session_id propagation
       session_id: generateSessionId(),
-      // ADDED: src tracking
+      technical_id: generateTechnicalId(),
+      event_ts: eventTimestamp,
       src: "form_v1",
       weight: val("weight"),
       gender: getGenderValue(),
@@ -1194,7 +1209,7 @@
       water: val("water"),
       result: val("result"),
       note: val("note"),
-      ts: new Date().toISOString()
+      ts: eventTimestamp
     };
   }
 
@@ -1271,9 +1286,9 @@
     const iframe = document.createElement("iframe");
     const postForm = document.createElement("form");
     const payload = {
-      // ADDED: session_id propagation
       session_id: sessionData.session_id,
-      // ADDED: src tracking
+      technical_id: sessionData.technical_id,
+      event_ts: sessionData.event_ts || sessionData.ts || "",
       src: sessionData.src,
       peso_kg: sessionData.weight,
       gender: sessionData.gender,
@@ -1292,10 +1307,13 @@
 
     return await new Promise((resolve, reject) => {
       const timeoutMs = 25000;
+      const loadGraceMs = 1500;
       let submitted = false;
+      let loadFailTimeoutId = 0;
       const cleanup = () => {
         iframe.removeEventListener("load", handleLoad);
         window.clearTimeout(timeoutId);
+        window.clearTimeout(loadFailTimeoutId);
         postForm.remove();
         iframe.remove();
       };
@@ -1305,6 +1323,17 @@
         try {
           if (iframe.contentWindow?.location?.href === "about:blank") return;
         } catch (_) {}
+
+        window.clearTimeout(loadFailTimeoutId);
+        loadFailTimeoutId = window.setTimeout(() => {
+          if (requestState.settled) return;
+          requestState.settled = true;
+          cleanup();
+          if (pendingGoogleSubmit === requestState) {
+            pendingGoogleSubmit = null;
+          }
+          reject(new Error("google_submit_unconfirmed"));
+        }, loadGraceMs);
       };
 
       const requestState = {
@@ -1619,7 +1648,7 @@
           }
           clearPendingGoogleSubmit();
         } catch (retryError) {
-          if (retryError?.message === "google_submit_timeout") {
+          if (retryError?.message === "google_submit_timeout" || retryError?.message === "google_submit_unconfirmed") {
             savePendingGoogleSubmit(pendingRetry);
           }
         }
@@ -1640,10 +1669,16 @@
       setValidationNotice("");
     } catch (error) {
       console.error(error);
-      if (error?.message === "google_submit_timeout" && sessionDataToSend) {
+      if ((error?.message === "google_submit_timeout" || error?.message === "google_submit_unconfirmed") && sessionDataToSend) {
         savePendingGoogleSubmit(sessionDataToSend);
       }
-      setValidationNotice("Errore salvataggio Google, invio WhatsApp bloccato.");
+      if (error?.message === "google_submit_timeout") {
+        setValidationNotice("Google non ha risposto in tempo. Dati conservati, riprova.");
+      } else if (error?.message === "google_submit_unconfirmed") {
+        setValidationNotice("Google non ha confermato il salvataggio. Invio WhatsApp bloccato.");
+      } else {
+        setValidationNotice("Errore salvataggio Google, invio WhatsApp bloccato.");
+      }
     } finally {
       sendBtn.disabled = false;
     }

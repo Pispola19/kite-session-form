@@ -11,6 +11,12 @@ from typing import Dict, Iterable, List, Optional
 
 FIXED_SCHEMA: List[str] = [
     "timestamp",
+    "event_ts",
+    "ingest_ts",
+    "ID",
+    "technical_id",
+    "session_id_raw",
+    "src",
     "weight",
     "gender",
     "board",
@@ -27,6 +33,12 @@ FIXED_SCHEMA: List[str] = [
 ]
 
 LABEL_TO_FIELD: Dict[str, str] = {
+    "ID": "ID",
+    "Technical ID": "technical_id",
+    "Session ID": "session_id_raw",
+    "Event TS": "event_ts",
+    "Ingest TS": "ingest_ts",
+    "SRC": "src",
     "Weight (kg)": "weight",
     "Gender": "gender",
     "Board type": "board",
@@ -47,6 +59,18 @@ LABEL_TO_FIELD: Dict[str, str] = {
 
 HEADER_ALIASES: Dict[str, str] = {
     "timestamp": "timestamp",
+    "event_ts": "event_ts",
+    "event ts": "event_ts",
+    "ingest_ts": "ingest_ts",
+    "ingest ts": "ingest_ts",
+    "id": "ID",
+    "technical_id": "technical_id",
+    "technical id": "technical_id",
+    "session_id": "session_id_raw",
+    "session id": "session_id_raw",
+    "session_id_raw": "session_id_raw",
+    "session id raw": "session_id_raw",
+    "src": "src",
     "weight": "weight",
     "gender": "gender",
     "board": "board",
@@ -66,8 +90,15 @@ HEADER_ALIASES: Dict[str, str] = {
 }
 
 FRONTEND_TO_FIELD: Dict[str, str] = {
-    "ts": "timestamp",
-    "timestamp": "timestamp",
+    "ts": "event_ts",
+    "timestamp": "event_ts",
+    "ID": "ID",
+    "id": "ID",
+    "technical_id": "technical_id",
+    "session_id": "session_id_raw",
+    "session_id_raw": "session_id_raw",
+    "event_ts": "event_ts",
+    "src": "src",
     "weight": "weight",
     "gender": "gender",
     "board": "board",
@@ -86,7 +117,10 @@ FRONTEND_TO_FIELD: Dict[str, str] = {
 }
 
 TECHNICAL_BLOCK_RE = re.compile(
-    r"\n---\nID:\s*(?P<id>[a-z0-9]{10})\nTS:\s*(?P<ts>[^\n]+)\nSRC:\s*(?P<src>[^\n]+)\nSIG:\s*(?P<sig>[a-f0-9]{10})\n---\s*\Z"
+    r"\n---\nTS:\s*(?P<ts>[^\n]+)\nSIG:\s*(?P<sig>[a-f0-9]{8,10})\n---\s*\Z"
+)
+LEGACY_TECHNICAL_BLOCK_RE = re.compile(
+    r"\n---\nID:\s*(?P<id>[a-z0-9]{10})\nTS:\s*(?P<ts>[^\n]+)\nSRC:\s*(?P<src>[^\n]+)\nSIG:\s*(?P<sig>[a-f0-9]{8,10})\n---\s*\Z"
 )
 
 
@@ -97,10 +131,15 @@ def _blank_record() -> Dict[str, Optional[str]]:
 def _split_message_and_technical_block(raw_text: str) -> tuple[str, Optional[str]]:
     text = str(raw_text or "").strip()
     match = TECHNICAL_BLOCK_RE.search(text)
-    if not match:
+    if match:
+        core_text = text[: match.start()].rstrip()
+        return core_text, match.group("ts").strip()
+
+    legacy_match = LEGACY_TECHNICAL_BLOCK_RE.search(text)
+    if not legacy_match:
         return text, None
-    core_text = text[: match.start()].rstrip()
-    return core_text, match.group("ts").strip()
+    core_text = text[: legacy_match.start()].rstrip()
+    return core_text, legacy_match.group("ts").strip()
 
 
 def _normalize_label(label: str) -> str:
@@ -147,6 +186,25 @@ def normalize_frontend_payload(payload: Dict[str, object]) -> Dict[str, Optional
         else:
             record[target_key] = value
 
+    fallback_values = {
+        "timestamp": _clean_value(payload.get("event_ts") or payload.get("ts") or payload.get("timestamp")),
+        "event_ts": _clean_value(payload.get("event_ts") or payload.get("ts") or payload.get("timestamp")),
+        "ID": _clean_value(payload.get("ID") or payload.get("id")),
+        "technical_id": _clean_value(payload.get("technical_id")),
+        "session_id_raw": _clean_value(
+            payload.get("session_id_raw")
+            or payload.get("session_id")
+            or payload.get("ID")
+            or payload.get("id")
+        ),
+        "src": _clean_value(payload.get("src")),
+    }
+
+    for target_key, value in fallback_values.items():
+        if value is None:
+            continue
+        record[target_key] = value
+
     return record
 
 
@@ -156,9 +214,16 @@ def parse_whatsapp_message(raw_text: str) -> Dict[str, Optional[str]]:
     Missing fields remain None and never cause positional shifts.
     """
 
-    core_text, timestamp = _split_message_and_technical_block(raw_text)
+    text = str(raw_text or "").strip()
+    core_text, timestamp = _split_message_and_technical_block(text)
     record = _blank_record()
     record["timestamp"] = timestamp
+    record["event_ts"] = timestamp
+
+    legacy_match = LEGACY_TECHNICAL_BLOCK_RE.search(text)
+    if legacy_match:
+        record["session_id_raw"] = legacy_match.group("id").strip()
+        record["src"] = legacy_match.group("src").strip()
 
     for line in core_text.splitlines():
         if ":" not in line:

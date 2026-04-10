@@ -1,6 +1,10 @@
 var FIXED_SCHEMA = [
   "timestamp",
+  "event_ts",
+  "ingest_ts",
   "ID",
+  "technical_id",
+  "session_id_raw",
   "src",
   "weight",
   "gender",
@@ -19,6 +23,10 @@ var FIXED_SCHEMA = [
 
 var LABEL_TO_FIELD = {
   "ID": "ID",
+  "Technical ID": "technical_id",
+  "Session ID": "session_id_raw",
+  "Event TS": "event_ts",
+  "Ingest TS": "ingest_ts",
   "SRC": "src",
   "Weight (kg)": "weight",
   "Gender": "gender",
@@ -40,9 +48,17 @@ var LABEL_TO_FIELD = {
 
 var HEADER_ALIASES = {
   "timestamp": "timestamp",
+  "event_ts": "event_ts",
+  "event ts": "event_ts",
+  "ingest_ts": "ingest_ts",
+  "ingest ts": "ingest_ts",
   "id": "ID",
-  "session_id": "ID",
-  "session id": "ID",
+  "technical_id": "technical_id",
+  "technical id": "technical_id",
+  "session_id": "session_id_raw",
+  "session id": "session_id_raw",
+  "session_id_raw": "session_id_raw",
+  "session id raw": "session_id_raw",
   "src": "src",
   "weight": "weight",
   "gender": "gender",
@@ -63,11 +79,14 @@ var HEADER_ALIASES = {
 };
 
 var FRONTEND_TO_FIELD = {
-  "ts": "timestamp",
-  "timestamp": "timestamp",
+  "ts": "event_ts",
+  "timestamp": "event_ts",
   "ID": "ID",
   "id": "ID",
-  "session_id": "ID",
+  "technical_id": "technical_id",
+  "session_id": "session_id_raw",
+  "session_id_raw": "session_id_raw",
+  "event_ts": "event_ts",
   "src": "src",
   "weight": "weight",
   "gender": "gender",
@@ -102,12 +121,21 @@ function doPost(e) {
     var record = parsedInput.kind === "json" || parsedInput.kind === "form"
       ? normalizeFrontendPayload_(parsedInput.data)
       : parseWhatsAppMessage_(parsedInput.data);
-    record.timestamp = formatRomeDate_(new Date());
     var headers = getSheetHeaders_(sheet);
-    var storageId = buildStoredId_(record.ID);
+    var ingestDate = new Date();
+    var eventTimestamp = cleanValue_(record.event_ts || record.timestamp);
+    var storageSeed = cleanValue_(record.technical_id || record.session_id_raw || record.ID);
+    var storageId = buildStoredId_(storageSeed);
 
-    // ADDED: deduplication
-    if (isDuplicateSessionId_(sheet, headers, storageId)) {
+    record.event_ts = eventTimestamp;
+    record.ingest_ts = formatIsoTimestamp_(ingestDate);
+    record.timestamp = eventTimestamp || record.ingest_ts;
+
+    if (isDuplicateRecord_(sheet, headers, {
+      technical_id: record.technical_id,
+      session_id_raw: record.session_id_raw,
+      ID: storageId
+    })) {
       return postMessageHtmlResponse_(true);
     }
 
@@ -155,6 +183,9 @@ function parseIncomingRequest_(e) {
   if (getValue("ID") !== "") mergedPayload.ID = getValue("ID");
   if (getValue("id") !== "") mergedPayload.id = getValue("id");
   if (getValue("session_id") !== "") mergedPayload.session_id = getValue("session_id");
+  if (getValue("session_id_raw") !== "") mergedPayload.session_id_raw = getValue("session_id_raw");
+  if (getValue("technical_id") !== "") mergedPayload.technical_id = getValue("technical_id");
+  if (getValue("event_ts") !== "") mergedPayload.event_ts = getValue("event_ts");
   if (getValue("src") !== "") mergedPayload.src = getValue("src");
   if (getValue("peso_kg") !== "") mergedPayload.peso_kg = getValue("peso_kg");
   if (getValue("tavola_tipo") !== "") mergedPayload.tavola_tipo = getValue("tavola_tipo");
@@ -244,8 +275,11 @@ function normalizeFrontendPayload_(payload) {
 
   // ADDED: ITALIAN KEYS SUPPORT
   var fallbackValues = {
-    // ADDED: ID and src support
-    ID: cleanValue_(payload.ID || payload.id || payload.session_id),
+    ID: cleanValue_(payload.ID || payload.id),
+    technical_id: cleanValue_(payload.technical_id),
+    session_id_raw: cleanValue_(payload.session_id_raw || payload.session_id || payload.ID || payload.id),
+    timestamp: cleanValue_(payload.event_ts || payload.ts || payload.timestamp),
+    event_ts: cleanValue_(payload.event_ts || payload.ts || payload.timestamp),
     src: cleanValue_(payload.src),
     weight: cleanValue_(payload.weight || payload.peso_kg),
     gender: cleanValue_(payload.gender),
@@ -280,11 +314,15 @@ function parseWhatsAppMessage_(rawText) {
 
   if (technicalMatch) {
     record.timestamp = String(technicalMatch[1] || "").trim() || null;
+    record.event_ts = record.timestamp;
     coreText = text.slice(0, technicalMatch.index).replace(/\s+$/, "");
   } else {
     legacyTechnicalMatch = text.match(LEGACY_TECHNICAL_BLOCK_RE);
     if (legacyTechnicalMatch) {
       record.timestamp = String(legacyTechnicalMatch[2] || "").trim() || null;
+      record.event_ts = record.timestamp;
+      record.session_id_raw = String(legacyTechnicalMatch[1] || "").trim() || null;
+      record.src = String(legacyTechnicalMatch[3] || "").trim() || null;
       coreText = text.slice(0, legacyTechnicalMatch.index).replace(/\s+$/, "");
     }
   }
@@ -343,7 +381,29 @@ function getSheetHeaders_(sheet) {
   if (!lastColumn) throw new Error("Sheet has no headers");
 
   var values = sheet.getRange(1, 1, 1, lastColumn).getValues();
-  return values[0];
+  return ensureFixedSchemaHeaders_(sheet, values[0]);
+}
+
+function ensureFixedSchemaHeaders_(sheet, headers) {
+  var currentHeaders = headers.slice();
+  var knownHeaders = {};
+
+  currentHeaders.forEach(function(header) {
+    var normalized = normalizeHeader_(header);
+    if (normalized) knownHeaders[normalized] = true;
+  });
+
+  var missingHeaders = FIXED_SCHEMA.filter(function(field) {
+    return !knownHeaders[field];
+  });
+
+  if (!missingHeaders.length) return currentHeaders;
+
+  sheet
+    .getRange(1, currentHeaders.length + 1, 1, missingHeaders.length)
+    .setValues([missingHeaders]);
+
+  return currentHeaders.concat(missingHeaders);
 }
 
 function buildSheetRow_(record, headers) {
@@ -362,19 +422,35 @@ function getHeaderIndex_(headers, targetKey) {
   return -1;
 }
 
-// ADDED: deduplication
-function isDuplicateSessionId_(sheet, headers, sessionId) {
-  if (!sessionId) return false;
-
-  var sessionColumnIndex = getHeaderIndex_(headers, "ID");
-  if (sessionColumnIndex === -1) return false;
-
+function isDuplicateRecord_(sheet, headers, identities) {
   var lastRow = sheet.getLastRow();
   if (lastRow <= 1) return false;
 
-  var values = sheet.getRange(2, sessionColumnIndex + 1, lastRow - 1, 1).getValues();
-  return values.some(function(row) {
-    return cleanValue_(row[0]) === sessionId;
+  var technicalId = cleanValue_(identities && identities.technical_id);
+  var sessionIdRaw = cleanValue_(identities && identities.session_id_raw);
+  var storageId = cleanValue_(identities && identities.ID);
+  var checks = [];
+
+  if (technicalId !== null) {
+    checks.push({ header: "technical_id", value: technicalId });
+  }
+
+  if (sessionIdRaw !== null) {
+    checks.push({ header: "session_id_raw", value: sessionIdRaw });
+  }
+
+  if (!checks.length && storageId !== null) {
+    checks.push({ header: "ID", value: storageId });
+  }
+
+  return checks.some(function(check) {
+    var columnIndex = getHeaderIndex_(headers, check.header);
+    if (columnIndex === -1) return false;
+
+    var values = sheet.getRange(2, columnIndex + 1, lastRow - 1, 1).getValues();
+    return values.some(function(row) {
+      return cleanValue_(row[0]) === check.value;
+    });
   });
 }
 
@@ -416,6 +492,6 @@ function postMessageHtmlResponse_(isDuplicate) {
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
 }
 
-function formatRomeDate_(date) {
-  return Utilities.formatDate(date, "Europe/Rome", "yyyy-MM-dd");
+function formatIsoTimestamp_(date) {
+  return new Date(date).toISOString();
 }
