@@ -339,18 +339,13 @@
 
   const form = document.getElementById("kiteForm");
   const preview = document.getElementById("previewText");
-  const resetBtn = document.getElementById("resetBtn");
   const sendBtn = document.getElementById("sendBtn");
-  const copyMessageBtn = document.getElementById("copyMessageBtn");
   const sendNotice = document.getElementById("sendNotice");
-  const copyNotice = document.getElementById("copyNotice");
-  const safariSuggestion = document.getElementById("safariSuggestion");
   const validationNotice = document.getElementById("validationNotice");
   const flagButtons = Array.from(document.querySelectorAll(".flag-btn[data-lang]"));
 
   let currentLang = "it";
   let sendAudioCtx = null;
-  let lastPreparedMessage = "";
 
   function t(key){
     const pack = translations[currentLang] || translations.en;
@@ -400,31 +395,15 @@
     } catch (_) {}
   }
 
-  function setPreparedMessage(message){
-    lastPreparedMessage = String(message || "");
+  function hideSendNotice(){
+    if (!sendNotice) return;
+    sendNotice.hidden = true;
   }
 
-  function invalidatePreparedMessage(){
-    lastPreparedMessage = "";
-  }
-
-  function hideTransientNotice(el){
-    if (!el) return;
-    const timerId = Number(el.dataset.hideTimer || 0);
-    if (timerId) window.clearTimeout(timerId);
-    delete el.dataset.hideTimer;
-    el.style.display = "none";
-    el.textContent = "";
-  }
-
-  function showTransientNotice(el, message){
-    if (!el) return;
-    hideTransientNotice(el);
-    el.textContent = message;
-    el.style.display = "block";
-    el.dataset.hideTimer = String(window.setTimeout(() => {
-      hideTransientNotice(el);
-    }, 2600));
+  function showSendNotice(){
+    if (!sendNotice) return;
+    sendNotice.textContent = t("send_notice");
+    sendNotice.hidden = false;
   }
 
   function setValidationNotice(message){
@@ -439,16 +418,6 @@
     validationNotice.textContent = message;
     validationNotice.style.display = "block";
     validationNotice.setAttribute("aria-hidden", "false");
-  }
-
-  function isIphoneChromeIos(){
-    const ua = String(window.navigator.userAgent || "");
-    return /iPhone/i.test(ua) && /CriOS/i.test(ua);
-  }
-
-  function syncSafariSuggestion(){
-    if (!safariSuggestion) return;
-    safariSuggestion.hidden = !isIphoneChromeIos();
   }
 
   function applyTranslations(lang){
@@ -472,8 +441,11 @@
       el.setAttribute("placeholder", t(key));
     });
 
+    if (sendNotice && !sendNotice.hidden) {
+      sendNotice.textContent = t("send_notice");
+    }
+
     syncFlagUI();
-    syncSafariSuggestion();
     syncBoardSizeOptions();
     validateFormFields({ showNotice: Boolean(validationNotice?.textContent) });
     refreshPreview();
@@ -1332,15 +1304,7 @@
         if (!submitted || requestState.settled) return;
         try {
           if (iframe.contentWindow?.location?.href === "about:blank") return;
-        } catch (_) {
-          // Cross-origin iframe after a real submit: treat as successful load.
-        }
-        requestState.settled = true;
-        cleanup();
-        if (pendingGoogleSubmit === requestState) {
-          pendingGoogleSubmit = null;
-        }
-        resolve({ ok: true, fallback: "iframe_load" });
+        } catch (_) {}
       };
 
       const requestState = {
@@ -1459,13 +1423,11 @@
   function resetFormAfterSuccessfulSubmit(){
     form?.reset();
     clearDraftSession();
-    invalidatePreparedMessage();
     Object.keys(NUMERIC_RULES).forEach((id) => {
       const el = document.getElementById(id);
       if (el) el.setCustomValidity("");
     });
     setValidationNotice("");
-    hideTransientNotice(copyNotice);
     syncBoardSizeOptions();
     syncBrandCustomUI();
     syncModelUI();
@@ -1548,10 +1510,6 @@
     } catch (_) {}
   }
 
-  function showSendNotice(){
-    showTransientNotice(sendNotice, t("send_notice"));
-  }
-
   function openWhatsAppWithMessage(message){
     const number = String(WHATSAPP_NUMBER).replace(/\D/g, "");
     const encoded = encodeURIComponent(String(message || ""));
@@ -1577,7 +1535,7 @@
     if (!el) return;
 
     const persistDraft = () => {
-      invalidatePreparedMessage();
+      hideSendNotice();
       saveDraftSession();
     };
 
@@ -1585,38 +1543,12 @@
     el.addEventListener("change", persistDraft);
   }
 
-  async function copyTextToClipboard(text){
-    if (window.navigator?.clipboard?.writeText) {
-      await window.navigator.clipboard.writeText(text);
-      return true;
-    }
-
-    const helper = document.createElement("textarea");
-    helper.value = text;
-    helper.setAttribute("readonly", "");
-    helper.style.position = "fixed";
-    helper.style.opacity = "0";
-    helper.style.pointerEvents = "none";
-    document.body.appendChild(helper);
-    helper.select();
-    helper.setSelectionRange(0, helper.value.length);
-
-    let copied = false;
-    try {
-      copied = document.execCommand("copy");
-    } catch (_) {
-      copied = false;
-    }
-
-    helper.remove();
-    return copied;
-  }
-
   Object.keys(NUMERIC_RULES).forEach((id) => {
     const el = document.getElementById(id);
     if (!el) return;
 
     el.addEventListener("input", () => {
+      hideSendNotice();
       sanitizeNumericField(id);
       validateFormFields({ showNotice: false });
       refreshPreview();
@@ -1681,7 +1613,10 @@
 
       if (pendingRetry && !shouldReusePending) {
         try {
-          await submitSessionToGoogleSheets(pendingRetry);
+          const retryResult = await submitSessionToGoogleSheets(pendingRetry);
+          if (!(retryResult && retryResult.ok === true)) {
+            throw new Error("google_submit_unconfirmed");
+          }
           clearPendingGoogleSubmit();
         } catch (retryError) {
           if (retryError?.message === "google_submit_timeout") {
@@ -1691,8 +1626,10 @@
       }
 
       console.log("Submitting:", sessionDataToSend);
-      setPreparedMessage(message);
-      await submitSessionToGoogleSheets(sessionDataToSend);
+      const submitResult = await submitSessionToGoogleSheets(sessionDataToSend);
+      if (!(submitResult && submitResult.ok === true)) {
+        throw new Error("google_submit_unconfirmed");
+      }
       console.log("Sent session_id:", sessionDataToSend.session_id);
       clearPendingGoogleSubmit();
       openWhatsAppWithMessage(message);
@@ -1706,44 +1643,9 @@
       if (error?.message === "google_submit_timeout" && sessionDataToSend) {
         savePendingGoogleSubmit(sessionDataToSend);
       }
-      window.alert("Errore salvataggio Google, invio WhatsApp bloccato.");
+      setValidationNotice("Errore salvataggio Google, invio WhatsApp bloccato.");
     } finally {
       sendBtn.disabled = false;
-    }
-  });
-
-  resetBtn?.addEventListener("click", () => {
-    form?.reset();
-    clearDraftSession();
-    invalidatePreparedMessage();
-    Object.keys(NUMERIC_RULES).forEach((id) => {
-      const el = document.getElementById(id);
-      if (el) el.setCustomValidity("");
-    });
-    setValidationNotice("");
-    hideTransientNotice(sendNotice);
-    hideTransientNotice(copyNotice);
-    syncBoardSizeOptions();
-    syncBrandCustomUI();
-    syncModelUI();
-    refreshPreview();
-  });
-
-  copyMessageBtn?.addEventListener("click", async () => {
-    try {
-      const message = lastPreparedMessage || buildOutgoingMessageSync();
-      if (!message) {
-        showTransientNotice(copyNotice, t("copy_notice_empty"));
-        return;
-      }
-
-      const copied = await copyTextToClipboard(message);
-      if (!copied) throw new Error("copy_failed");
-
-      setPreparedMessage(message);
-      showTransientNotice(copyNotice, t("copy_notice_success"));
-    } catch (_) {
-      showTransientNotice(copyNotice, t("copy_notice_failure"));
     }
   });
 

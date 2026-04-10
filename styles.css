@@ -43,7 +43,7 @@ body{
   align-items:flex-start;
   justify-content:space-between;
   gap:14px;
-  margin: 0 0 16px;
+  margin: 18px 0 0;
   padding: 14px 16px;
   border: 1px solid rgba(96,165,250,.32);
   border-radius: var(--radius);
@@ -438,21 +438,6 @@ button:disabled{
   color: rgba(159,178,214,.85);
 }
 
-.safari-suggestion{
-  text-align: center;
-}
-
-.hint-strong{
-  margin: 8px 2px 0;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(96,165,250,.28);
-  background: rgba(96,165,250,.10);
-  color: rgba(233,240,255,.98);
-  font-size: 14px;
-  line-height: 1.45;
-}
-
 .error{
   display:none;
   margin: 10px 0 0;
@@ -465,7 +450,6 @@ button:disabled{
 }
 
 .send-notice{
-  display:none;
   margin: 10px 0 0;
   padding: 12px 14px;
   border-radius: 12px;
@@ -474,6 +458,11 @@ button:disabled{
   color: rgba(233,240,255,.98);
   font-size: 14px;
   line-height: 1.45;
+  white-space: pre-line;
+}
+
+.send-notice[hidden]{
+  display:none;
 }
 
 .actions{
@@ -482,23 +471,6 @@ button:disabled{
   flex-wrap: wrap;
   align-items:center;
   margin-top: 6px;
-}
-
-.fallback-actions{
-  display:flex;
-  margin-top: -2px;
-}
-
-.thank-you-note{
-  margin: 14px 2px 4px;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid rgba(52,211,153,.28);
-  background: rgba(52,211,153,.08);
-  color: rgba(233,240,255,.95);
-  font-size: 14px;
-  line-height: 1.45;
-  white-space: pre-line;
 }
 
 button{
