@@ -1142,6 +1142,7 @@
   function appendTechnicalBlockSync(body){
     const ts = rdkTimestampRfc3339();
 
+    // Keep the WhatsApp technical block minimal: TS + SIG only.
     let block = `${body}\n---\nTS: ${ts}`;
     const sig = generateSignatureSync(block);
     block += `\nSIG: ${sig}\n---`;
