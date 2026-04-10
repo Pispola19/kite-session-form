@@ -1272,10 +1272,22 @@
 
     return await new Promise((resolve, reject) => {
       const timeoutMs = 12000;
+      let submitted = false;
       const cleanup = () => {
+        iframe.removeEventListener("load", handleLoad);
         window.clearTimeout(timeoutId);
         postForm.remove();
         iframe.remove();
+      };
+
+      const handleLoad = () => {
+        if (!submitted || requestState.settled) return;
+        requestState.settled = true;
+        cleanup();
+        if (pendingGoogleSubmit === requestState) {
+          pendingGoogleSubmit = null;
+        }
+        resolve({ ok: true, fallback: "iframe_load" });
       };
 
       const requestState = {
@@ -1298,6 +1310,7 @@
       iframe.hidden = true;
       iframe.name = targetName;
       iframe.setAttribute("aria-hidden", "true");
+      iframe.addEventListener("load", handleLoad);
 
       postForm.method = "POST";
       postForm.action = GOOGLE_SHEETS_WEBHOOK_URL;
@@ -1316,6 +1329,7 @@
       document.body.appendChild(postForm);
       requestState.frameWindow = iframe.contentWindow;
       pendingGoogleSubmit = requestState;
+      submitted = true;
       postForm.submit();
     });
   }
