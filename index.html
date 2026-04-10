@@ -275,12 +275,6 @@
               <button type="submit" class="primary" id="sendBtn" data-i18n="btn_send">Invia (10 sec)</button>
             </div>
 
-            <div class="error" id="validationNotice" role="alert" aria-live="assertive" aria-hidden="true"></div>
-            <div class="send-notice" id="sendNotice" aria-live="polite" hidden>
-              <div class="send-notice-title" id="sendNoticeTitle">✔️ DATI INVIATI</div>
-              <div class="send-notice-body" id="sendNoticeBody">Grazie 🙏</div>
-            </div>
-
             <div class="preview" aria-live="polite">
               <h2 data-i18n="preview_title">Anteprima payload</h2>
               <pre id="previewText" data-i18n="preview_empty">Compila i campi obbligatori per generare il messaggio...</pre>
@@ -306,6 +300,16 @@
           </p>
         </div>
       </section>
+
+      <div class="status-modal" id="statusModal" hidden aria-hidden="true">
+        <div class="status-modal__backdrop"></div>
+        <div class="status-modal__card" role="alertdialog" aria-modal="true" aria-labelledby="statusModalTitle" aria-describedby="statusModalBody">
+          <div class="status-modal__spinner" id="statusModalSpinner" aria-hidden="true"></div>
+          <div class="status-modal__title" id="statusModalTitle">Invio in corso...</div>
+          <div class="status-modal__body" id="statusModalBody" hidden></div>
+          <button type="button" class="status-modal__close" id="statusModalClose" data-i18n="status_modal_close" hidden>Chiudi</button>
+        </div>
+      </div>
 
     </div>
   </body>

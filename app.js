@@ -34,8 +34,8 @@
   const LS_PENDING_GOOGLE_SUBMIT = "pending_google_submit";
   const SESSION_ID_MONTH_CODES = ["ge", "fe", "ma", "ap", "mg", "gi", "lu", "ag", "se", "ot", "no", "di"];
   let pendingGoogleSubmit = null;
-  let sendNoticeState = "";
-  let sendCooldownTimerId = 0;
+  let statusModalState = "";
+  let statusModalTimerId = 0;
 
   const AIRUSH_MODELS = [
     "Ultra v5",
@@ -342,10 +342,12 @@
   const form = document.getElementById("kiteForm");
   const preview = document.getElementById("previewText");
   const sendBtn = document.getElementById("sendBtn");
-  const sendNotice = document.getElementById("sendNotice");
-  const sendNoticeTitle = document.getElementById("sendNoticeTitle");
-  const sendNoticeBody = document.getElementById("sendNoticeBody");
   const validationNotice = document.getElementById("validationNotice");
+  const statusModal = document.getElementById("statusModal");
+  const statusModalTitle = document.getElementById("statusModalTitle");
+  const statusModalBody = document.getElementById("statusModalBody");
+  const statusModalSpinner = document.getElementById("statusModalSpinner");
+  const statusModalClose = document.getElementById("statusModalClose");
   const flagButtons = Array.from(document.querySelectorAll(".flag-btn[data-lang]"));
 
   let currentLang = "it";
@@ -400,60 +402,93 @@
     } catch (_) {}
   }
 
-  function hideSendNotice(){
-    if (!sendNotice) return;
-    sendNoticeState = "";
-    sendNotice.classList.remove("send-notice--success", "send-notice--probable", "send-notice--error");
-    sendNotice.setAttribute("aria-live", "polite");
-    sendNotice.hidden = true;
+  function hideStatusModal({ enableSend = true } = {}){
+    if (!statusModal) return;
+    window.clearTimeout(statusModalTimerId);
+    statusModalTimerId = 0;
+    statusModalState = "";
+    statusModal.hidden = true;
+    statusModal.setAttribute("aria-hidden", "true");
+    statusModal.classList.remove("status-modal--pending", "status-modal--success", "status-modal--error");
+    document.body.classList.remove("modal-open");
+    if (enableSend && sendBtn) {
+      sendBtn.disabled = false;
+    }
   }
 
-  function showSendNotice(state = "success"){
-    if (!sendNotice) return;
-    const noticeCopyByState = {
+  function renderStatusModal(state = "pending"){
+    if (!statusModal) return;
+    const modalCopyByState = {
+      pending: {
+        title: "status_modal_pending_title",
+        body: "",
+        className: "status-modal--pending",
+        showSpinner: true,
+        showClose: false
+      },
       success: {
         title: "send_notice_success_title",
         body: "send_notice_success_body",
-        className: "send-notice--success"
+        className: "status-modal--success",
+        showSpinner: false,
+        showClose: false
       },
       probable: {
         title: "send_notice_success_title",
         body: "send_notice_success_body",
-        className: "send-notice--success"
+        className: "status-modal--success",
+        showSpinner: false,
+        showClose: false
       },
       error: {
         title: "send_notice_error_title",
         body: "send_notice_error_body",
-        className: "send-notice--error"
+        className: "status-modal--error",
+        showSpinner: false,
+        showClose: true
       }
     };
-    const normalizedState = noticeCopyByState[state] ? state : "success";
-    const noticeCopy = noticeCopyByState[normalizedState];
+    const normalizedState = modalCopyByState[state] ? state : "pending";
+    const modalCopy = modalCopyByState[normalizedState];
 
-    sendNoticeState = normalizedState;
-    sendNotice.classList.remove("send-notice--success", "send-notice--probable", "send-notice--error");
-    sendNotice.classList.add(noticeCopy.className);
-    sendNotice.setAttribute("aria-live", normalizedState === "error" ? "assertive" : "polite");
-    if (sendNoticeTitle) {
-      sendNoticeTitle.textContent = t(noticeCopy.title);
+    statusModalState = normalizedState;
+    statusModal.classList.remove("status-modal--pending", "status-modal--success", "status-modal--error");
+    statusModal.classList.add(modalCopy.className);
+    statusModal.setAttribute("aria-hidden", "false");
+    if (statusModalTitle) {
+      statusModalTitle.textContent = t(modalCopy.title);
     }
-    if (sendNoticeBody) {
-      sendNoticeBody.textContent = t(noticeCopy.body);
+    if (statusModalBody) {
+      const bodyText = modalCopy.body ? t(modalCopy.body) : "";
+      statusModalBody.textContent = bodyText;
+      statusModalBody.hidden = !bodyText;
     }
-    if (!sendNoticeTitle || !sendNoticeBody) {
-      sendNotice.textContent = `${t(noticeCopy.title)}\n${t(noticeCopy.body)}`.trim();
+    if (statusModalSpinner) {
+      statusModalSpinner.hidden = !modalCopy.showSpinner;
     }
-    sendNotice.hidden = false;
+    if (statusModalClose) {
+      statusModalClose.hidden = !modalCopy.showClose;
+    }
   }
 
-  function startSendCooldown(durationMs = 2500){
-    if (!sendBtn) return;
-    window.clearTimeout(sendCooldownTimerId);
-    sendBtn.disabled = true;
-    sendCooldownTimerId = window.setTimeout(() => {
-      sendBtn.disabled = false;
-      sendCooldownTimerId = 0;
-    }, durationMs);
+  function showStatusModal(state = "pending"){
+    if (!statusModal) return;
+    window.clearTimeout(statusModalTimerId);
+    statusModalTimerId = 0;
+    renderStatusModal(state);
+    statusModal.hidden = false;
+    document.body.classList.add("modal-open");
+  }
+
+  function scheduleStatusModalClose(delayMs = 1800){
+    if (!statusModal) {
+      if (sendBtn) sendBtn.disabled = false;
+      return;
+    }
+    window.clearTimeout(statusModalTimerId);
+    statusModalTimerId = window.setTimeout(() => {
+      hideStatusModal({ enableSend: true });
+    }, delayMs);
   }
 
   function setValidationNotice(message){
@@ -491,8 +526,8 @@
       el.setAttribute("placeholder", t(key));
     });
 
-    if (sendNotice && !sendNotice.hidden) {
-      showSendNotice(sendNoticeState || "success");
+    if (statusModal && !statusModal.hidden) {
+      renderStatusModal(statusModalState || "pending");
     }
 
     syncFlagUI();
@@ -1625,7 +1660,7 @@
     if (!el) return;
 
     const persistDraft = () => {
-      hideSendNotice();
+      hideStatusModal();
       saveDraftSession();
     };
 
@@ -1638,7 +1673,7 @@
     if (!el) return;
 
     el.addEventListener("input", () => {
-      hideSendNotice();
+      hideStatusModal();
       sanitizeNumericField(id);
       validateFormFields({ showNotice: false });
       refreshPreview();
@@ -1681,19 +1716,24 @@
     });
   });
 
+  statusModalClose?.addEventListener("click", () => {
+    hideStatusModal({ enableSend: true });
+  });
+
   form?.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const valid = validateFormFields({ showNotice: true });
     if (!valid || !form.reportValidity()) return;
 
-    hideSendNotice();
+    hideStatusModal({ enableSend: false });
     setValidationNotice("");
     sendBtn.disabled = true;
+    showStatusModal("pending");
 
     let sessionDataToSend = null;
     let pendingRecordToPersist = null;
-    let shouldApplyCooldown = false;
+    let shouldAutoCloseModal = false;
 
     try {
       const sessionData = buildSessionData();
@@ -1703,7 +1743,10 @@
       saveLastSession(sessionData);
       saveDraftSession();
       const message = buildOutgoingMessageSync();
-      if (!message) return;
+      if (!message) {
+        hideStatusModal({ enableSend: true });
+        return;
+      }
 
       if (pendingRetry && !shouldReusePending) {
         try {
@@ -1747,21 +1790,19 @@
       markFirstSubmitDone();
       resetFormAfterSuccessfulSubmit();
       playSendFeedback();
-      showSendNotice(isCertainSuccess ? "success" : "probable");
+      showStatusModal(isCertainSuccess ? "success" : "probable");
       setValidationNotice("");
-      shouldApplyCooldown = true;
+      shouldAutoCloseModal = true;
     } catch (error) {
       console.error(error);
       if ((error?.message === "google_submit_timeout" || error?.message === "google_submit_error") && sessionDataToSend) {
         savePendingGoogleSubmit(sessionDataToSend);
       }
       setValidationNotice("");
-      showSendNotice("error");
+      showStatusModal("error");
     } finally {
-      if (shouldApplyCooldown) {
-        startSendCooldown();
-      } else if (!sendCooldownTimerId) {
-        sendBtn.disabled = false;
+      if (shouldAutoCloseModal) {
+        scheduleStatusModalClose(1800);
       }
     }
   });
