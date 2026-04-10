@@ -32,6 +32,7 @@
   const LS_LAST_SESSION = "last_kite_session";
   const LS_FIRST_SUBMIT = "rdk_first_submit";
   const LS_PENDING_GOOGLE_SUBMIT = "pending_google_submit";
+  const SESSION_ID_MONTH_CODES = ["ge", "fe", "ma", "ap", "mg", "gi", "lu", "ag", "se", "ot", "no", "di"];
   let pendingGoogleSubmit = null;
 
   const AIRUSH_MODELS = [
@@ -1089,24 +1090,66 @@
     return !firstMessage;
   }
 
-  function randomRdkId(){
-    const length = 10;
+  function randomRdkId(length = 10){
+    const size = typeof length === "number" && length > 0 ? Math.floor(length) : 10;
     const alphabet = "abcdefghijklmnopqrstuvwxyz0123456789";
     const chars = [];
 
     if (window.crypto?.getRandomValues) {
-      const buffer = new Uint8Array(length);
+      const buffer = new Uint8Array(size);
       window.crypto.getRandomValues(buffer);
-      for (let i = 0; i < length; i += 1) {
+      for (let i = 0; i < size; i += 1) {
         chars.push(alphabet[buffer[i] % alphabet.length]);
       }
     } else {
-      for (let i = 0; i < length; i += 1) {
+      for (let i = 0; i < size; i += 1) {
         chars.push(alphabet[Math.floor(Math.random() * alphabet.length)]);
       }
     }
 
     return chars.join("");
+  }
+
+  function padSessionIdPart(value){
+    return String(value).padStart(2, "0");
+  }
+
+  function getRomeSessionIdParts(){
+    const now = new Date();
+
+    if (window.Intl?.DateTimeFormat) {
+      try {
+        const parts = new Intl.DateTimeFormat("en-GB", {
+          timeZone: "Europe/Rome",
+          day: "2-digit",
+          month: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: false
+        }).formatToParts(now);
+        const values = {};
+        parts.forEach(({ type, value }) => {
+          if (type !== "literal") values[type] = value;
+        });
+
+        const monthIndex = Number(values.month) - 1;
+        if (SESSION_ID_MONTH_CODES[monthIndex]) {
+          return {
+            day: values.day,
+            monthCode: SESSION_ID_MONTH_CODES[monthIndex],
+            hour: values.hour,
+            minute: values.minute
+          };
+        }
+      } catch (_) {}
+    }
+
+    return {
+      day: padSessionIdPart(now.getDate()),
+      monthCode: SESSION_ID_MONTH_CODES[now.getMonth()] || "xx",
+      hour: padSessionIdPart(now.getHours()),
+      minute: padSessionIdPart(now.getMinutes())
+    };
   }
 
   function rdkTimestampRfc3339(){
@@ -1154,7 +1197,8 @@
 
   // ADDED: session id
   function generateSessionId() {
-    return randomRdkId();
+    const parts = getRomeSessionIdParts();
+    return `${parts.day}${parts.monthCode}${parts.hour}${parts.minute}${randomRdkId(2)}`;
   }
 
   function buildSessionData(){
