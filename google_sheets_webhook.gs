@@ -104,12 +104,15 @@ function doPost(e) {
       : parseWhatsAppMessage_(parsedInput.data);
     record.timestamp = formatRomeDate_(new Date());
     var headers = getSheetHeaders_(sheet);
-    var sessionId = cleanValue_(record.ID);
+    var storageId = buildStoredId_(record.ID);
 
     // ADDED: deduplication
-    if (isDuplicateSessionId_(sheet, headers, sessionId)) {
+    if (isDuplicateSessionId_(sheet, headers, storageId)) {
       return postMessageHtmlResponse_(true);
     }
+
+    record.ID = storageId || generateSheetId_();
+    record.src = resolveRecordSource_(parsedInput.kind, record.src);
 
     var row = buildSheetRow_(record, headers);
 
@@ -373,6 +376,31 @@ function isDuplicateSessionId_(sheet, headers, sessionId) {
   return values.some(function(row) {
     return cleanValue_(row[0]) === sessionId;
   });
+}
+
+function resolveRecordSource_(kind, currentSource) {
+  if (kind === "form" || kind === "json") return "form_v1";
+  return cleanValue_(currentSource) || "whatsapp_v1";
+}
+
+function buildStoredId_(value) {
+  var seed = cleanValue_(value);
+  if (!seed) return null;
+
+  var hash = 2166136261;
+  var text = String(seed);
+  for (var i = 0; i < text.length; i += 1) {
+    hash ^= text.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  var hex = (hash >>> 0).toString(16).padStart(8, "0");
+  return ("gs" + hex).slice(0, 10);
+}
+
+function generateSheetId_() {
+  var random = Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, "0");
+  return ("gs" + random).slice(0, 10);
 }
 
 function jsonResponse_(status, payload) {
