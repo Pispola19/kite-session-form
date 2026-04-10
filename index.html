@@ -4,10 +4,17 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#0b1220" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Kite Session" />
     <title>Stai usando la vela giusta?</title>
+    <link rel="manifest" href="/kite-session-form/manifest.json" />
+    <link rel="apple-touch-icon" href="/kite-session-form/icons/icon-192.png" />
     <link rel="stylesheet" href="styles.css" />
     <script src="translations.js" defer></script>
     <script src="app.js" defer></script>
+    <script src="pwa.js" defer></script>
   </head>
   <body>
     <div class="wrap">
@@ -28,6 +35,24 @@
           </div>
         </div>
       </header>
+
+      <section id="installBanner" class="install-banner" hidden aria-live="polite">
+        <div class="install-banner-copy">
+          <strong data-i18n="install_banner_title">Installa questa app (10 sec)</strong>
+          <p id="installBannerGeneric" class="install-banner-text" data-i18n="install_banner_generic" hidden>
+            Aggiungila alla schermata Home per riaprirla più velocemente dopo ogni sessione.
+          </p>
+          <p id="installBannerIos" class="install-banner-text" data-i18n="install_banner_ios" hidden>
+            iPhone/iPad: tocca Condividi e poi Aggiungi a Home.
+          </p>
+          <p id="installBannerAndroid" class="install-banner-text" data-i18n="install_banner_android" hidden>
+            Android: se il browser mostra Installa, conferma. In alternativa usa il menu del browser.
+          </p>
+        </div>
+        <button type="button" id="installBannerDismiss" class="install-banner-dismiss" data-i18n="install_banner_close" aria-label="Close install hint">
+          Chiudi
+        </button>
+      </section>
 
       <div class="card">
         <div class="card-inner">
