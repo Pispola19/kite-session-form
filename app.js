@@ -1154,7 +1154,7 @@
 
   // ADDED: session id
   function generateSessionId() {
-    return Date.now().toString(36) + Math.random().toString(36).slice(2);
+    return randomRdkId();
   }
 
   function buildSessionData(){
