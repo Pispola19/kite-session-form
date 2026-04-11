@@ -36,6 +36,7 @@
   let pendingGoogleSubmit = null;
   let statusModalState = "";
   let statusModalTimerId = 0;
+  let isFormSubmitting = false;
 
   const AIRUSH_MODELS = [
     "Ultra v5",
@@ -355,6 +356,18 @@
 
   let currentLang = "it";
   let sendAudioCtx = null;
+
+  function lockSubmitState(reason = "submit"){
+    isFormSubmitting = true;
+    if (sendBtn) sendBtn.disabled = true;
+    console.log("SUBMIT START", reason);
+  }
+
+  function unlockSubmitState(reason = "submit"){
+    isFormSubmitting = false;
+    if (sendBtn) sendBtn.disabled = false;
+    console.log("UNLOCK", reason);
+  }
 
   function t(key){
     const pack = translations[currentLang] || translations.en;
@@ -1380,48 +1393,10 @@
     };
   }
 
-  // ADDED: retry support
-  function savePendingGoogleSubmit(sessionData){
-    try {
-      window.localStorage.setItem(LS_PENDING_GOOGLE_SUBMIT, JSON.stringify(sessionData));
-    } catch (_) {}
-  }
-
-  function loadPendingGoogleSubmit(){
-    try {
-      const raw = window.localStorage.getItem(LS_PENDING_GOOGLE_SUBMIT);
-      if (!raw) return null;
-      const parsed = JSON.parse(raw);
-      return parsed && typeof parsed === "object" ? parsed : null;
-    } catch (_) {
-      return null;
-    }
-  }
-
   function clearPendingGoogleSubmit(){
     try {
       window.localStorage.removeItem(LS_PENDING_GOOGLE_SUBMIT);
     } catch (_) {}
-  }
-
-  function getRetryComparablePayload(sessionData){
-    if (!sessionData || typeof sessionData !== "object") return "";
-    const comparable = {
-      weight: sessionData.weight || "",
-      gender: sessionData.gender || "",
-      board: sessionData.board || "",
-      boardSize: sessionData.boardSize || "",
-      level: sessionData.level || "",
-      kite: sessionData.kite || "",
-      wind: sessionData.wind || "",
-      brand: sessionData.brand || "",
-      model: sessionData.model || "",
-      location: sessionData.location || "",
-      water: sessionData.water || "",
-      result: sessionData.result || "",
-      note: sessionData.note || ""
-    };
-    return JSON.stringify(comparable);
   }
 
   // ADDED: postMessage confirmation
@@ -1454,6 +1429,8 @@
 
   window.addEventListener("pageshow", function() {
     pendingGoogleSubmit = null;
+    hideStatusModal({ enableSend: true });
+    unlockSubmitState("pageshow");
   });
 
   async function submitSessionToGoogleSheets(sessionData){
@@ -1811,49 +1788,34 @@
   form?.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    if (isFormSubmitting) {
+      console.log("SUBMIT START", "blocked_already_submitting");
+      return;
+    }
+
     const valid = validateFormFields({ showNotice: true });
     if (!valid || !form.reportValidity()) return;
 
     hideStatusModal({ enableSend: false });
     hidePostSubmitPanel();
     setValidationNotice("");
-    sendBtn.disabled = true;
+    lockSubmitState("form_submit");
     showStatusModal("pending");
 
     let sessionDataToSend = null;
-    let pendingRecordToPersist = null;
+    let message = "";
     let shouldAutoCloseModal = false;
+    let shouldOpenWhatsApp = false;
 
     try {
       const sessionData = buildSessionData();
-      const pendingRetry = loadPendingGoogleSubmit();
-      const shouldReusePending = pendingRetry && getRetryComparablePayload(pendingRetry) === getRetryComparablePayload(sessionData);
-      sessionDataToSend = shouldReusePending ? pendingRetry : sessionData;
+      sessionDataToSend = sessionData;
+      clearPendingGoogleSubmit();
       saveLastSession(sessionData);
       saveDraftSession();
-      const message = buildOutgoingMessageSync();
+      message = buildOutgoingMessageSync();
       if (!message) {
-        hideStatusModal({ enableSend: true });
-        return;
-      }
-
-      if (pendingRetry && !shouldReusePending) {
-        try {
-          const retryResult = await submitSessionToGoogleSheets(pendingRetry);
-          if (retryResult?.ok === true) {
-            clearPendingGoogleSubmit();
-          } else if (retryResult?.probable === true) {
-            pendingRecordToPersist = pendingRetry;
-            savePendingGoogleSubmit(pendingRetry);
-          } else {
-            throw new Error("google_submit_error");
-          }
-        } catch (retryError) {
-          if (retryError?.message === "google_submit_timeout" || retryError?.message === "google_submit_error") {
-            pendingRecordToPersist = pendingRetry;
-            savePendingGoogleSubmit(pendingRetry);
-          }
-        }
+        throw new Error("submit_message_empty");
       }
 
       console.log("Submitting:", sessionDataToSend);
@@ -1866,33 +1828,32 @@
       }
 
       console.log("Sent session_id:", sessionDataToSend.session_id);
-      if (isCertainSuccess) {
-        if (pendingRecordToPersist) {
-          savePendingGoogleSubmit(pendingRecordToPersist);
-        } else {
-          clearPendingGoogleSubmit();
-        }
-      } else {
-        savePendingGoogleSubmit(sessionDataToSend);
-      }
-      openWhatsAppWithMessage(message);
       markFirstSubmitDone();
-      resetFormAfterSuccessfulSubmit();
       showPostSubmitPanel();
       playSendFeedback();
       showStatusModal(isCertainSuccess ? "success" : "probable");
       setValidationNotice("");
       shouldAutoCloseModal = true;
+      shouldOpenWhatsApp = true;
     } catch (error) {
       console.error(error);
-      if ((error?.message === "google_submit_timeout" || error?.message === "google_submit_error") && sessionDataToSend) {
-        savePendingGoogleSubmit(sessionDataToSend);
+      if (error?.message === "submit_message_empty") {
+        hideStatusModal({ enableSend: false });
+        setValidationNotice("");
+      } else {
+        setValidationNotice("");
+        showStatusModal("error");
       }
-      setValidationNotice("");
-      showStatusModal("error");
     } finally {
+      clearPendingGoogleSubmit();
+      resetFormAfterSuccessfulSubmit();
+      console.log("SUBMIT END");
+      unlockSubmitState("finally");
       if (shouldAutoCloseModal) {
         scheduleStatusModalClose(2200);
+      }
+      if (shouldOpenWhatsApp && message) {
+        openWhatsAppWithMessage(message);
       }
     }
   });
