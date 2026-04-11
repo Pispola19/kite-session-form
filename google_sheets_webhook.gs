@@ -149,10 +149,9 @@ function doPost(e) {
     // ADDED: postMessage confirmation
     return postMessageHtmlResponse_(false);
   } catch (error) {
-    return jsonResponse_(500, {
-      ok: false,
-      error: String(error && error.message ? error.message : error)
-    });
+    return HtmlService
+      .createHtmlOutput('<script>window.parent.postMessage({ ok: false }, "*");</script>')
+      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
   }
 }
 
