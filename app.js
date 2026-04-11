@@ -1785,7 +1785,7 @@
     handleShareApp();
   });
 
-  form?.addEventListener("submit", async (e) => {
+  async function handleFormSubmit(e) {
     e.preventDefault();
 
     if (isFormSubmitting) {
@@ -1856,7 +1856,16 @@
         openWhatsAppWithMessage(message);
       }
     }
-  });
+  }
+
+  if (form) {
+    if (window.__rdkFormSubmitHandler) {
+      form.removeEventListener("submit", window.__rdkFormSubmitHandler);
+    }
+    form.addEventListener("submit", handleFormSubmit);
+    window.__rdkFormSubmitHandler = handleFormSubmit;
+    window.__formListenerAttached = true;
+  }
 
   try {
     currentLang = localStorage.getItem("rdk_lang") || "it";
