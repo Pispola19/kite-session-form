@@ -1281,6 +1281,7 @@
           timeZone: "Europe/Rome",
           day: "2-digit",
           month: "2-digit",
+          year: "numeric",
           hour: "2-digit",
           minute: "2-digit",
           hour12: false
@@ -1296,7 +1297,8 @@
             day: values.day,
             monthCode: SESSION_ID_MONTH_CODES[monthIndex],
             hour: values.hour,
-            minute: values.minute
+            minute: values.minute,
+            yearDigit: String(values.year).slice(-1)
           };
         }
       } catch (_) {}
@@ -1306,7 +1308,8 @@
       day: padSessionIdPart(now.getDate()),
       monthCode: SESSION_ID_MONTH_CODES[now.getMonth()] || "xx",
       hour: padSessionIdPart(now.getHours()),
-      minute: padSessionIdPart(now.getMinutes())
+      minute: padSessionIdPart(now.getMinutes()),
+      yearDigit: String(now.getFullYear()).slice(-1)
     };
   }
 
@@ -1356,7 +1359,7 @@
   // ADDED: session id
   function generateSessionId() {
     const parts = getRomeSessionIdParts();
-    return `${parts.day}${parts.monthCode}${parts.hour}${parts.minute}${randomRdkId(4)}`;
+    return `${parts.day}${parts.monthCode}${parts.hour}${parts.minute}${parts.yearDigit}${randomRdkId(4)}`;
   }
 
   function generateTechnicalId() {
