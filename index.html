@@ -19,6 +19,12 @@
   <body>
     <div class="wrap">
       <header>
+        <div class="brandbar">
+          <div class="brand" aria-label="Kite Session">
+            <div class="brand-mark" aria-hidden="true"></div>
+            <div class="brand-name">KITE SESSION</div>
+          </div>
+        </div>
         <div class="lang">
           <div class="flags" role="group" aria-label="Language">
             <button type="button" class="flag-btn" data-lang="it" aria-pressed="false" title="Italiano">🇮🇹</button>
@@ -30,14 +36,70 @@
         </div>
         <div class="topbar">
           <div class="hero-copy">
-            <h1 data-i18n="title">Stai usando la vela giusta?</h1>
-            <p class="sub" data-i18n="subtitle">Compila in 10-20 secondi
-Invia
-
-Dati reali - Nessuna registrazione - nessun log in</p>
+            <div class="hero">
+              <h1 data-i18n="title">Stai usando la vela giusta?</h1>
+              <p class="sub" data-i18n="subtitle">Compila in 10–20 secondi e invia</p>
+              <div class="hero-cta">
+                <a class="btn primary" href="#kiteForm">Vai al form</a>
+                <a class="btn secondary" href="#how">Come funziona</a>
+              </div>
+            </div>
           </div>
         </div>
       </header>
+
+      <main class="content">
+        <section class="section" id="how" aria-label="Come funziona">
+          <h2 class="section-title">Come funziona</h2>
+          <p class="section-subtitle">Inserisci la tua sessione e aiuta a migliorare le stime.</p>
+          <div class="grid-cards">
+            <article class="ux-card">
+              <div class="ux-card__kicker">1</div>
+              <h3 class="ux-card__title">Inserisci i dati</h3>
+              <p class="ux-card__text">Peso, vento, misura vela e contesto. In pochi secondi.</p>
+            </article>
+            <article class="ux-card">
+              <div class="ux-card__kicker">2</div>
+              <h3 class="ux-card__title">Il sistema raccoglie dati reali</h3>
+              <p class="ux-card__text">Ogni sessione alimenta un dataset reale della community.</p>
+            </article>
+            <article class="ux-card">
+              <div class="ux-card__kicker">3</div>
+              <h3 class="ux-card__title">Migliora nel tempo</h3>
+              <p class="ux-card__text">Più sessioni = suggerimenti più solidi e utili.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="why" aria-label="Perché contribuire">
+          <h2 class="section-title">Perché contribuire</h2>
+          <div class="grid-cards">
+            <article class="ux-card">
+              <h3 class="ux-card__title">Migliori le tue scelte</h3>
+              <p class="ux-card__text">Capisci cosa funziona davvero nelle tue condizioni.</p>
+            </article>
+            <article class="ux-card">
+              <h3 class="ux-card__title">Aiuti la community</h3>
+              <p class="ux-card__text">Dati condivisi = decisioni migliori per tutti.</p>
+            </article>
+            <article class="ux-card">
+              <h3 class="ux-card__title">Costruisci database reale</h3>
+              <p class="ux-card__text">Un riferimento indipendente, basato su sessioni vere.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="community" aria-label="Esempi dalla community">
+          <h2 class="section-title">Dalla community</h2>
+          <p class="section-subtitle">Sessioni reali della community</p>
+          <div class="community-lines" role="list" aria-label="Sessioni community">
+            <div class="community-line" role="listitem">Punta Trettu · 74kg · 18 nodi · Vela 9m² · Risultato: giusto</div>
+            <div class="community-line" role="listitem">Stagnone · 82kg · 22 nodi · Vela 8m² · Risultato: invelato</div>
+            <div class="community-line" role="listitem">Porto Pollo · 68kg · 16 nodi · Vela 10m² · Risultato: giusto</div>
+            <div class="community-line" role="listitem">La Franqui · 90kg · 20 nodi · Vela 9m² · Risultato: sottoinvelato</div>
+          </div>
+        </section>
+      </main>
 
       <div class="card">
         <div class="card-inner">
@@ -256,7 +318,7 @@ Dati reali - Nessuna registrazione - nessun log in</p>
               <div>
                 <label for="result"><span data-i18n="label_result">Risultato sessione</span><span class="req-mark" aria-hidden="true">*</span></label>
                 <select id="result" name="result" required class="field-tier-neutral">
-                  <option value="">Seleziona</option>
+                  <option value="" data-i18n="opt_result_prompt">Seleziona</option>
                   <option value="underpowered" data-i18n="opt_result_underpowered">Sottoinvelato</option>
                   <option value="good" data-i18n="opt_result_good">Giusto</option>
                   <option value="powered" data-i18n="opt_result_powered">Invelato</option>
