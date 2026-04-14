@@ -603,6 +603,69 @@
     validationNotice.setAttribute("aria-hidden", "false");
   }
 
+  function getHumanFieldLabel(el){
+    if (!el) return "";
+    const id = el.getAttribute?.("id") || "";
+    if (!id) return "";
+    const escaped = window.CSS?.escape ? window.CSS.escape(id) : id.replace(/"/g, "\\\"");
+    const label = document.querySelector(`label[for="${escaped}"]`);
+    if (!label) return "";
+    return String(label.textContent || "")
+      .replace(/\*/g, "")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
+  function clearFirstInvalidHighlight(){
+    if (!form) return;
+    form.querySelectorAll(".first-invalid").forEach((el) => el.classList.remove("first-invalid"));
+  }
+
+  function clearInvalidFieldHighlights(){
+    if (!form) return;
+    form.querySelectorAll(".invalid-field").forEach((el) => el.classList.remove("invalid-field"));
+    clearFirstInvalidHighlight();
+  }
+
+  function listInvalidFields(){
+    if (!form) return [];
+    return Array.from(form.querySelectorAll("input:invalid, select:invalid, textarea:invalid"));
+  }
+
+  function markInvalidFields(invalidFields){
+    if (!form) return;
+    clearInvalidFieldHighlights();
+    invalidFields.forEach((el) => el.classList.add("invalid-field"));
+    if (invalidFields[0]) invalidFields[0].classList.add("first-invalid");
+  }
+
+  function focusFirstInvalidField(){
+    if (!form) return null;
+    clearFirstInvalidHighlight();
+
+    const invalid = form.querySelector("input:invalid, select:invalid, textarea:invalid");
+    if (!invalid) return null;
+
+    invalid.classList.add("first-invalid");
+    try {
+      invalid.focus({ preventScroll: true });
+    } catch (_) {
+      try { invalid.focus(); } catch (_) {}
+    }
+    try {
+      invalid.scrollIntoView({ behavior: "smooth", block: "center" });
+    } catch (_) {
+      try { invalid.scrollIntoView(true); } catch (_) {}
+    }
+    return invalid;
+  }
+
+  function requiredFieldsCountMessage(count){
+    if (!count) return "";
+    if (count === 1) return "Manca 1 campo obbligatorio.";
+    return `Mancano ${count} campi obbligatori.`;
+  }
+
   function applyTranslations(lang){
     if (!translations[lang]) lang = "en";
     currentLang = lang;
@@ -1802,12 +1865,43 @@
       return;
     }
 
+    if (form) form.classList.add("was-submitted");
+
     const valid = validateFormFields({ showNotice: true });
-    if (!valid || !form.reportValidity()) return;
+    const htmlValid = Boolean(form?.checkValidity?.());
+    if (!valid || !htmlValid) {
+      const invalidFields = listInvalidFields();
+      markInvalidFields(invalidFields);
+
+      const invalidEl = invalidFields[0] || focusFirstInvalidField();
+      if (invalidEl) {
+        try {
+          invalidEl.focus({ preventScroll: true });
+        } catch (_) {
+          try { invalidEl.focus(); } catch (_) {}
+        }
+        try {
+          invalidEl.scrollIntoView({ behavior: "smooth", block: "center" });
+        } catch (_) {
+          try { invalidEl.scrollIntoView(true); } catch (_) {}
+        }
+      }
+
+      const label = getHumanFieldLabel(invalidEl);
+      const count = invalidFields.length;
+
+      if (label) {
+        setValidationNotice(`Manca un campo obbligatorio: ${label}`);
+      } else {
+        setValidationNotice(requiredFieldsCountMessage(count) || "Compila tutti i campi obbligatori evidenziati in rosso.");
+      }
+      return;
+    }
 
     hideStatusModal({ enableSend: false });
     hidePostSubmitPanel();
     setValidationNotice("");
+    clearInvalidFieldHighlights();
     lockSubmitState("form_submit");
     showStatusModal("pending");
 
@@ -1874,6 +1968,24 @@
     form.addEventListener("submit", handleFormSubmit);
     window.__rdkFormSubmitHandler = handleFormSubmit;
     window.__formListenerAttached = true;
+
+    const clearInvalidOnInput = () => {
+      if (!form.classList.contains("was-submitted")) return;
+
+      const invalidFields = listInvalidFields();
+      markInvalidFields(invalidFields);
+
+      if (form.checkValidity()) {
+        setValidationNotice("");
+        return;
+      }
+
+      if (!validationNotice?.textContent) {
+        setValidationNotice(requiredFieldsCountMessage(invalidFields.length) || "Compila tutti i campi obbligatori evidenziati in rosso.");
+      }
+    };
+    form.addEventListener("input", clearInvalidOnInput);
+    form.addEventListener("change", clearInvalidOnInput);
   }
 
   try {
