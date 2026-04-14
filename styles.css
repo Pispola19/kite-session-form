@@ -769,7 +769,7 @@ code{
 .hero{
   display:grid;
   gap: 8px;
-  padding: 6px 0 4px;
+  padding: 6px 0 2px;
   justify-items: center;
 }
 
@@ -821,27 +821,39 @@ code{
 
 .content{
   display:grid;
-  gap: 14px;
-  padding: 10px 0 14px;
+  gap: 10px;
+  padding: 6px 0 12px;
 }
 
 .section{
   padding: 0 4px;
-  margin-top: 44px;
+  margin-top: 28px;
 }
 
 .section:first-child{
-  margin-top: 18px;
+  margin-top: 10px;
+}
+
+#why{
+  margin-top: 12px;
+}
+
+#community{
+  margin-top: 12px;
+}
+
+.content + .card{
+  margin-top: 12px;
 }
 
 .section-title{
-  margin: 10px 0 6px;
+  margin: 8px 0 6px;
   font-size: 18px;
   letter-spacing: .01em;
 }
 
 .section-subtitle{
-  margin: 0 0 10px;
+  margin: 0 0 8px;
   color: rgba(159,178,214,.92);
   font-size: 13px;
   line-height: 1.4;
@@ -850,7 +862,7 @@ code{
 .grid-cards{
   display:grid;
   grid-template-columns: 1fr;
-  gap: 10px;
+  gap: 8px;
 }
 
 @media (min-width: 640px){
@@ -861,10 +873,10 @@ code{
 
 .ux-card{
   min-width: 0;
-  padding: 14px 14px 12px;
+  padding: 12px 12px 10px;
   border-radius: calc(var(--radius) + 2px);
-  background: rgba(15,27,50,.72);
-  border: 1px solid rgba(255,255,255,.08);
+  background: rgba(15,27,50,.62);
+  border: 1px solid rgba(255,255,255,.07);
 }
 
 .ux-card__kicker{
@@ -877,7 +889,7 @@ code{
   font-weight: 900;
   color: rgba(6,17,31,.95);
   background: linear-gradient(90deg, var(--accent2), var(--accent));
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .ux-card__title{
@@ -895,15 +907,15 @@ code{
 
 .community-lines{
   display: grid;
-  gap: 6px;
-  padding: 2px 0 0;
+  gap: 5px;
+  padding: 0;
 }
 
 .community-line{
   font-size: 13px;
   line-height: 1.35;
   color: rgba(233,240,255,.90);
-  padding: 6px 0;
+  padding: 5px 0;
   border-bottom: 1px solid rgba(255,255,255,.06);
 }
 
