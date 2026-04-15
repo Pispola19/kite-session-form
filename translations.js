@@ -119,7 +119,15 @@ window.RDK_TRANSLATIONS = {
     how_step_2_title: "The system collects real data",
     how_step_2_text: "Each session feeds a real community dataset.",
     how_step_3_title: "Improves over time",
-    how_step_3_text: "More sessions = more solid, useful suggestions."
+    how_step_3_text: "More sessions = more solid, useful suggestions.",
+
+    why_title: "Why contribute",
+    why_card_1_title: "Make better choices",
+    why_card_1_text: "Understand what really works in your conditions.",
+    why_card_2_title: "Help the community",
+    why_card_2_text: "Shared data = better decisions for everyone.",
+    why_card_3_title: "Build a real database",
+    why_card_3_text: "An independent reference, based on real sessions."
   },
 
   it: {
@@ -242,7 +250,15 @@ window.RDK_TRANSLATIONS = {
     how_step_2_title: "Il sistema raccoglie dati reali",
     how_step_2_text: "Ogni sessione alimenta un dataset reale della community.",
     how_step_3_title: "Migliora nel tempo",
-    how_step_3_text: "Più sessioni = suggerimenti più solidi e utili."
+    how_step_3_text: "Più sessioni = suggerimenti più solidi e utili.",
+
+    why_title: "Perché contribuire",
+    why_card_1_title: "Migliori le tue scelte",
+    why_card_1_text: "Capisci cosa funziona davvero nelle tue condizioni.",
+    why_card_2_title: "Aiuti la community",
+    why_card_2_text: "Dati condivisi = decisioni migliori per tutti.",
+    why_card_3_title: "Costruisci database reale",
+    why_card_3_text: "Un riferimento indipendente, basato su sessioni vere."
   },
 
   de: {
@@ -365,7 +381,15 @@ window.RDK_TRANSLATIONS = {
     how_step_2_title: "The system collects real data",
     how_step_2_text: "Each session feeds a real community dataset.",
     how_step_3_title: "Improves over time",
-    how_step_3_text: "More sessions = more solid, useful suggestions."
+    how_step_3_text: "More sessions = more solid, useful suggestions.",
+
+    why_title: "Why contribute",
+    why_card_1_title: "Make better choices",
+    why_card_1_text: "Understand what really works in your conditions.",
+    why_card_2_title: "Help the community",
+    why_card_2_text: "Shared data = better decisions for everyone.",
+    why_card_3_title: "Build a real database",
+    why_card_3_text: "An independent reference, based on real sessions."
   },
 
   es: {
@@ -488,7 +512,15 @@ window.RDK_TRANSLATIONS = {
     how_step_2_title: "The system collects real data",
     how_step_2_text: "Each session feeds a real community dataset.",
     how_step_3_title: "Improves over time",
-    how_step_3_text: "More sessions = more solid, useful suggestions."
+    how_step_3_text: "More sessions = more solid, useful suggestions.",
+
+    why_title: "Why contribute",
+    why_card_1_title: "Make better choices",
+    why_card_1_text: "Understand what really works in your conditions.",
+    why_card_2_title: "Help the community",
+    why_card_2_text: "Shared data = better decisions for everyone.",
+    why_card_3_title: "Build a real database",
+    why_card_3_text: "An independent reference, based on real sessions."
   },
 
   fr: {
@@ -611,6 +643,14 @@ window.RDK_TRANSLATIONS = {
     how_step_2_title: "The system collects real data",
     how_step_2_text: "Each session feeds a real community dataset.",
     how_step_3_title: "Improves over time",
-    how_step_3_text: "More sessions = more solid, useful suggestions."
+    how_step_3_text: "More sessions = more solid, useful suggestions.",
+
+    why_title: "Why contribute",
+    why_card_1_title: "Make better choices",
+    why_card_1_text: "Understand what really works in your conditions.",
+    why_card_2_title: "Help the community",
+    why_card_2_text: "Shared data = better decisions for everyone.",
+    why_card_3_title: "Build a real database",
+    why_card_3_text: "An independent reference, based on real sessions."
   }
 };
