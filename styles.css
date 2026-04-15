@@ -827,12 +827,18 @@ code{
   min-width: 140px;
   text-align: center;
   white-space: normal;
+  color: #ffffff !important;
+  position: relative;
+  z-index: 2;
 }
 
 .hero-cta button span,
 .hero-cta a span{
   display: inline;
   line-height: 1.2;
+  color: #ffffff !important;
+  opacity: 1 !important;
+  visibility: visible !important;
 }
 
 @media (min-width: 640px){
