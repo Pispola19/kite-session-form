@@ -835,10 +835,20 @@ code{
 .hero-cta button span,
 .hero-cta a span{
   display: inline;
+  position: relative;
+  z-index: 3;
   line-height: 1.2;
   color: #ffffff !important;
   opacity: 1 !important;
   visibility: visible !important;
+}
+
+.hero-cta button::before,
+.hero-cta button::after,
+.hero-cta a::before,
+.hero-cta a::after{
+  z-index: 1;
+  pointer-events: none;
 }
 
 @media (min-width: 640px){
