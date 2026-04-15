@@ -805,20 +805,37 @@ code{
 }
 
 .hero-cta{
-  display: inline-flex;
-  gap: 6px;
-  flex-wrap: wrap;
-  justify-content:center;
-  margin-top: 0;
-  max-width: 520px;
-  margin-left: auto;
-  margin-right: auto;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.hero-cta button,
+.hero-cta a{
+  padding: 14px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 12px;
+  min-width: 140px;
+  text-align: center;
+  white-space: nowrap;
 }
 
 @media (min-width: 640px){
   .hero-cta{
     flex-wrap: nowrap;
-    max-width: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-cta {
+    flex-direction: column;
+  }
+
+  .hero-cta button,
+  .hero-cta a {
+    width: 100%;
   }
 }
 
