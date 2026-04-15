@@ -809,17 +809,30 @@ code{
   gap: 12px;
   justify-content: center;
   margin-top: 16px;
+  min-width: 0;
 }
 
 .hero-cta button,
 .hero-cta a{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 14px 22px;
   font-size: 15px;
   font-weight: 600;
+  line-height: 1.2;
+  height: auto;
+  overflow: visible;
   border-radius: 12px;
   min-width: 140px;
   text-align: center;
-  white-space: nowrap;
+  white-space: normal;
+}
+
+.hero-cta button span,
+.hero-cta a span{
+  display: inline;
+  line-height: 1.2;
 }
 
 @media (min-width: 640px){
