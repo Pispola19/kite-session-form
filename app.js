@@ -380,6 +380,30 @@
     return pack[key] ?? translations.en[key] ?? "";
   }
 
+  function shuffleInPlace(arr){
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+
+  function rotateCommunityExamples(){
+    const lines = Array.from(document.querySelectorAll('.community-line[data-i18n^="community_example_"]'));
+    if (!lines.length) return;
+
+    const examples = lines
+      .map((el) => el.getAttribute("data-i18n"))
+      .filter(Boolean)
+      .map((key) => t(key));
+
+    shuffleInPlace(examples);
+
+    lines.forEach((el, idx) => {
+      if (examples[idx]) el.textContent = examples[idx];
+    });
+  }
+
   function interpolate(template, values){
     return String(template || "").replace(/\{(\w+)\}/g, (_, key) => String(values[key] ?? ""));
   }
@@ -667,6 +691,7 @@
   }
 
   function applyTranslations(lang){
+    lang = String(lang || "en").split("-")[0];
     if (!translations[lang]) lang = "en";
     currentLang = lang;
 
@@ -681,6 +706,8 @@
       const key = el.getAttribute("data-i18n");
       el.textContent = t(key);
     });
+
+    rotateCommunityExamples();
 
     document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
       const key = el.getAttribute("data-i18n-placeholder");
