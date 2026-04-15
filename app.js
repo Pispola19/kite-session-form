@@ -392,15 +392,14 @@
     const lines = Array.from(document.querySelectorAll('.community-line[data-i18n^="community_example_"]'));
     if (!lines.length) return;
 
-    const examples = lines
+    const keys = lines
       .map((el) => el.getAttribute("data-i18n"))
-      .filter(Boolean)
-      .map((key) => t(key));
+      .filter(Boolean);
 
-    shuffleInPlace(examples);
+    shuffleInPlace(keys);
 
     lines.forEach((el, idx) => {
-      if (examples[idx]) el.textContent = examples[idx];
+      if (keys[idx]) el.textContent = t(keys[idx]);
     });
   }
 
