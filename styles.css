@@ -896,6 +896,33 @@ code{
   gap: 8px;
 }
 
+.section--compact,
+#how,
+#why{
+  margin-top: 14px;
+}
+
+.section--compact .section-title,
+#how .section-title,
+#why .section-title{
+  font-size: 16px;
+  margin: 6px 0 4px;
+}
+
+.section--compact .section-subtitle,
+#how .section-subtitle,
+#why .section-subtitle{
+  font-size: 12px;
+  opacity: 0.75;
+  margin-bottom: 6px;
+}
+
+.section--compact .grid-cards,
+#how .grid-cards,
+#why .grid-cards{
+  gap: 6px;
+}
+
 @media (min-width: 640px){
   .grid-cards{
     grid-template-columns: repeat(3, 1fr);
@@ -908,6 +935,14 @@ code{
   border-radius: calc(var(--radius) + 2px);
   background: rgba(15,27,50,.62);
   border: 1px solid rgba(255,255,255,.07);
+}
+
+.section--compact .ux-card,
+#how .ux-card,
+#why .ux-card{
+  padding: 8px 9px 7px;
+  background: rgba(15,27,50,.38);
+  border-color: rgba(255,255,255,.05);
 }
 
 .ux-card__kicker{
@@ -923,10 +958,26 @@ code{
   margin-bottom: 8px;
 }
 
+.section--compact .ux-card__kicker,
+#how .ux-card__kicker,
+#why .ux-card__kicker{
+  width: 22px;
+  height: 22px;
+  margin-bottom: 6px;
+  border-radius: 9px;
+}
+
 .ux-card__title{
   margin: 0 0 6px;
   font-size: 14px;
   letter-spacing: .01em;
+}
+
+.section--compact .ux-card__title,
+#how .ux-card__title,
+#why .ux-card__title{
+  font-size: 13px;
+  margin-bottom: 4px;
 }
 
 .ux-card__text{
@@ -934,6 +985,14 @@ code{
   color: rgba(233,240,255,.86);
   font-size: 13px;
   line-height: 1.45;
+}
+
+.section--compact .ux-card__text,
+#how .ux-card__text,
+#why .ux-card__text{
+  font-size: 12px;
+  line-height: 1.35;
+  opacity: 0.75;
 }
 
 .community-lines{

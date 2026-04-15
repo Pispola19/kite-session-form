@@ -103,7 +103,23 @@ window.RDK_TRANSLATIONS = {
     validation_required: "Enter {field}.",
     validation_required_wind: "Wind is required.",
     validation_integer: "{field} must be a whole number.",
-    validation_range: "{field} must be between {min} and {max}."
+    validation_range: "{field} must be between {min} and {max}.",
+
+    community_title: "Community",
+    community_subtitle: "Community sessions",
+    community_example_1: "Punta Trettu · 74kg · 18 kts · Kite 9m² · Result: good",
+    community_example_2: "Stagnone · 82kg · 22 kts · Kite 8m² · Result: powered",
+    community_example_3: "Porto Pollo · 68kg · 16 kts · Kite 10m² · Result: good",
+    community_example_4: "La Franqui · 90kg · 20 kts · Kite 9m² · Result: underpowered",
+
+    how_title: "How it works",
+    how_subtitle: "Enter your session and help improve estimates.",
+    how_step_1_title: "Enter the data",
+    how_step_1_text: "Weight, wind, kite size and context. In a few seconds.",
+    how_step_2_title: "The system collects real data",
+    how_step_2_text: "Each session feeds a real community dataset.",
+    how_step_3_title: "Improves over time",
+    how_step_3_text: "More sessions = more solid, useful suggestions."
   },
 
   it: {
@@ -210,7 +226,23 @@ window.RDK_TRANSLATIONS = {
     validation_required: "Inserisci {field}.",
     validation_required_wind: "Il vento e' obbligatorio.",
     validation_integer: "{field} deve essere un numero intero.",
-    validation_range: "{field} deve essere compreso tra {min} e {max}."
+    validation_range: "{field} deve essere compreso tra {min} e {max}.",
+
+    community_title: "Dalla community",
+    community_subtitle: "Sessioni reali della community",
+    community_example_1: "Punta Trettu · 74kg · 18 nodi · Vela 9m² · Risultato: giusto",
+    community_example_2: "Stagnone · 82kg · 22 nodi · Vela 8m² · Risultato: invelato",
+    community_example_3: "Porto Pollo · 68kg · 16 nodi · Vela 10m² · Risultato: giusto",
+    community_example_4: "La Franqui · 90kg · 20 nodi · Vela 9m² · Risultato: sottoinvelato",
+
+    how_title: "Come funziona",
+    how_subtitle: "Inserisci la tua sessione e aiuta a migliorare le stime.",
+    how_step_1_title: "Inserisci i dati",
+    how_step_1_text: "Peso, vento, misura vela e contesto. In pochi secondi.",
+    how_step_2_title: "Il sistema raccoglie dati reali",
+    how_step_2_text: "Ogni sessione alimenta un dataset reale della community.",
+    how_step_3_title: "Migliora nel tempo",
+    how_step_3_text: "Più sessioni = suggerimenti più solidi e utili."
   },
 
   de: {
@@ -317,7 +349,23 @@ window.RDK_TRANSLATIONS = {
     validation_required: "{field} eingeben.",
     validation_required_wind: "Wind ist erforderlich.",
     validation_integer: "{field} muss eine ganze Zahl sein.",
-    validation_range: "{field} muss zwischen {min} und {max} liegen."
+    validation_range: "{field} muss zwischen {min} und {max} liegen.",
+
+    community_title: "Community",
+    community_subtitle: "Community sessions",
+    community_example_1: "Punta Trettu · 74kg · 18 kts · Kite 9m² · Result: good",
+    community_example_2: "Stagnone · 82kg · 22 kts · Kite 8m² · Result: powered",
+    community_example_3: "Porto Pollo · 68kg · 16 kts · Kite 10m² · Result: good",
+    community_example_4: "La Franqui · 90kg · 20 kts · Kite 9m² · Result: underpowered",
+
+    how_title: "How it works",
+    how_subtitle: "Enter your session and help improve estimates.",
+    how_step_1_title: "Enter the data",
+    how_step_1_text: "Weight, wind, kite size and context. In a few seconds.",
+    how_step_2_title: "The system collects real data",
+    how_step_2_text: "Each session feeds a real community dataset.",
+    how_step_3_title: "Improves over time",
+    how_step_3_text: "More sessions = more solid, useful suggestions."
   },
 
   es: {
@@ -424,7 +472,23 @@ window.RDK_TRANSLATIONS = {
     validation_required: "Introduce {field}.",
     validation_required_wind: "El viento es obligatorio.",
     validation_integer: "{field} debe ser un número entero.",
-    validation_range: "{field} debe estar entre {min} y {max}."
+    validation_range: "{field} debe estar entre {min} y {max}.",
+
+    community_title: "Community",
+    community_subtitle: "Community sessions",
+    community_example_1: "Punta Trettu · 74kg · 18 kts · Kite 9m² · Result: good",
+    community_example_2: "Stagnone · 82kg · 22 kts · Kite 8m² · Result: powered",
+    community_example_3: "Porto Pollo · 68kg · 16 kts · Kite 10m² · Result: good",
+    community_example_4: "La Franqui · 90kg · 20 kts · Kite 9m² · Result: underpowered",
+
+    how_title: "How it works",
+    how_subtitle: "Enter your session and help improve estimates.",
+    how_step_1_title: "Enter the data",
+    how_step_1_text: "Weight, wind, kite size and context. In a few seconds.",
+    how_step_2_title: "The system collects real data",
+    how_step_2_text: "Each session feeds a real community dataset.",
+    how_step_3_title: "Improves over time",
+    how_step_3_text: "More sessions = more solid, useful suggestions."
   },
 
   fr: {
@@ -531,6 +595,22 @@ window.RDK_TRANSLATIONS = {
     validation_required: "Saisis {field}.",
     validation_required_wind: "Le vent est obligatoire.",
     validation_integer: "{field} doit être un nombre entier.",
-    validation_range: "{field} doit être compris entre {min} et {max}."
+    validation_range: "{field} doit être compris entre {min} et {max}.",
+
+    community_title: "Community",
+    community_subtitle: "Community sessions",
+    community_example_1: "Punta Trettu · 74kg · 18 kts · Kite 9m² · Result: good",
+    community_example_2: "Stagnone · 82kg · 22 kts · Kite 8m² · Result: powered",
+    community_example_3: "Porto Pollo · 68kg · 16 kts · Kite 10m² · Result: good",
+    community_example_4: "La Franqui · 90kg · 20 kts · Kite 9m² · Result: underpowered",
+
+    how_title: "How it works",
+    how_subtitle: "Enter your session and help improve estimates.",
+    how_step_1_title: "Enter the data",
+    how_step_1_text: "Weight, wind, kite size and context. In a few seconds.",
+    how_step_2_title: "The system collects real data",
+    how_step_2_text: "Each session feeds a real community dataset.",
+    how_step_3_title: "Improves over time",
+    how_step_3_text: "More sessions = more solid, useful suggestions."
   }
 };
