@@ -1058,3 +1058,29 @@ code{
 .community-line:last-child{
   border-bottom: none;
 }
+
+#how .grid-cards{
+  display: none;
+}
+
+#why .grid-cards{
+  display: none;
+}
+
+.install-banner-platform{
+  display: none;
+}
+
+.install-banner{
+  padding: 9px 12px;
+  margin-top: 12px;
+}
+
+.install-banner-copy strong{
+  margin-bottom: 6px;
+  font-size: 15px;
+}
+
+.install-banner-actions{
+  margin-top: 8px;
+}

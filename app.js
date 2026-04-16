@@ -392,14 +392,52 @@
     const lines = Array.from(document.querySelectorAll('.community-line[data-i18n^="community_example_"]'));
     if (!lines.length) return;
 
-    const keys = lines
-      .map((el) => el.getAttribute("data-i18n"))
-      .filter(Boolean);
+    const entries = lines
+      .map((el) => ({ el, key: el.getAttribute("data-i18n") || "" }))
+      .filter((item) => Boolean(item.key));
 
-    shuffleInPlace(keys);
+    if (!entries.length) return;
 
-    lines.forEach((el, idx) => {
-      if (keys[idx]) el.textContent = t(keys[idx]);
+    const spotNames = ["Punta Trettu", "Stagnone", "Is Solinas"];
+    const keyToText = (key) => t(key);
+
+    const pickedKeys = new Set();
+    const fixedPicks = [];
+
+    spotNames.forEach((spot) => {
+      const variants = entries
+        .map((item) => item.key)
+        .filter((key) => keyToText(key).includes(spot));
+
+      if (!variants.length) return;
+
+      shuffleInPlace(variants);
+      const chosen = variants[0];
+      if (!pickedKeys.has(chosen)) {
+        pickedKeys.add(chosen);
+        fixedPicks.push(chosen);
+      }
+    });
+
+    const remaining = entries
+      .map((item) => item.key)
+      .filter((key) => !pickedKeys.has(key));
+
+    shuffleInPlace(remaining);
+    const randomPicks = remaining.slice(0, Math.max(0, 8 - fixedPicks.length));
+
+    const finalKeys = [...fixedPicks, ...randomPicks].slice(0, 8);
+    shuffleInPlace(finalKeys);
+
+    entries.forEach(({ el }) => {
+      el.style.display = "none";
+    });
+
+    finalKeys.forEach((key, idx) => {
+      if (!entries[idx]) return;
+      const { el } = entries[idx];
+      el.textContent = keyToText(key);
+      el.style.display = "";
     });
   }
 
