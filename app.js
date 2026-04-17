@@ -68,6 +68,7 @@
   const CABRINHA_MODELS = [
     "Switchblade",
     "Switchblade Apex",
+    "Moto",
     "Nitro",
     "Nitro Apex",
     "Drifter",
@@ -77,7 +78,8 @@
     "Moto XL",
     "Moto XL Apex",
     "FX",
-    "FX2"
+    "FX2",
+    "Contra"
   ];
 
   const CRAZYFLY_MODELS = [
@@ -88,20 +90,25 @@
 
   const DUOTONE_MODELS = [
     "Evo",
+    "Evo SLS / D-Lab",
     "Evo SLS",
     "Evo D/Lab",
     "Evo Concept Blue",
     "Rebel",
+    "Rebel SLS / D-Lab",
     "Rebel SLS",
     "Rebel D/Lab",
     "Neo",
     "Neo SLS",
     "Neo D/Lab",
+    "Dice",
     "Juice",
+    "Juice Dlab",
     "Juice D/Lab",
     "Vegas",
     "Vegas Concept Blue",
     "Vegas D/Lab",
+    "Mono",
     "Volt",
     "Volt D/Lab"
   ];
@@ -117,6 +124,7 @@
   ];
 
   const CORE_MODELS = [
+    "XR",
     "XR5",
     "XR6",
     "XR7",
@@ -129,6 +137,7 @@
     "Nexus 3",
     "Nexus 4",
     "Nexus LW",
+    "GTS",
     "Pace",
     "Pace Pro",
     "Section",
@@ -153,8 +162,11 @@
     "Bandit",
     "Bandit TEC",
     "Bandit XV",
+    "Bandit S",
     "Bandit-S",
     "Breeze",
+    "Bullit",
+    "Diablo",
     "Addikt",
     "Chrono Foil",
     "Trax Foil",
@@ -204,10 +216,12 @@
   const NAISH_MODELS = [
     "Pivot",
     "Pivot Nvision",
+    "Triad",
     "Psycho",
     "Dash",
     "Ride",
     "Slash",
+    "Boxer",
     "Torch"
   ];
 
@@ -247,6 +261,7 @@
   const OZONE_MODELS = [
     "Enduro",
     "Edge",
+    "Alpha",
     "Catalyst",
     "Vortex",
     "AMP",
@@ -254,22 +269,34 @@
     "Zephyr",
     "Zephyr Ultra-X",
     "Chrono",
-    "Chrono V5"
+    "Chrono V5",
+    "Hyperlink"
   ];
 
   const RRD_MODELS = [
+    "Addiction",
+    "Emotion",
+    "Obsession",
+    "Obsession Gold",
+    "Passion",
     "Passion Y30",
+    "Religion",
     "Passion LW Y30",
+    "Vision",
     "Vision Y27",
     "Religion Y30"
   ];
 
   const SLINGSHOT_MODELS = [
+    "Rally GT",
+    "Code",
     "Code V2",
     "Code NXT",
     "Rally",
+    "Ghost",
     "Ghost V3",
     "SST",
+    "UFO",
     "RPM",
     "RPX",
     "Mistral"
