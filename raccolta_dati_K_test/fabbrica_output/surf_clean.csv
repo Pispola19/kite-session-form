@@ -1,0 +1,101 @@
+Brand,Modello,Length_cm,Width_cm,TargetRider,brand_raw,brand_clean,model_raw,model_clean,category
+Airush,Kite,168,52,"all‑around wave, freeride",Airush,Airush,Kite,Kite,surf
+Airush,Kraken,180,61,"big wave, advanced rider",Airush,Airush,Kraken,Kraken,surf
+Airush,Wave,172,56,"wave rider, intermediate‑advanced",Airush,Airush,Wave,Wave,surf
+Ben Wilson Surf,Flow,170,55,"wave rider, intermediate",Ben Wilson Surf,Ben Wilson Surf,Flow,Flow,surf
+Ben Wilson Surf,Surf,176,57,"big wave, advanced rider",Ben Wilson Surf,Ben Wilson Surf,Surf,Surf,surf
+Best,Board,165,52,"all‑around, beginner‑intermediate",Best,Best,Board,Board,surf
+Best,Breaker,178,58,"big wave, advanced rider",Best,Best,Breaker,Breaker,surf
+Best,Flow,170,54,"wave rider, intermediate",Best,Best,Flow,Flow,surf
+Blade,Flow,170,55,"wave rider, intermediate",Blade,Blade,Flow,Flow,surf
+Blade,Surf,176,57,"big wave, advanced rider",Blade,Blade,Surf,Surf,surf
+Brunotti,Flow,170,55,"wave rider, intermediate",Brunotti,Brunotti,Flow,Flow,surf
+Brunotti,Surf,176,57,"big wave, advanced rider",Brunotti,Brunotti,Surf,Surf,surf
+Cabrinha,Kite,174,57,"wave rider, intermediate‑advanced",Cabrinha,Cabrinha,Kite,Kite,surf
+Cabrinha,Moto,180,60,"big wave, advanced rider",Cabrinha,Cabrinha,Moto,Moto,surf
+Cabrinha,Park,168,53,"all‑around, freeride",Cabrinha,Cabrinha,Park,Park,surf
+Cali,Flow,170,55,"wave rider, intermediate",Cali,Cali,Flow,Flow,surf
+Cali,Surf,176,57,"big wave, advanced rider",Cali,Cali,Surf,Surf,surf
+Calibro 9,Flow,170,55,"wave rider, intermediate",Calibro 9,Calibro 9,Flow,Flow,surf
+Calibro 9,Surf,176,57,"big wave, advanced rider",Calibro 9,Calibro 9,Surf,Surf,surf
+Carved,Kite,170,55,"wave rider, intermediate",Carved,Carved,Kite,Kite,surf
+Carved,Wave,176,59,"big wave, advanced rider",Carved,Carved,Wave,Wave,surf
+Core,Board,166,52,"all‑around, freeride",Core,Core Kiteboarding,Board,Board,surf
+Core,Flow,172,56,"wave rider, intermediate",Core,Core Kiteboarding,Flow,Flow,surf
+Core,Surf,178,58,"big wave, advanced rider",Core,Core Kiteboarding,Surf,Surf,surf
+CrazyFly,Board,164,52,"all‑around, freeride",CrazyFly,CrazyFly,Board,Board,surf
+CrazyFly,Flow,170,55,"wave rider, intermediate",CrazyFly,CrazyFly,Flow,Flow,surf
+CrazyFly,Surf,176,57,"big wave, advanced rider",CrazyFly,CrazyFly,Surf,Surf,surf
+Dakine,Flow,170,55,"wave rider, intermediate",Dakine,Dakine,Flow,Flow,surf
+Dakine,Surf,176,57,"big wave, advanced rider",Dakine,Dakine,Surf,Surf,surf
+Duotone,Board,166,52,"all‑around, freeride",Duotone,Duotone,Board,Board,surf
+Duotone,Flow,172,56,"wave rider, intermediate",Duotone,Duotone,Flow,Flow,surf
+Duotone,Surf,178,58,"big wave, advanced rider",Duotone,Duotone,Surf,Surf,surf
+Eleveight,Board,164,52,"all‑around, freeride",Eleveight,Eleveight,Board,Board,surf
+Eleveight,Flow,170,55,"wave rider, intermediate",Eleveight,Eleveight,Flow,Flow,surf
+Eleveight,Surf,176,57,"big wave, advanced rider",Eleveight,Eleveight,Surf,Surf,surf
+Flexifoil,Flow,170,55,"wave rider, intermediate",Flexifoil,Flexifoil,Flow,Flow,surf
+Flexifoil,Surf,176,57,"big wave, advanced rider",Flexifoil,Flexifoil,Surf,Surf,surf
+Flysurfer,Flow,172,56,"wave rider, intermediate",Flysurfer,Flysurfer,Flow,Flow,surf
+Flysurfer,Surf,178,58,"big wave, advanced rider",Flysurfer,Flysurfer,Surf,Surf,surf
+Gaastra,Board,164,52,"all‑around, freeride",Gaastra,Gaastra,Board,Board,surf
+Gaastra,Flow,170,55,"wave rider, intermediate",Gaastra,Gaastra,Flow,Flow,surf
+Gaastra,Kite,176,57,"big wave, advanced rider",Gaastra,Gaastra,Kite,Kite,surf
+Genetrix,Flow,170,55,"wave rider, intermediate",Genetrix,Genetrix,Flow,Flow,surf
+Genetrix,Surf,176,57,"big wave, advanced rider",Genetrix,Genetrix,Surf,Surf,surf
+GUNSAILS,Flow,170,55,"wave rider, intermediate",GUNSAILS,GUNSAILS,Flow,Flow,surf
+GUNSAILS,Surf,176,57,"big wave, advanced rider",GUNSAILS,GUNSAILS,Surf,Surf,surf
+Harlem,Flow,172,56,"wave rider, intermediate",Harlem,Harlem,Flow,Flow,surf
+Harlem,Wave,178,58,"big wave, advanced rider",Harlem,Harlem,Wave,Wave,surf
+HQ,Flow,170,55,"wave rider, intermediate",HQ,HQ,Flow,Flow,surf
+HQ,Surf,176,57,"big wave, advanced rider",HQ,HQ,Surf,Surf,surf
+ION,Flow,170,55,"wave rider, intermediate",ION,ION,Flow,Flow,surf
+ION,Surf,176,57,"big wave, advanced rider",ION,ION,Surf,Surf,surf
+Jimmy Lewis,Flow,170,55,"wave rider, intermediate",Jimmy Lewis,Jimmy Lewis,Flow,Flow,surf
+Jimmy Lewis,Surf,176,57,"big wave, advanced rider",Jimmy Lewis,Jimmy Lewis,Surf,Surf,surf
+Kaack,Flow,170,55,"wave rider, intermediate",Kaack,Kaack,Flow,Flow,surf
+Kaack,Surf,176,57,"big wave, advanced rider",Kaack,Kaack,Surf,Surf,surf
+Kazuma,Flow,170,55,"wave rider, intermediate",Kazuma,Kazuma,Flow,Flow,surf
+Kazuma,Surf,176,57,"big wave, advanced rider",Kazuma,Kazuma,Surf,Surf,surf
+KSP,Flow,170,55,"wave rider, intermediate",KSP,KSP,Flow,Flow,surf
+KSP,Surf,176,57,"big wave, advanced rider",KSP,KSP,Surf,Surf,surf
+Liquid Force,Board,164,52,"all‑around, freeride",Liquid Force,Liquid Force,Board,Board,surf
+Liquid Force,Flow,170,55,"wave rider, intermediate",Liquid Force,Liquid Force,Flow,Flow,surf
+Liquid Force,Surf,176,57,"big wave, advanced rider",Liquid Force,Liquid Force,Surf,Surf,surf
+Mystic,Flow,170,55,"wave rider, intermediate",Mystic,Mystic,Flow,Flow,surf
+Mystic,Surf,176,57,"big wave, advanced rider",Mystic,Mystic,Surf,Surf,surf
+Naish,Flow,170,55,"wave rider, intermediate",Naish,Naish,Flow,Flow,surf
+Naish,Kite,164,52,"all‑around, freeride",Naish,Naish,Kite,Kite,surf
+Naish,Surf,176,57,"big wave, advanced rider",Naish,Naish,Surf,Surf,surf
+NeilPryde,Flow,170,55,"wave rider, intermediate",NeilPryde,NeilPryde,Flow,Flow,surf
+NeilPryde,Surf,176,57,"big wave, advanced rider",NeilPryde,NeilPryde,Surf,Surf,surf
+Nobile,Flow,170,55,"wave rider, intermediate",Nobile,Nobile,Flow,Flow,surf
+Nobile,Surf,176,57,"big wave, advanced rider",Nobile,Nobile,Surf,Surf,surf
+North,Flow,170,55,"wave rider, intermediate",North,North,Flow,Flow,surf
+North,Kite,164,52,"all‑around, freeride",North,North,Kite,Kite,surf
+North,Surf,176,57,"big wave, advanced rider",North,North,Surf,Surf,surf
+Ocean Rodeo,Flow,170,55,"wave rider, intermediate",Ocean Rodeo,Ocean Rodeo,Flow,Flow,surf
+Ocean Rodeo,Surf,176,57,"big wave, advanced rider",Ocean Rodeo,Ocean Rodeo,Surf,Surf,surf
+Ozone,Board,164,52,"all‑around, freeride",Ozone,Ozone,Board,Board,surf
+Ozone,Flow,170,55,"wave rider, intermediate",Ozone,Ozone,Flow,Flow,surf
+Ozone,Surf,176,57,"big wave, advanced rider",Ozone,Ozone,Surf,Surf,surf
+Peter Lynn,Flow,170,55,"wave rider, intermediate",Peter Lynn,Peter Lynn,Flow,Flow,surf
+Peter Lynn,Surf,176,57,"big wave, advanced rider",Peter Lynn,Peter Lynn,Surf,Surf,surf
+Prolimit,Flow,170,55,"wave rider, intermediate",Prolimit,Prolimit,Flow,Flow,surf
+Prolimit,Surf,176,57,"big wave, advanced rider",Prolimit,Prolimit,Surf,Surf,surf
+Ride Engine,Flow,170,55,"wave rider, intermediate",Ride Engine,Ride Engine,Flow,Flow,surf
+Ride Engine,Surf,176,57,"big wave, advanced rider",Ride Engine,Ride Engine,Surf,Surf,surf
+RRD,Flow,170,55,"wave rider, intermediate",RRD,RRD,Flow,Flow,surf
+RRD,Surf,176,57,"big wave, advanced rider",RRD,RRD,Surf,Surf,surf
+Slingshot,Flow,170,55,"wave rider, intermediate",Slingshot,Slingshot,Flow,Flow,surf
+Slingshot,Surf,176,57,"big wave, advanced rider",Slingshot,Slingshot,Surf,Surf,surf
+Takoon,Flow,170,55,"wave rider, intermediate",Takoon,Takoon,Flow,Flow,surf
+Takoon,Surf,176,57,"big wave, advanced rider",Takoon,Takoon,Surf,Surf,surf
+Twin‑tip,Flow,170,55,"wave rider, intermediate",Twin‑tip,Twin-tip,Flow,Flow,surf
+Twin‑tip,Surf,176,57,"big wave, advanced rider",Twin‑tip,Twin-tip,Surf,Surf,surf
+Ultimate Kiteboarding,Flow,170,55,"wave rider, intermediate",Ultimate Kiteboarding,Ultimate Kiteboarding,Flow,Flow,surf
+Ultimate Kiteboarding,Surf,176,57,"big wave, advanced rider",Ultimate Kiteboarding,Ultimate Kiteboarding,Surf,Surf,surf
+Underwave,Flow,170,55,"wave rider, intermediate",Underwave,Underwave,Flow,Flow,surf
+Underwave,Surf,176,57,"big wave, advanced rider",Underwave,Underwave,Surf,Surf,surf
+Wainman Hawaii,Flow,170,55,"wave rider, intermediate",Wainman Hawaii,Wainman Hawaii,Flow,Flow,surf
+Wainman Hawaii,Surf,176,57,"big wave, advanced rider",Wainman Hawaii,Wainman Hawaii,Surf,Surf,surf

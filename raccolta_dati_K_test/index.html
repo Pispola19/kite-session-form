@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="theme-color" content="#0b1220" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Kite Session" />
+    <title>Stai usando la vela giusta?</title>
+    <link rel="manifest" href="/kite-session-form/manifest.json" />
+    <link rel="apple-touch-icon" href="/kite-session-form/icons/icon-192.png" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="translations.js" defer></script>
+    <script src="app.js" defer></script>
+    <script src="pwa.js" defer></script>
+  </head>
+  <body>
+    <div class="wrap">
+      <header>
+        <div class="lang">
+          <div class="flags" role="group" aria-label="Language">
+            <button type="button" class="flag-btn" data-lang="it" aria-pressed="false" title="Italiano">🇮🇹</button>
+            <button type="button" class="flag-btn" data-lang="en" aria-pressed="false" title="English">🇬🇧</button>
+            <button type="button" class="flag-btn" data-lang="de" aria-pressed="false" title="Deutsch">🇩🇪</button>
+            <button type="button" class="flag-btn" data-lang="es" aria-pressed="false" title="Español">🇪🇸</button>
+            <button type="button" class="flag-btn" data-lang="fr" aria-pressed="false" title="Français">🇫🇷</button>
+          </div>
+        </div>
+        <div class="topbar">
+          <div class="hero-copy">
+            <div class="hero">
+              <h1 data-i18n="title">Stai usando la vela giusta?</h1>
+              <p class="sub" data-i18n="subtitle">Compila e invia in 10–20 secondi
+
+Dati reali - Nessuna registrazione - nessun log in</p>
+            </div>
+          </div>
+        </div>
+      </header>
+      <div class="card">
+        <div class="card-inner">
+          <form id="kiteForm" autocomplete="on" novalidate>
+            <p class="section-label" data-i18n="section_core">Sessione</p>
+            <p class="form-field-legend" data-i18n="form_field_legend">* Obbligatorio. Tutti gli altri campi sono opzionali.</p>
+            <p class="form-field-border-hint" data-i18n="form_field_border_hint">Contorno: rosso = obbligatorio · giallo = opzionale utile · azzurro = altri opzionali.</p>
+
+            <div class="core-block">
+              <div id="coreTopRow" class="row row-core-top">
+                <div class="cell-weight-narrow">
+                  <label for="weight"><span data-i18n="label_weight">Peso (kg)</span><span class="req-mark" aria-hidden="true">*</span></label>
+                  <input
+                    id="weight"
+                    name="weight"
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    placeholder="es. 74"
+                    data-i18n-placeholder="ph_weight"
+                    required
+                    class="input-weight-compact"
+                  />
+                </div>
+
+                <div class="cell-gender-compact">
+                  <label for="gender"><span data-i18n="label_gender">Gender</span></label>
+                  <select id="gender" name="gender" class="field-tier-neutral gender-select-compact">
+                    <option value="" data-i18n="opt_gender_prompt">-</option>
+                    <option value="M" data-i18n="opt_gender_male">Male</option>
+                    <option value="F" data-i18n="opt_gender_female">Female</option>
+                  </select>
+                </div>
+
+                <div class="cell-board-type">
+                  <label for="board"><span data-i18n="label_board">Tipo tavola</span><span class="req-mark" aria-hidden="true">*</span></label>
+                  <select id="board" name="board" required>
+                    <option value="" data-i18n="opt_board_prompt">Seleziona tipo tavola</option>
+                    <option value="twintip" data-i18n="opt_board_twintip">Twintip</option>
+                    <option value="surfboard" data-i18n="opt_board_surfboard">Surfboard</option>
+                    <option value="foil" data-i18n="opt_board_foil">Foil</option>
+                  </select>
+                </div>
+
+                <div id="boardSizeCell" class="cell-board-size">
+                  <label for="boardSize"><span data-i18n="label_board_size">Misura tavola</span></label>
+                  <p id="boardSizeHintAbove" class="board-size-hint-above" data-i18n="board_size_hint_above" hidden>Scegli una misura dall'elenco. Se non c'è, seleziona Altro e scrivi a destra.</p>
+                  <div class="board-size-controls">
+                    <select id="boardSize" name="boardSize" disabled class="field-tier-neutral">
+                      <option value="" data-i18n="opt_board_size_prompt">Scegli misura</option>
+                    </select>
+                    <input
+                      type="text"
+                      id="boardSizeCustom"
+                      name="boardSizeCustom"
+                      autocomplete="off"
+                      maxlength="32"
+                      hidden
+                      class="input-board-size-custom field-tier-neutral"
+                      data-i18n-placeholder="ph_board_size_custom"
+                      placeholder="es. 137x41"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="row level-kite-wind">
+                <div class="level-cell">
+                  <label for="level"><span data-i18n="label_level">Livello</span><span class="req-mark" aria-hidden="true">*</span></label>
+                  <select id="level" name="level" required>
+                    <option value="" data-i18n="opt_level_prompt">Seleziona livello</option>
+                    <option value="beginner" data-i18n="opt_level_beginner">Beginner</option>
+                    <option value="independent" data-i18n="opt_level_independent">Independent</option>
+                    <option value="advanced" data-i18n="opt_level_advanced">Advanced</option>
+                  </select>
+                </div>
+
+                <div class="kite-compact">
+                  <label for="kite"><span data-i18n="label_kite_size">Misura kite (m²)</span><span class="req-mark" aria-hidden="true">*</span></label>
+                  <input
+                    id="kite"
+                    name="kite"
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    placeholder="es. 9"
+                    data-i18n-placeholder="ph_kite_size"
+                    required
+                    class="input-numeric-compact"
+                  />
+                </div>
+
+                <div class="wind-compact">
+                  <label for="wind"><span data-i18n="label_wind">Vento stimato</span><span class="req-mark" aria-hidden="true">*</span></label>
+                  <input
+                    id="wind"
+                    name="wind"
+                    type="text"
+                    inputmode="numeric"
+                    autocomplete="off"
+                    placeholder="es. 18"
+                    data-i18n-placeholder="ph_wind"
+                    required
+                    class="input-numeric-compact"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <p class="section-label" data-i18n="section_tech">Tecnico</p>
+            <div class="row two">
+              <div>
+                <label for="brand"><span data-i18n="label_brand">Marca kite</span></label>
+                <select id="brand" name="brand" class="field-tier-important">
+                  <option value="" data-i18n="opt_brand_prompt">Seleziona marca</option>
+                  <option value="Airush">Airush</option>
+                  <option value="Ben Wilson Surf">Ben Wilson Surf</option>
+                  <option value="Best">Best</option>
+                  <option value="Blade">Blade</option>
+                  <option value="Brunotti">Brunotti</option>
+                  <option value="Cabrinha">Cabrinha</option>
+                  <option value="Calibro 9">Calibro 9</option>
+                  <option value="Cali">Cali</option>
+                  <option value="Core Kiteboarding">Core Kiteboarding</option>
+                  <option value="CrazyFly">CrazyFly</option>
+                  <option value="Duotone Kiteboarding">Duotone Kiteboarding</option>
+                  <option value="Eleveight">Eleveight</option>
+                  <option value="Epic Kiteboarding">Epic Kiteboarding</option>
+                  <option value="F-One">F-One</option>
+                  <option value="Flexifoil">Flexifoil</option>
+                  <option value="Flysurfer">Flysurfer</option>
+                  <option value="Gaastra Kiteboarding">Gaastra Kiteboarding</option>
+                  <option value="Genetrix Kiteboarding">Genetrix Kiteboarding</option>
+                  <option value="GUNSAILS">GUNSAILS</option>
+                  <option value="Harlem Kitesurfing">Harlem Kitesurfing</option>
+                  <option value="HQ Powerkites">HQ Powerkites</option>
+                  <option value="Jimmy Lewis">Jimmy Lewis</option>
+                  <option value="Kaack">Kaack</option>
+                  <option value="Kazuma">Kazuma</option>
+                  <option value="KSP Sports">KSP Sports</option>
+                  <option value="Liquid Force">Liquid Force</option>
+                  <option value="Mystic">Mystic</option>
+                  <option value="Naish Kiteboarding">Naish Kiteboarding</option>
+                  <option value="NeilPryde">NeilPryde</option>
+                  <option value="Nobile Kiteboarding">Nobile Kiteboarding</option>
+                  <option value="North Kiteboarding">North Kiteboarding</option>
+                  <option value="Ocean Rodeo">Ocean Rodeo</option>
+                  <option value="Ozone">Ozone</option>
+                  <option value="Peter Lynn">Peter Lynn</option>
+                  <option value="Red Bull">Red Bull</option>
+                  <option value="RRD">RRD</option>
+                  <option value="Slingshot">Slingshot</option>
+                  <option value="Star Kiteboarding">Star Kiteboarding</option>
+                  <option value="Switch Kiteboarding">Switch Kiteboarding</option>
+                  <option value="Takoon">Takoon</option>
+                  <option value="Ultimate Kiteboarding">Ultimate Kiteboarding</option>
+                  <option value="Underwave">Underwave</option>
+                  <option value="Wainman Hawaii">Wainman Hawaii</option>
+                  <option value="__brand_other__" data-i18n="opt_brand_other">Other</option>
+                </select>
+                <input id="brandCustom" name="brandCustom" type="text" inputmode="text" hidden data-i18n-placeholder="ph_brand_custom" placeholder="Insert brand" class="field-tier-important" />
+                <div class="hint" data-i18n="hint_brand">Usa il nome ufficiale (senza abbreviazioni)</div>
+              </div>
+              <div>
+                <label for="model"><span data-i18n="label_model">Modello kite</span></label>
+                <input id="model" name="model" type="text" inputmode="text" placeholder="Orbit, Dice, XR, Nexus..." data-i18n-placeholder="ph_model" class="field-tier-important" />
+                <select id="modelSelect" name="modelSelect" hidden class="field-tier-important">
+                  <option value="" data-i18n="opt_model_prompt">Select model</option>
+                  <option value="Evo">Evo</option>
+                  <option value="Evo SLS">Evo SLS</option>
+                  <option value="Evo D/Lab">Evo D/Lab</option>
+                  <option value="Evo Concept Blue">Evo Concept Blue</option>
+                  <option value="Rebel">Rebel</option>
+                  <option value="Rebel SLS">Rebel SLS</option>
+                  <option value="Rebel D/Lab">Rebel D/Lab</option>
+                  <option value="Neo">Neo</option>
+                  <option value="Neo SLS">Neo SLS</option>
+                  <option value="Neo D/Lab">Neo D/Lab</option>
+                  <option value="Juice">Juice</option>
+                  <option value="Juice D/Lab">Juice D/Lab</option>
+                  <option value="Vegas">Vegas</option>
+                  <option value="Vegas Concept Blue">Vegas Concept Blue</option>
+                  <option value="Vegas D/Lab">Vegas D/Lab</option>
+                  <option value="Volt">Volt</option>
+                  <option value="Volt D/Lab">Volt D/Lab</option>
+                  <option value="__model_other__" data-i18n="opt_model_other">Other</option>
+                </select>
+                <input id="modelCustom" name="modelCustom" type="text" inputmode="text" hidden data-i18n-placeholder="ph_model_custom" placeholder="Insert model" class="field-tier-important" />
+                <div class="hint" data-i18n="hint_model">Inserisci solo il nome del modello (senza versioni)</div>
+              </div>
+            </div>
+
+            <p class="section-label" data-i18n="section_context">Contesto</p>
+            <div class="row">
+              <div>
+                <label for="location"><span data-i18n="label_location">Spot</span></label>
+                <input id="location" name="location" type="text" inputmode="text" placeholder="es. Punta Trettu" data-i18n-placeholder="ph_location" class="field-tier-neutral" />
+              </div>
+            </div>
+
+            <div class="row two">
+              <div>
+                <label for="water"><span data-i18n="label_water">Condizioni acqua</span></label>
+                <select id="water" name="water" class="field-tier-important">
+                  <option value="" data-i18n="opt_water_prompt">Condizioni acqua</option>
+                  <option value="flat" data-i18n="opt_water_flat">Piatta</option>
+                  <option value="chop_light" data-i18n="opt_water_chop_light">Chop leggero</option>
+                  <option value="chop" data-i18n="opt_water_chop">Chop</option>
+                  <option value="chop_strong" data-i18n="opt_water_chop_strong">Chop forte</option>
+                  <option value="small_waves" data-i18n="opt_water_small_waves">Piccole onde</option>
+                  <option value="waves" data-i18n="opt_water_waves">Onde</option>
+                  <option value="big_waves" data-i18n="opt_water_big_waves">Grandi onde</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="result"><span data-i18n="label_result">Risultato sessione</span><span class="req-mark" aria-hidden="true">*</span></label>
+                <select id="result" name="result" required class="field-tier-neutral">
+                  <option value="" data-i18n="opt_result_prompt">Seleziona</option>
+                  <option value="underpowered" data-i18n="opt_result_underpowered">Sottoinvelato</option>
+                  <option value="good" data-i18n="opt_result_good">Giusto</option>
+                  <option value="powered" data-i18n="opt_result_powered">Invelato</option>
+                  <option value="overpowered" data-i18n="opt_result_overpowered">Sovrainvelato</option>
+                  <option value="survival" data-i18n="opt_result_survival">Sopravvivenza</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="note"><span data-i18n="label_notes">Note</span></label>
+                <textarea id="note" name="note" placeholder="Info utili (raffiche, setup, condizioni...)" data-i18n-placeholder="ph_notes" class="field-tier-neutral"></textarea>
+                <div class="hint" data-i18n="hint_screenshot">Se serve, aggiungi screenshot manualmente su WhatsApp dopo l'invio.</div>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button type="submit" class="primary" id="sendBtn" data-i18n="btn_send">Invia (10 sec)</button>
+            </div>
+
+            <div id="validationNotice" class="validation-notice" aria-live="polite" aria-hidden="true"></div>
+
+            <div class="preview" aria-live="polite">
+              <h2 data-i18n="preview_title">Anteprima payload</h2>
+              <pre id="previewText" data-i18n="preview_empty">Compila i campi obbligatori per generare il messaggio...</pre>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <main class="content">
+        <section class="section" id="spotConditions" aria-label="Condizioni spot">
+          <h2 class="section-title" data-i18n="spot_conditions_title">Condizioni spot</h2>
+          <p class="section-subtitle" id="spotConditionsSubtitle" data-i18n="spot_conditions_subtitle">Inserisci uno spot per vedere i dati disponibili</p>
+          
+          <div id="spotConditionsContent" class="spot-conditions-content">
+            <div id="spotPlaceholder" class="spot-placeholder">
+              <p data-i18n="spot_placeholder_text">Digita un nome spot nel campo sopra per vedere le informazioni</p>
+            </div>
+            
+            <div id="spotData" class="spot-data" hidden>
+              <div class="spot-status">
+                <span id="spotStatus" class="spot-status-text"></span>
+                <span id="spotUpdated" class="spot-updated-text"></span>
+              </div>
+              
+              <div class="spot-areas">
+                <div class="spot-area">
+                  <h4 class="spot-area-title" data-i18n="spot_area_rider">Segnalazioni rider</h4>
+                  <div id="riderData" class="spot-area-content"></div>
+                </div>
+                
+                <div class="spot-area">
+                  <h4 class="spot-area-title" data-i18n="spot_area_anemometer">Anemometro</h4>
+                  <div id="anemometerData" class="spot-area-content"></div>
+                </div>
+                
+                <div class="spot-area">
+                  <h4 class="spot-area-title" data-i18n="spot_area_forecast">Previsione 4h</h4>
+                  <div id="forecastData" class="spot-area-content"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="how" aria-label="Come funziona">
+          <h2 class="section-title" data-i18n="how_title">Come funziona</h2>
+          <p class="section-subtitle" data-i18n="how_subtitle">Inserisci la tua sessione e aiuta a migliorare le stime.</p>
+          <div class="grid-cards">
+            <article class="ux-card">
+              <div class="ux-card__kicker">1</div>
+              <h3 class="ux-card__title" data-i18n="how_step_1_title">Inserisci i dati</h3>
+              <p class="ux-card__text" data-i18n="how_step_1_text">Peso, vento, misura vela e contesto. In pochi secondi.</p>
+            </article>
+            <article class="ux-card">
+              <div class="ux-card__kicker">2</div>
+              <h3 class="ux-card__title" data-i18n="how_step_2_title">Il sistema raccoglie dati reali</h3>
+              <p class="ux-card__text" data-i18n="how_step_2_text">Ogni sessione alimenta un dataset reale della community.</p>
+            </article>
+            <article class="ux-card">
+              <div class="ux-card__kicker">3</div>
+              <h3 class="ux-card__title" data-i18n="how_step_3_title">Migliora nel tempo</h3>
+              <p class="ux-card__text" data-i18n="how_step_3_text">Più sessioni = suggerimenti più solidi e utili.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="why" aria-label="Perché contribuire">
+          <h2 class="section-title" data-i18n="why_title">Perché contribuire</h2>
+          <p class="section-subtitle" data-i18n="why_subtitle">Ti aiuta a capire cosa funziona davvero nelle tue condizioni e, allo stesso tempo, contribuisce a costruire un riferimento reale utile anche per gli altri rider.</p>
+          <div class="grid-cards">
+            <article class="ux-card">
+              <h3 class="ux-card__title" data-i18n="why_card_1_title">Migliori le tue scelte</h3>
+              <p class="ux-card__text" data-i18n="why_card_1_text">Capisci cosa funziona davvero nelle tue condizioni.</p>
+            </article>
+            <article class="ux-card">
+              <h3 class="ux-card__title" data-i18n="why_card_2_title">Aiuti la community</h3>
+              <p class="ux-card__text" data-i18n="why_card_2_text">Dati condivisi = decisioni migliori per tutti.</p>
+            </article>
+            <article class="ux-card">
+              <h3 class="ux-card__title" data-i18n="why_card_3_title">Costruisci database reale</h3>
+              <p class="ux-card__text" data-i18n="why_card_3_text">Un riferimento indipendente, basato su sessioni vere.</p>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <section id="installBanner" class="install-banner" hidden aria-live="polite">
+        <div class="install-banner-copy">
+          <strong data-i18n="install_banner_title">📲 Salva questa app (10 sec)</strong>
+          <div class="install-banner-platform">
+            <p class="install-banner-text install-banner-text--intro" data-i18n="install_banner_ios_intro">
+              iPhone:
+            </p>
+            <p class="install-banner-text" data-i18n="install_banner_ios_compact">
+              Tocca Condividi ⬇️ → Aggiungi a Home
+            </p>
+          </div>
+          <div class="install-banner-platform">
+            <p class="install-banner-text install-banner-text--intro" data-i18n="install_banner_android_intro">
+              Android:
+            </p>
+            <p class="install-banner-text" data-i18n="install_banner_android_compact">
+              Menu → Installa app
+            </p>
+          </div>
+          <div class="install-banner-actions">
+            <button type="button" id="shareAppBtn" class="install-banner-share" data-i18n="share_app_button">Condividi</button>
+            <p id="shareAppStatus" class="install-banner-share-status" aria-live="polite" hidden></p>
+          </div>
+        </div>
+      </section>
+
+      <div class="status-modal" id="statusModal" hidden aria-hidden="true">
+        <div class="status-modal__backdrop"></div>
+        <div class="status-modal__card" role="alertdialog" aria-modal="true" aria-labelledby="statusModalTitle" aria-describedby="statusModalBody">
+          <div class="status-modal__spinner" id="statusModalSpinner" aria-hidden="true"></div>
+          <div class="status-modal__title" id="statusModalTitle">Invio in corso...</div>
+          <div class="status-modal__body" id="statusModalBody" hidden></div>
+          <button type="button" class="status-modal__close" id="statusModalClose" data-i18n="status_modal_close" hidden>Chiudi</button>
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>
