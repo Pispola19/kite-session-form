@@ -615,6 +615,50 @@
     installBanner.hidden = false;
   }
 
+  function renderUIState(uiState){
+    const state = typeof uiState === "string" ? { name: uiState } : uiState || {};
+
+    if (state.name === "submit_prepare") {
+      hideStatusModal({ enableSend: false });
+      hidePostSubmitPanel();
+      setValidationNotice("");
+      clearInvalidFieldHighlights();
+      return;
+    }
+
+    if (state.name === "submit_pending") {
+      showStatusModal("pending");
+      return;
+    }
+
+    if (state.name === "post_submit_panel") {
+      showPostSubmitPanel();
+      return;
+    }
+
+    if (state.name === "submit_result") {
+      showStatusModal(state.status);
+      setValidationNotice("");
+      return;
+    }
+
+    if (state.name === "submit_message_empty") {
+      hideStatusModal({ enableSend: false });
+      setValidationNotice("");
+      return;
+    }
+
+    if (state.name === "submit_error") {
+      setValidationNotice("");
+      showStatusModal("error");
+      return;
+    }
+
+    if (state.name === "submit_autoclose") {
+      scheduleStatusModalClose(state.delayMs);
+    }
+  }
+
   function setShareAppStatus(message, translationKey = ""){
     if (!shareAppStatus) return;
     if (!message) {
@@ -1546,11 +1590,11 @@
     return `${Date.now().toString(36)}${randomRdkId(20)}`;
   }
 
-  function buildSessionData(){
+  function collectFormData(){
     const boardSizeSelection = val("boardSize");
     const eventTimestamp = new Date().toISOString();
 
-    return {
+    const formData = {
       session_id: generateSessionId(),
       technical_id: generateTechnicalId(),
       event_ts: eventTimestamp,
@@ -1570,6 +1614,33 @@
       note: val("note"),
       ts: eventTimestamp
     };
+
+    Object.defineProperties(formData, {
+      __boardText: { value: selectedText("board") },
+      __levelText: { value: selectedText("level") },
+      __waterText: { value: selectedText("water") },
+      __resultText: { value: selectedText("result") }
+    });
+
+    return formData;
+  }
+
+  function buildSessionData(){
+    return collectFormData();
+  }
+
+  function buildPayload(formData){
+    return formData;
+  }
+
+  function submitPayload(payload){
+    fetch("http://127.0.0.1:8000/submit", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(payload)
+    }).catch(() => {});
   }
 
   function clearPendingGoogleSubmit(){
@@ -1797,47 +1868,52 @@
     refreshPreview();
   }
 
-  function buildCoreMessage(){
-    const weight = val("weight");
-    const board = val("board");
-    const boardSizeSelection = val("boardSize");
-    const boardSize = boardSizeSelection === BOARD_SIZE_OTHER ? val("boardSizeCustom") : boardSizeSelection;
-    const level = val("level");
-    const kite = val("kite");
-    const brand = getBrandValue();
-    const model = getModelValue();
-    const wind = val("wind");
-    const location = val("location");
-    const water = val("water");
-    const result = val("result");
-    const note = val("note");
+  function buildCoreMessage(formData){
+    const useFormData = formData && typeof formData === "object";
+    const weight = useFormData ? String(formData.weight || "").trim() : val("weight");
+    const board = useFormData ? String(formData.board || "").trim() : val("board");
+    const boardSizeSelection = useFormData ? String(formData.boardSize || "").trim() : val("boardSize");
+    const boardSize = useFormData ? boardSizeSelection : boardSizeSelection === BOARD_SIZE_OTHER ? val("boardSizeCustom") : boardSizeSelection;
+    const level = useFormData ? String(formData.level || "").trim() : val("level");
+    const kite = useFormData ? String(formData.kite || "").trim() : val("kite");
+    const brand = useFormData ? String(formData.brand || "").trim() : getBrandValue();
+    const model = useFormData ? String(formData.model || "").trim() : getModelValue();
+    const wind = useFormData ? String(formData.wind || "").trim() : val("wind");
+    const location = useFormData ? String(formData.location || "").trim() : val("location");
+    const water = useFormData ? String(formData.water || "").trim() : val("water");
+    const result = useFormData ? String(formData.result || "").trim() : val("result");
+    const note = useFormData ? String(formData.note || "").trim() : val("note");
+    const boardText = useFormData ? String(formData.__boardText || "").trim() : selectedText("board");
+    const levelText = useFormData ? String(formData.__levelText || "").trim() : selectedText("level");
+    const waterText = useFormData ? String(formData.__waterText || "").trim() : selectedText("water");
+    const resultText = useFormData ? String(formData.__resultText || "").trim() : selectedText("result");
 
     const lines = [];
     if (weight) lines.push(`⚖️ ${CANONICAL_LABELS.weight}: ${weight}`);
-    if (board) lines.push(`🪵 ${CANONICAL_LABELS.board}: ${selectedText("board") || board}`);
+    if (board) lines.push(`🪵 ${CANONICAL_LABELS.board}: ${boardText || board}`);
     if (boardSize) lines.push(`🪵 ${CANONICAL_LABELS.boardSize}: ${boardSize}`);
-    if (level) lines.push(`🎯 ${CANONICAL_LABELS.level}: ${selectedText("level") || level}`);
+    if (level) lines.push(`🎯 ${CANONICAL_LABELS.level}: ${levelText || level}`);
     if (kite) lines.push(`🪁 ${CANONICAL_LABELS.kite}: ${kite}`);
     if (brand) lines.push(`🏷️ ${CANONICAL_LABELS.brand}: ${brand}`);
     if (model) lines.push(`🪁 ${CANONICAL_LABELS.model}: ${model}`);
     if (wind) lines.push(`🌬️ ${CANONICAL_LABELS.wind}: ${wind}`);
     if (location) lines.push(`📍 ${CANONICAL_LABELS.location}: ${location}`);
-    if (water) lines.push(`🌊 ${CANONICAL_LABELS.water}: ${selectedText("water") || water}`);
-    if (result) lines.push(`✅ ${CANONICAL_LABELS.result}: ${selectedText("result") || result}`);
+    if (water) lines.push(`🌊 ${CANONICAL_LABELS.water}: ${waterText || water}`);
+    if (result) lines.push(`✅ ${CANONICAL_LABELS.result}: ${resultText || result}`);
     if (note) lines.push(`${CANONICAL_LABELS.notes}: ${note}`);
 
     return lines.join("\n");
   }
 
-  function buildOutgoingBody(){
-    const core = buildCoreMessage();
+  function buildOutgoingBody(formData){
+    const core = buildCoreMessage(formData);
     if (!core) return "";
     if (hasFirstSubmitDone()) return core;
     return `${t("first_submit_prefix")}\n\n${core}`;
   }
 
-  function buildOutgoingMessageSync(){
-    const body = buildOutgoingBody();
+  function buildOutgoingMessageSync(formData){
+    const body = buildOutgoingBody(formData);
     if (!body) return "";
     return appendTechnicalBlockSync(body);
   }
@@ -2005,12 +2081,9 @@
       return;
     }
 
-    hideStatusModal({ enableSend: false });
-    hidePostSubmitPanel();
-    setValidationNotice("");
-    clearInvalidFieldHighlights();
+    renderUIState({ name: "submit_prepare" });
     lockSubmitState("form_submit");
-    showStatusModal("pending");
+    renderUIState({ name: "submit_pending" });
 
     let sessionDataToSend = null;
     let message = "";
@@ -2018,20 +2091,14 @@
     let shouldOpenWhatsApp = false;
 
     try {
-      const sessionData = buildSessionData();
-      const formDataObject = sessionData;
-      fetch("http://127.0.0.1:8000/submit", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(formDataObject)
-      }).catch(() => {});
-      sessionDataToSend = sessionData;
+      const formData = collectFormData();
+      const payload = buildPayload(formData);
+      submitPayload(payload);
+      sessionDataToSend = payload;
       clearPendingGoogleSubmit();
-      saveLastSession(sessionData);
+      saveLastSession(sessionDataToSend);
       saveDraftSession();
-      message = buildOutgoingMessageSync();
+      message = buildOutgoingMessageSync(formData);
       if (!message) {
         throw new Error("submit_message_empty");
       }
@@ -2047,20 +2114,17 @@
 
       console.log("Sent session_id:", sessionDataToSend.session_id);
       markFirstSubmitDone();
-      showPostSubmitPanel();
+      renderUIState({ name: "post_submit_panel" });
       playSendFeedback();
-      showStatusModal(isCertainSuccess ? "success" : "probable");
-      setValidationNotice("");
+      renderUIState({ name: "submit_result", status: isCertainSuccess ? "success" : "probable" });
       shouldAutoCloseModal = true;
       shouldOpenWhatsApp = true;
     } catch (error) {
       console.error(error);
       if (error?.message === "submit_message_empty") {
-        hideStatusModal({ enableSend: false });
-        setValidationNotice("");
+        renderUIState({ name: "submit_message_empty" });
       } else {
-        setValidationNotice("");
-        showStatusModal("error");
+        renderUIState({ name: "submit_error" });
       }
     } finally {
       clearPendingGoogleSubmit();
@@ -2068,7 +2132,7 @@
       console.log("SUBMIT END");
       unlockSubmitState("finally");
       if (shouldAutoCloseModal) {
-        scheduleStatusModalClose(2200);
+        renderUIState({ name: "submit_autoclose", delayMs: 2200 });
       }
       if (shouldOpenWhatsApp && message) {
         openWhatsAppWithMessage(message);

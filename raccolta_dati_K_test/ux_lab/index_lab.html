@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark light" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>UX LAB / NO SUBMIT REALE</title>
+    <link rel="stylesheet" href="../styles.css" />
+    <style>
+      .lab-banner {
+        position: sticky;
+        top: 0;
+        z-index: 20;
+        margin: 0 0 18px;
+        padding: 12px 16px;
+        border: 1px solid rgba(250, 204, 21, 0.72);
+        border-radius: 8px;
+        background: rgba(113, 63, 18, 0.92);
+        color: #fef9c3;
+        font-weight: 800;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      .lab-note {
+        margin: 8px 0 0;
+        color: rgba(226, 232, 240, 0.78);
+        font-size: 0.95rem;
+        text-transform: none;
+      }
+
+      .lab-status {
+        margin-top: 12px;
+        padding: 12px 14px;
+        border: 1px solid rgba(96, 165, 250, 0.48);
+        border-radius: 8px;
+        background: rgba(15, 23, 42, 0.72);
+        color: #dbeafe;
+      }
+
+      .lab-progress {
+        display: grid;
+        gap: 8px;
+        margin: 14px 0 4px;
+        padding: 12px 14px;
+        border: 1px solid rgba(148, 163, 184, 0.4);
+        border-radius: 8px;
+        background: rgba(15, 23, 42, 0.58);
+      }
+
+      .lab-progress__row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        color: rgba(226, 232, 240, 0.86);
+        font-size: 0.92rem;
+        font-weight: 700;
+      }
+
+      .lab-progress__bar {
+        overflow: hidden;
+        height: 8px;
+        border-radius: 999px;
+        background: rgba(148, 163, 184, 0.18);
+      }
+
+      .lab-progress__fill {
+        display: block;
+        width: 0%;
+        height: 100%;
+        border-radius: inherit;
+        background: linear-gradient(90deg, #60a5fa, #22c55e);
+        transition: width 160ms ease;
+      }
+
+      .lab-progress__hint {
+        margin: 0;
+        color: rgba(226, 232, 240, 0.72);
+        font-size: 0.9rem;
+      }
+
+      .lab-tag {
+        display: inline-flex;
+        align-items: center;
+        min-height: 28px;
+        padding: 4px 10px;
+        border: 1px solid rgba(148, 163, 184, 0.45);
+        border-radius: 999px;
+        color: rgba(226, 232, 240, 0.82);
+        font-size: 0.82rem;
+        font-weight: 700;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <div class="lab-banner" role="status">
+        UX LAB / NO SUBMIT REALE
+        <p class="lab-note">Ambiente visivo separato: non carica logica reale e non invia API.</p>
+      </div>
+
+      <header>
+        <div class="topbar">
+          <div class="hero-copy">
+            <div class="hero">
+              <span class="lab-tag">Visual shell</span>
+              <h1>Stai usando la vela giusta?</h1>
+              <p class="sub">Sandbox per prove di layout e stati visivi. I dati qui sotto sono solo mock locali.</p>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="card">
+        <div class="card-inner">
+          <form id="labForm" autocomplete="off" novalidate action="./index_lab.html" method="get" onsubmit="return false">
+            <p class="section-label">Sessione</p>
+            <p class="form-field-legend">* Obbligatorio. Tutti gli altri campi sono opzionali.</p>
+            <p class="form-field-border-hint">Laboratorio: il pulsante simula solo lo stato visuale, senza invii reali.</p>
+
+            <div class="core-block">
+              <div class="row row-core-top">
+                <div class="cell-weight-narrow">
+                  <label for="labWeight">Peso (kg)<span class="req-mark" aria-hidden="true">*</span></label>
+                  <input id="labWeight" name="weight" type="text" inputmode="numeric" placeholder="es. 74" required class="input-weight-compact" />
+                </div>
+
+                <div class="cell-gender-compact">
+                  <label for="labGender">Gender</label>
+                  <select id="labGender" name="gender" class="field-tier-neutral gender-select-compact">
+                    <option value="">-</option>
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                  </select>
+                </div>
+
+                <div class="cell-board-type">
+                  <label for="labBoard">Tipo tavola<span class="req-mark" aria-hidden="true">*</span></label>
+                  <select id="labBoard" name="board" required>
+                    <option value="">Seleziona tipo tavola</option>
+                    <option value="Twintip">Twintip</option>
+                    <option value="Surfboard">Surfboard</option>
+                    <option value="Foil">Foil</option>
+                  </select>
+                </div>
+
+                <div class="cell-board-size">
+                  <label for="labBoardSize">Misura tavola</label>
+                  <div class="board-size-controls">
+                    <select id="labBoardSize" name="boardSize" class="field-tier-neutral">
+                      <option value="">Scegli misura</option>
+                      <option value="137x41">137x41</option>
+                      <option value="140x42">140x42</option>
+                      <option value="5'8">5'8</option>
+                      <option value="90">90</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row level-kite-wind">
+                <div class="level-cell">
+                  <label for="labLevel">Livello<span class="req-mark" aria-hidden="true">*</span></label>
+                  <select id="labLevel" name="level" required>
+                    <option value="">Seleziona livello</option>
+                    <option value="Beginner">Beginner</option>
+                    <option value="Independent">Independent</option>
+                    <option value="Advanced">Advanced</option>
+                  </select>
+                </div>
+
+                <div class="kite-compact">
+                  <label for="labKite">Misura kite (m2)<span class="req-mark" aria-hidden="true">*</span></label>
+                  <input id="labKite" name="kite" type="text" inputmode="numeric" placeholder="es. 9" required class="input-numeric-compact" />
+                </div>
+
+                <div class="wind-compact">
+                  <label for="labWind">Vento stimato<span class="req-mark" aria-hidden="true">*</span></label>
+                  <input id="labWind" name="wind" type="text" inputmode="numeric" placeholder="es. 18" required class="input-numeric-compact" />
+                </div>
+              </div>
+            </div>
+
+            <p class="section-label">Tecnico</p>
+            <div class="row two">
+              <div>
+                <label for="labBrand">Marca kite</label>
+                <select id="labBrand" name="brand" class="field-tier-important">
+                  <option value="">Seleziona marca</option>
+                  <option value="Duotone Kiteboarding">Duotone Kiteboarding</option>
+                  <option value="Core Kiteboarding">Core Kiteboarding</option>
+                  <option value="North Kiteboarding">North Kiteboarding</option>
+                  <option value="Ozone">Ozone</option>
+                  <option value="RRD">RRD</option>
+                </select>
+                <div class="hint">Campo mock per verifiche visuali.</div>
+              </div>
+              <div>
+                <label for="labModel">Modello kite</label>
+                <input id="labModel" name="model" type="text" inputmode="text" placeholder="Orbit, Dice, XR, Nexus..." class="field-tier-important" />
+                <div class="hint">Nessuna logica modello reale collegata.</div>
+              </div>
+            </div>
+
+            <p class="section-label">Contesto</p>
+            <div class="row">
+              <div>
+                <label for="labLocation">Spot</label>
+                <input id="labLocation" name="location" type="text" inputmode="text" placeholder="es. Punta Trettu" class="field-tier-neutral" />
+              </div>
+            </div>
+
+            <div class="row two">
+              <div>
+                <label for="labWater">Condizioni acqua</label>
+                <select id="labWater" name="water" class="field-tier-important">
+                  <option value="">Condizioni acqua</option>
+                  <option value="Flat">Piatta</option>
+                  <option value="Chop light">Chop leggero</option>
+                  <option value="Chop">Chop</option>
+                  <option value="Waves">Onde</option>
+                </select>
+              </div>
+
+              <div>
+                <label for="labResult">Risultato sessione<span class="req-mark" aria-hidden="true">*</span></label>
+                <select id="labResult" name="result" required class="field-tier-neutral">
+                  <option value="">Seleziona</option>
+                  <option value="Underpowered">Sottoinvelato</option>
+                  <option value="Good">Giusto</option>
+                  <option value="Powered">Invelato</option>
+                  <option value="Overpowered">Sovrainvelato</option>
+                  <option value="Survival">Sopravvivenza</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="row">
+              <div>
+                <label for="labNote">Note</label>
+                <textarea id="labNote" name="note" placeholder="Info utili per testare spazi, lunghezze testo, stato anteprima..." class="field-tier-neutral"></textarea>
+                <div class="hint">Solo testo locale di laboratorio.</div>
+              </div>
+            </div>
+
+            <div class="actions">
+              <button type="submit" class="primary" id="labSendBtn">Simula invio lab</button>
+              <button type="button" class="secondary" id="labResetBtn">Reset lab</button>
+            </div>
+
+            <div id="labStatus" class="lab-status" aria-live="polite">Nessun invio reale: il submit e' bloccato in questa pagina.</div>
+
+            <div class="lab-progress" aria-live="polite">
+              <div class="lab-progress__row">
+                <span>Stato compilazione lab</span>
+                <span id="labCompletionCount">0/13 campi</span>
+              </div>
+              <div class="lab-progress__bar" aria-hidden="true">
+                <span class="lab-progress__fill" id="labCompletionFill"></span>
+              </div>
+              <p class="lab-progress__hint" id="labCompletionHint">Compilazione non iniziata.</p>
+            </div>
+
+            <div class="preview" aria-live="polite">
+              <h2>Anteprima mock</h2>
+              <pre id="labPreviewText">Compila i campi per visualizzare una preview locale del laboratorio.</pre>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function(){
+        var form = document.getElementById("labForm");
+        var preview = document.getElementById("labPreviewText");
+        var status = document.getElementById("labStatus");
+        var completionCount = document.getElementById("labCompletionCount");
+        var completionFill = document.getElementById("labCompletionFill");
+        var completionHint = document.getElementById("labCompletionHint");
+        var resetButton = document.getElementById("labResetBtn");
+        var trackedFields = ["weight", "gender", "board", "boardSize", "level", "kite", "wind", "brand", "model", "location", "water", "result", "note"];
+        var requiredFields = ["weight", "board", "level", "kite", "wind", "result"];
+
+        function value(name){
+          var field = form.elements[name];
+          return field ? String(field.value || "").trim() : "";
+        }
+
+        function renderPreview(){
+          var rows = [
+            ["Weight (kg)", value("weight")],
+            ["Gender", value("gender")],
+            ["Board type", value("board")],
+            ["Board size", value("boardSize")],
+            ["Level", value("level")],
+            ["Kite (m2)", value("kite")],
+            ["Wind (kts)", value("wind")],
+            ["Brand", value("brand")],
+            ["Model", value("model")],
+            ["Spot", value("location")],
+            ["Water conditions", value("water")],
+            ["Session result", value("result")],
+            ["Notes", value("note")]
+          ].filter(function(row){ return row[1]; });
+
+          preview.textContent = rows.length
+            ? rows.map(function(row){ return row[0] + ": " + row[1]; }).join("\n")
+            : "Compila i campi per visualizzare una preview locale del laboratorio.";
+        }
+
+        function renderCompletionHint(){
+          var filledCount = trackedFields.filter(function(name){ return Boolean(value(name)); }).length;
+          var missingRequired = requiredFields.filter(function(name){ return !value(name); });
+          var percent = Math.round((filledCount / trackedFields.length) * 100);
+
+          completionCount.textContent = filledCount + "/" + trackedFields.length + " campi";
+          completionFill.style.width = percent + "%";
+          completionHint.textContent = missingRequired.length
+            ? "Hint locale: mancano " + missingRequired.length + " campi obbligatori nella shell lab."
+            : "Hint locale: campi obbligatori della shell lab compilati.";
+        }
+
+        function renderLabState(){
+          renderPreview();
+          renderCompletionHint();
+        }
+
+        form.addEventListener("input", renderLabState);
+        form.addEventListener("change", renderLabState);
+        form.addEventListener("submit", function(event){
+          event.preventDefault();
+          event.stopPropagation();
+          form.classList.add("was-submitted");
+          renderLabState();
+          status.textContent = "Submit reale bloccato: questa e' solo una simulazione UX locale.";
+        });
+
+        resetButton.addEventListener("click", function(){
+          form.reset();
+          form.classList.remove("was-submitted");
+          status.textContent = "Nessun invio reale: il submit e' bloccato in questa pagina.";
+          renderLabState();
+        });
+
+        renderLabState();
+      })();
+    </script>
+  </body>
+</html>

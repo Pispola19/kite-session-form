@@ -16,8 +16,8 @@
   --focus-border: rgba(244,198,122,.65);
   --hover-border: rgba(244,198,122,.30);
   --field-bg: rgba(9,14,26,.58);
-  --field-req-border: rgba(251, 113, 133, 0.58);
-  --field-req-glow: rgba(251, 113, 133, 0.22);
+  --field-req-border: rgba(251, 113, 133, 0.78);
+  --field-req-glow: rgba(251, 113, 133, 0.28);
   --field-imp-border: rgba(234, 179, 8, 0.55);
   --field-imp-glow: rgba(234, 179, 8, 0.2);
   --field-soft-border: rgba(96, 165, 250, 0.52);
@@ -32,10 +32,12 @@ body{
   margin:0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
   background:
-    radial-gradient(1200px 700px at 15% 0%, rgba(96,165,250,.14), transparent 62%),
-    radial-gradient(900px 520px at 85% 10%, rgba(45,212,191,.10), transparent 58%),
-    radial-gradient(700px 520px at 55% 0%, rgba(244,198,122,.08), transparent 60%),
-    var(--bg);
+    radial-gradient(circle at 5% 8%, rgba(255,249,201,.92) 0%, rgba(255,221,137,.68) 9%, rgba(255,171,83,.36) 22%, transparent 38%),
+    radial-gradient(ellipse at 0% 24%, rgba(255,153,78,.38) 0%, rgba(255,153,78,0) 34%),
+    radial-gradient(ellipse at 48% 52%, rgba(255,241,197,.28) 0%, rgba(255,241,197,0) 24%),
+    repeating-linear-gradient(176deg, transparent 0 28px, rgba(255,255,255,.055) 29px 30px, transparent 31px 58px),
+    radial-gradient(ellipse at 50% 102%, rgba(0,72,116,.74) 0%, rgba(0,128,170,.34) 38%, rgba(0,128,170,0) 68%),
+    linear-gradient(180deg, #f8cb77 0%, #f29a66 22%, #8dd7f0 43%, #18a5d9 64%, #045d91 100%);
   color:var(--text);
   line-height:1.4;
 }
@@ -144,21 +146,35 @@ header{
 
 .lang .flags{
   display:flex;
+  align-items:center;
+  justify-content:center;
   gap: 4px;
-  padding: 4px 6px;
+  flex-wrap: nowrap;
+  padding: 3px 5px;
   border: 1px solid var(--border);
   border-radius: 999px;
   background: rgba(255,255,255,.03);
 }
 
 .flag-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap: 4px;
+  min-height: 28px;
   cursor:pointer;
   border: 1px solid transparent;
   background: transparent;
   color: var(--text);
   border-radius: 999px;
-  padding: 6px 7px;
-  font-size: 16px;
+  padding: 5px 7px;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.flag-icon{
+  font-size: 14px;
   line-height: 1;
 }
 
@@ -193,9 +209,20 @@ header{
 }
 
 .req-mark{
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
   color: var(--danger);
-  font-weight: 700;
-  margin-left: 3px;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  margin-left: 5px;
+  border: 1px solid rgba(251, 113, 133, 0.55);
+  border-radius: 999px;
+  background: rgba(251, 113, 133, 0.12);
+  box-shadow: 0 0 0 2px rgba(251, 113, 133, 0.08);
   white-space: nowrap;
 }
 
@@ -383,6 +410,18 @@ p.sub{
   white-space: pre-line;
 }
 
+.brand-translation{
+  margin: 4px 0 8px;
+  color: rgba(159,178,214,.78);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.brand-translation:empty{
+  display: none;
+}
+
 @media (min-width: 980px){
   p.sub{
     max-width: none;
@@ -410,10 +449,12 @@ p.sub{
 }
 
 .card{
-  background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+  background: linear-gradient(180deg, rgba(12,24,42,.82), rgba(7,18,34,.86));
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  box-shadow: var(--shadow);
+  box-shadow:
+    0 18px 48px rgba(0,17,35,.42),
+    0 1px 0 rgba(255,255,255,.05) inset;
   overflow:hidden;
 }
 
@@ -424,8 +465,8 @@ p.sub{
       0 1px 0 rgba(255,255,255,.06) inset;
     border-color: rgba(255,255,255,.10);
     background:
-      radial-gradient(800px 220px at 50% 0%, rgba(244,198,122,.06), transparent 60%),
-      linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      radial-gradient(800px 220px at 50% 0%, rgba(244,198,122,.05), transparent 60%),
+      linear-gradient(180deg, rgba(12,24,42,.84), rgba(7,18,34,.88));
   }
 }
 
@@ -537,7 +578,9 @@ button:disabled{
 #kiteForm input[required]:enabled,
 #kiteForm select[required]:enabled{
   border-color: var(--field-req-border);
-  box-shadow: 0 0 0 1px var(--field-req-glow);
+  box-shadow:
+    inset 3px 0 0 rgba(251, 113, 133, 0.42),
+    0 0 0 1px var(--field-req-glow);
 }
 
 .hint{
