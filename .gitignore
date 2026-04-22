@@ -1,0 +1,11 @@
+.DS_Store
+APP_JS_MAP.md
+CODEBASE_MAP.md
+INGEST_SPEC.md
+test_google_sheet_ingest_reference.py
+ingest_api/
+fabbrica_output/
+tabelle_kite_ordinate/
+google_sheet_ingest_reference.py
+google_sheets_webhook.gs
+ux_lab/
