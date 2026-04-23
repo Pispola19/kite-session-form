@@ -1143,6 +1143,7 @@ code{
 
   body {
     min-height: 100dvh;
+    background-image: url("assets/bg-mobile.jpg");
     background-repeat: no-repeat;
     background-attachment: scroll;
     background-position: 70% center;
