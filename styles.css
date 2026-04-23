@@ -1146,8 +1146,8 @@ code{
     background-image: url("assets/bg-mobile.jpg");
     background-repeat: no-repeat;
     background-attachment: scroll;
-    background-position: 70% center;
-    background-size: cover;
+    background-position: center;
+    background-size: contain;
   }
 
   .brand-translation {
