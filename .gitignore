@@ -1,0 +1,21 @@
+# database
+*.db
+*.sqlite
+*.sqlite3
+
+# macOS
+.DS_Store
+
+# logs
+*.log
+
+# python cache
+__pycache__/
+
+# local folders
+backup_codice/
+SIERRA/
+ux_lab/
+
+# spot services runtime data
+fabbrica_spot_services/data/*.db
