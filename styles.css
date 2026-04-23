@@ -1136,9 +1136,33 @@ code{
 }
 
 @media (max-width: 768px) {
+  html,
   body {
+    overflow-x: hidden;
+  }
+
+  body {
+    min-height: 100dvh;
     background-attachment: scroll;
     background-position: center center;
     background-size: cover;
+  }
+
+  .card,
+  .form-card,
+  .panel,
+  main section,
+  main .container,
+  main .panel,
+  main .card {
+    width: 92%;
+    max-width: 420px;
+    margin: 20px auto;
+  }
+
+  .card,
+  .form-card,
+  .panel {
+    padding: 16px;
   }
 }
