@@ -1143,8 +1143,9 @@ code{
 
   body {
     min-height: 100dvh;
+    background-repeat: no-repeat;
     background-attachment: scroll;
-    background-position: center center;
+    background-position: 70% center;
     background-size: cover;
   }
 
