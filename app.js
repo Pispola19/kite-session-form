@@ -31,6 +31,7 @@
   const LS_DRAFT_SESSION = "draft_kite_session";
   const LS_LAST_SESSION = "last_kite_session";
   const LS_FIRST_SUBMIT = "rdk_first_submit";
+  const LS_PENDING_LOCAL_SUBMIT = "pending_local_submit";
   const LS_PENDING_GOOGLE_SUBMIT = "pending_google_submit";
   const SESSION_ID_MONTH_CODES = ["ge", "fe", "ma", "ap", "mg", "gi", "lu", "ag", "se", "ot", "no", "di"];
   let pendingGoogleSubmit = null;
@@ -510,6 +511,28 @@
     try {
       localStorage.removeItem(key);
     } catch (_) {}
+  }
+
+  function loadPendingLocalSubmit(){
+    const pending = loadStoredJson(LS_PENDING_LOCAL_SUBMIT);
+    if (!pending || typeof pending !== "object") return null;
+    if (!pending.payload || typeof pending.payload !== "object") return null;
+    return pending;
+  }
+
+  function savePendingLocalSubmit(payload){
+    return storeJson(LS_PENDING_LOCAL_SUBMIT, {
+      state: "pending_local_submit",
+      created_at: new Date().toISOString(),
+      session_id: payload?.session_id || "",
+      technical_id: payload?.technical_id || "",
+      src: payload?.src || "",
+      payload
+    });
+  }
+
+  function clearPendingLocalSubmit(){
+    removeStoredValue(LS_PENDING_LOCAL_SUBMIT);
   }
 
   function hideStatusModal({ enableSend = true } = {}){
@@ -1590,6 +1613,31 @@
     return `${Date.now().toString(36)}${randomRdkId(20)}`;
   }
 
+  function generateMessageId(formData) {
+    const stableParts = [
+      formData.session_id,
+      formData.technical_id,
+      formData.event_ts,
+      formData.src,
+      formData.weight,
+      formData.gender,
+      formData.board,
+      formData.boardSize,
+      formData.level,
+      formData.kite,
+      formData.wind,
+      formData.brand,
+      formData.model,
+      formData.location,
+      formData.water,
+      formData.result,
+      formData.note
+    ].map((value) => value == null ? "" : String(value)).join("\u001f");
+    const digest = `${signatureDigestHex(stableParts)}${signatureDigestHex([...stableParts].reverse().join(""))}`;
+    const sourceId = String(formData.technical_id || formData.session_id || "").slice(0, 12);
+    return `msg_${digest}_${sourceId}`;
+  }
+
   function collectFormData(){
     const boardSizeSelection = val("boardSize");
     const eventTimestamp = new Date().toISOString();
@@ -1614,6 +1662,7 @@
       note: val("note"),
       ts: eventTimestamp
     };
+    formData.message_id = generateMessageId(formData);
 
     Object.defineProperties(formData, {
       __boardText: { value: selectedText("board") },
@@ -1633,14 +1682,22 @@
     return formData;
   }
 
-  function submitPayload(payload){
-    fetch("http://127.0.0.1:8000/submit", {
+  async function submitPayload(payload){
+    const response = await fetch("http://127.0.0.1:8000/submit", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(payload)
-    }).catch(() => {});
+    });
+    if (!response.ok) {
+      throw new Error("local_submit_error");
+    }
+    const result = await response.json();
+    if (result?.ok !== true || result?.durable !== true) {
+      throw new Error("local_submit_error");
+    }
+    return result;
   }
 
   function clearPendingGoogleSubmit(){
@@ -2089,16 +2146,23 @@
     let message = "";
     let shouldAutoCloseModal = false;
     let shouldOpenWhatsApp = false;
+    let localDurableConfirmed = false;
 
     try {
-      const formData = collectFormData();
-      const payload = buildPayload(formData);
-      submitPayload(payload);
+      const pendingLocalSubmit = loadPendingLocalSubmit();
+      const formData = pendingLocalSubmit?.payload || collectFormData();
+      const payload = pendingLocalSubmit?.payload || buildPayload(formData);
+      if (!pendingLocalSubmit && !savePendingLocalSubmit(payload)) {
+        throw new Error("local_pending_error");
+      }
+      await submitPayload(payload);
+      localDurableConfirmed = true;
+      clearPendingLocalSubmit();
       sessionDataToSend = payload;
       clearPendingGoogleSubmit();
       saveLastSession(sessionDataToSend);
       saveDraftSession();
-      message = buildOutgoingMessageSync(formData);
+      message = buildOutgoingMessageSync(payload);
       if (!message) {
         throw new Error("submit_message_empty");
       }
@@ -2128,7 +2192,9 @@
       }
     } finally {
       clearPendingGoogleSubmit();
-      resetFormAfterSuccessfulSubmit();
+      if (localDurableConfirmed) {
+        resetFormAfterSuccessfulSubmit();
+      }
       console.log("SUBMIT END");
       unlockSubmitState("finally");
       if (shouldAutoCloseModal) {
