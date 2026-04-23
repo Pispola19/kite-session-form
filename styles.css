@@ -1148,6 +1148,34 @@ code{
     background-size: cover;
   }
 
+  .brand-translation {
+    margin-bottom: 4px;
+    line-height: 1.2;
+    color: rgba(255,255,255,0.92);
+    font-weight: 500;
+  }
+
+  p.sub {
+    margin-bottom: 4px;
+    line-height: 1.2;
+    color: #ffffff;
+    font-weight: 500;
+  }
+
+  label {
+    margin-bottom: 4px;
+  }
+
+  input,
+  select {
+    margin-bottom: 10px;
+  }
+
+  select,
+  .gender-select-compact {
+    padding-right: 36px;
+  }
+
   .card,
   .form-card,
   .panel,
