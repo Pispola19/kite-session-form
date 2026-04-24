@@ -48,12 +48,25 @@
     speedEl.textContent = windValue ? `Velocità ${windValue} kn` : "Velocità - kn";
   }
 
+  function updateReadonlyRiderWind() {
+    const windInput = document.getElementById("wind");
+    const riderEl = document.querySelector(".rs-rider-value");
+
+    if (!riderEl) {
+      return;
+    }
+
+    const windValue = windInput?.value.trim() || "";
+    riderEl.textContent = windValue ? `${windValue} kn` : "-";
+  }
+
   document.addEventListener("DOMContentLoaded", () => {
     const locationInput = document.getElementById("location");
     const windInput = document.getElementById("wind");
 
     updateReadonlySpotValue();
     updateReadonlyWindSpeed();
+    updateReadonlyRiderWind();
 
     if (locationInput) {
       locationInput.addEventListener("input", () => updateReadonlySpotValue());
@@ -66,5 +79,7 @@
 
     windInput.addEventListener("input", () => updateReadonlyWindSpeed());
     windInput.addEventListener("change", () => updateReadonlyWindSpeed());
+    windInput.addEventListener("input", () => updateReadonlyRiderWind());
+    windInput.addEventListener("change", () => updateReadonlyRiderWind());
   });
 })();
