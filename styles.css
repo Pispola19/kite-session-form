@@ -1142,12 +1142,11 @@ code{
   }
 
   body {
-    min-height: 100dvh;
     background-image: url("assets/bg-mobile.jpg");
+    background-size: cover;
+    background-position: center 30%;
     background-repeat: no-repeat;
     background-attachment: scroll;
-    background-position: center;
-    background-size: contain;
   }
 
   .brand-translation {
