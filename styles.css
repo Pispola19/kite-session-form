@@ -1263,6 +1263,10 @@ code{
   margin-top: 4px;
 }
 
+.rs-forecast-row {
+  margin-top: 4px;
+}
+
 .rs-wind-value {
   display: inline-flex;
   flex-wrap: wrap;
@@ -1270,8 +1274,13 @@ code{
   margin-left: 6px;
 }
 
+.rs-forecast-value {
+  margin-left: 6px;
+}
+
 .rs-wind-direction,
-.rs-wind-speed {
+.rs-wind-speed,
+.rs-forecast-value {
   opacity: 0.85;
   font-size: 12px;
 }
