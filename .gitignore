@@ -24,3 +24,6 @@ ui_extras.safe.js
 # Extra sicurezza
 *.env
 *.local
+
+# temp backups
+*.bak*
