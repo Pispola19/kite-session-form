@@ -1259,6 +1259,23 @@ code{
   font-size: 15px;
 }
 
+.rs-wind-row {
+  margin-top: 4px;
+}
+
+.rs-wind-value {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-left: 6px;
+}
+
+.rs-wind-direction,
+.rs-wind-speed {
+  opacity: 0.85;
+  font-size: 12px;
+}
+
 @media (max-width: 768px) {
   html,
   body {
