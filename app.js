@@ -2146,6 +2146,7 @@
     let message = "";
     let shouldAutoCloseModal = false;
     let shouldOpenWhatsApp = false;
+    let shouldResetForm = false;
     let localDurableConfirmed = false;
 
     try {
@@ -2155,9 +2156,13 @@
       if (!pendingLocalSubmit && !savePendingLocalSubmit(payload)) {
         throw new Error("local_pending_error");
       }
-      await submitPayload(payload);
-      localDurableConfirmed = true;
-      clearPendingLocalSubmit();
+      try {
+        await submitPayload(payload);
+        localDurableConfirmed = true;
+        clearPendingLocalSubmit();
+      } catch (localSubmitError) {
+        console.warn("local_submit_unavailable_pending_retained", localSubmitError);
+      }
       sessionDataToSend = payload;
       clearPendingGoogleSubmit();
       saveLastSession(sessionDataToSend);
@@ -2182,6 +2187,7 @@
       playSendFeedback();
       renderUIState({ name: "submit_result", status: isCertainSuccess ? "success" : "probable" });
       shouldAutoCloseModal = true;
+      shouldResetForm = true;
       shouldOpenWhatsApp = true;
     } catch (error) {
       console.error(error);
@@ -2192,7 +2198,7 @@
       }
     } finally {
       clearPendingGoogleSubmit();
-      if (localDurableConfirmed) {
+      if (shouldResetForm) {
         resetFormAfterSuccessfulSubmit();
       }
       console.log("SUBMIT END");
