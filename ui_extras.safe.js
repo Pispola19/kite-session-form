@@ -4,8 +4,8 @@
 
 (function () {
   function updateReadonlyWindSpeed(root = document) {
-    const windInput = root.getElementById("wind");
-    const speedEl = root.querySelector(".rs-wind-speed");
+    const windInput = document.getElementById("wind");
+    const speedEl = document.querySelector(".rs-wind-speed");
 
     if (!speedEl) {
       return;
