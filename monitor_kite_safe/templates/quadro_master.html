@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ app_title }} - Quadro Master</title>
+  <style>
+    :root {
+      --bg: #0e1117;
+      --panel: #171d26;
+      --line: rgba(255,255,255,.08);
+      --text: #f4f7fb;
+      --muted: #aeb8c7;
+      --green: #2ecc71;
+      --yellow: #f1c40f;
+      --red: #e74c3c;
+      --gray: #7f8c8d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 24px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Arial, sans-serif;
+    }
+    main {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: grid;
+      gap: 16px;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .nav {
+      color: var(--text);
+      text-decoration: none;
+      background: rgba(255,255,255,.07);
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 13px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 14px;
+    }
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+    }
+    .card-title {
+      margin: 0 0 8px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+    .state {
+      display: inline-block;
+      padding: 10px 14px;
+      border-radius: 999px;
+      color: #111;
+      font-weight: 800;
+      font-size: 16px;
+    }
+    .on, .ok { background: var(--green); }
+    .degraded, .starting, .stopping { background: var(--yellow); }
+    .off, .error { background: var(--red); }
+    .unknown { background: var(--gray); }
+    .metric {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+    .metric strong { color: var(--text); }
+    .pressure-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .pressure-card {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 14px;
+      background: rgba(255,255,255,.03);
+    }
+    .pressure-card .state {
+      padding: 7px 10px;
+      font-size: 13px;
+    }
+    .mono {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 13px;
+      word-break: break-word;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+    button {
+      border: 0;
+      padding: 11px 15px;
+      border-radius: 10px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    button.start { background: var(--green); color: #111; }
+    button.stop { background: var(--red); color: #111; }
+    button:disabled { opacity: .55; cursor: not-allowed; }
+    .muted {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+    .last-action {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+      min-height: 18px;
+    }
+    @media (max-width: 760px) {
+      body { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="topbar">
+      <div>
+        <h1 style="margin:0 0 4px;">Quadro Master</h1>
+        <div class="muted">Governo del sistema in pagina separata. Il monitor operativo resta su <strong>/</strong>.</div>
+      </div>
+      <a class="nav" href="/">Torna al monitor</a>
+    </div>
+
+    <section class="grid">
+      <article class="panel">
+        <h2 class="card-title">Stato sistema</h2>
+        <span id="overallState" class="state unknown">...</span>
+        <div class="metric">Sincronizzato ogni <strong>9s</strong></div>
+      </article>
+
+      <article class="panel">
+        <h2 class="card-title">Ingest</h2>
+        <span id="ingestState" class="state unknown">...</span>
+        <div class="metric">PID ingest: <strong id="ingestPid">n/a</strong></div>
+      </article>
+
+      <article class="panel">
+        <h2 class="card-title">Worker</h2>
+        <span id="workerState" class="state unknown">...</span>
+        <div class="metric">PID worker: <strong id="workerPid">n/a</strong></div>
+      </article>
+
+      <article class="panel">
+        <h2 class="card-title">Queue</h2>
+        <span id="queueState" class="state unknown">...</span>
+        <div class="metric">Buffer locale: <strong id="queueSummary">...</strong></div>
+      </article>
+
+      <article class="panel">
+        <h2 class="card-title">DIGA / SQS</h2>
+        <span id="damState" class="state unknown">...</span>
+        <div class="metric">Engine: <strong id="damEngine">...</strong></div>
+        <div class="metric">Pending: <strong id="damPending">...</strong></div>
+        <div class="metric">In-flight: <strong id="damInFlight">...</strong></div>
+        <div class="metric">Delayed: <strong id="damDelayed">...</strong></div>
+        <div class="metric mono" id="damError"></div>
+      </article>
+    </section>
+
+    <section class="panel">
+      <h2 style="margin:0;">Pressione conduttura</h2>
+      <div class="muted">Spie read-only su queue, worker, bridge e ingresso DB/fabbrica.</div>
+      <div class="pressure-grid">
+        <article class="pressure-card">
+          <h3 class="card-title">Worker path</h3>
+          <span id="workerPathState" class="state unknown">...</span>
+          <div class="metric">Queue size: <strong id="queueSizeBytes">...</strong></div>
+          <div class="metric">Worker offset: <strong id="workerOffsetBytes">...</strong></div>
+          <div class="metric">Worker backlog: <strong id="workerBacklogBytes">...</strong></div>
+        </article>
+
+        <article class="pressure-card">
+          <h3 class="card-title">Bridge path</h3>
+          <span id="bridgePathState" class="state unknown">...</span>
+          <div class="metric">Worker output: <strong id="workerOutputSizeBytes">...</strong></div>
+          <div class="metric">Bridge offset: <strong id="bridgeOffsetBytes">...</strong></div>
+          <div class="metric">Bridge backlog: <strong id="bridgeBacklogBytes">...</strong></div>
+        </article>
+
+        <article class="pressure-card">
+          <h3 class="card-title">DB / fabbrica</h3>
+          <span id="dbFabbricaState" class="state unknown">...</span>
+          <div class="metric">Ultimo raw locale: <strong id="lastRawLocal">...</strong></div>
+          <div class="metric">Ultimo parsed locale: <strong id="lastParsedLocal">...</strong></div>
+          <div class="metric mono" id="dbPressureError"></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2 style="margin:0;">Comandi</h2>
+      <div class="muted">START/STOP reali su ingest API + worker tramite PID salvati dal quadro.</div>
+      <div class="controls">
+        <button id="startBtn" class="start">START SYSTEM</button>
+        <button id="stopBtn" class="stop">STOP SYSTEM</button>
+      </div>
+      <div id="lastAction" class="last-action">Nessuna azione eseguita.</div>
+    </section>
+  </main>
+
+  <script>
+    const POLL_MS = 9000;
+    const cls = (state) => String(state || 'unknown').toLowerCase().replace(/[^a-z0-9_-]/g, '');
+    const pidText = (pid) => pid ? String(pid) : 'n/a';
+    const countText = (value) => Number.isFinite(Number(value)) ? Number(value).toLocaleString('it-IT') : 'n/a';
+    const bytesText = (value) => Number.isFinite(Number(value)) ? `${Number(value).toLocaleString('it-IT')} B` : 'n/a';
+    const rowText = (row) => {
+      if (!row) return 'n/a';
+      const id = row.id ? `#${row.id}` : 'n/a';
+      const session = row.session_id ? ` · ${row.session_id}` : '';
+      const extra = row.raw_id ? ` · raw #${row.raw_id}` : '';
+      const created = row.created_at ? ` · ${row.created_at}` : '';
+      return `${id}${extra}${session}${created}`;
+    };
+
+    function setState(id, state) {
+      const el = document.getElementById(id);
+      el.textContent = state || 'NON DISPONIBILE';
+      el.className = 'state ' + cls(state);
+    }
+
+    function setText(id, value) {
+      document.getElementById(id).textContent = value;
+    }
+
+    function damState(dam) {
+      if (!dam || dam.available === false) return 'ERROR';
+      const status = dam.dam_status || {};
+      if (status.is_healthy === false) return 'ERROR';
+      if (status.last_error || status.queue_counts_error || dam.error) return 'DEGRADED';
+      return 'OK';
+    }
+
+    function safeDamError(dam) {
+      const status = dam?.dam_status || {};
+      const raw = status.last_error || status.queue_counts_error || dam?.error || '';
+      return String(raw).replace(/https:\/\/sqs\.[^\s"]+/g, '[SQS_QUEUE_URL_REDACTED]').slice(0, 220);
+    }
+
+    async function refresh() {
+      const res = await fetch('/api/master-status', { cache: 'no-store' });
+      const s = await res.json();
+      setState('overallState', s.overall);
+      setState('ingestState', s.ingest.state);
+      setState('workerState', s.worker.state);
+      setState('queueState', s.queue.state);
+      setText('ingestPid', pidText(s.ingest.pid));
+      setText('workerPid', pidText(s.worker.pid));
+      setText('queueSummary', s.queue.state === 'OK' ? 'accessibile' : 'errore');
+      const d = s.dam || {};
+      const ds = d.dam_status || {};
+      setState('damState', damState(d));
+      setText('damEngine', ds.engine_type || d.configuration?.active_engine || 'n/a');
+      setText('damPending', countText(ds.visible_messages ?? ds.pending_messages));
+      setText('damInFlight', countText(ds.in_flight_messages));
+      setText('damDelayed', countText(ds.delayed_messages));
+      setText('damError', safeDamError(d));
+      const p = s.pressure || {};
+      setState('workerPathState', p.worker_path_state);
+      setState('bridgePathState', p.bridge_path_state);
+      setState('dbFabbricaState', p.db_fabbrica_ingresso_state);
+      setText('queueSizeBytes', bytesText(p.queue_size_bytes));
+      setText('workerOffsetBytes', bytesText(p.worker_offset_bytes));
+      setText('workerBacklogBytes', bytesText(p.worker_backlog_bytes));
+      setText('workerOutputSizeBytes', bytesText(p.worker_output_size_bytes));
+      setText('bridgeOffsetBytes', bytesText(p.bridge_offset_bytes));
+      setText('bridgeBacklogBytes', bytesText(p.bridge_backlog_bytes));
+      setText('lastRawLocal', rowText(p.last_raw_ingest_local));
+      setText('lastParsedLocal', rowText(p.last_parsed_extract_local));
+      setText('dbPressureError', p.db_error || '');
+    }
+
+    function actionLabel(url) {
+      return url.endsWith('/start') ? 'START' : 'STOP';
+    }
+
+    async function postAction(url) {
+      const buttonStart = document.getElementById('startBtn');
+      const buttonStop = document.getElementById('stopBtn');
+      buttonStart.disabled = true;
+      buttonStop.disabled = true;
+      const label = actionLabel(url);
+      try {
+        const res = await fetch(url, { method: 'POST', cache: 'no-store' });
+        const payload = await res.json();
+        if (payload.ok) {
+          document.getElementById('lastAction').textContent = `${label} completato. Stato: ${payload.status?.overall || 'n/a'}.`;
+        } else {
+          document.getElementById('lastAction').textContent = `${label} non eseguito: ${payload.reason || 'errore'}.`;
+        }
+      } catch (err) {
+        document.getElementById('lastAction').textContent = `${label} fallito: ${err && err.message ? err.message : err}.`;
+      } finally {
+        await refresh();
+        buttonStart.disabled = false;
+        buttonStop.disabled = false;
+      }
+    }
+
+    document.getElementById('startBtn').addEventListener('click', () => postAction('/api/master/start'));
+    document.getElementById('stopBtn').addEventListener('click', () => postAction('/api/master/stop'));
+    refresh();
+    setInterval(refresh, POLL_MS);
+  </script>
+</body>
+</html>

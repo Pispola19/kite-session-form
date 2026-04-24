@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ app_title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <div class="page">
+      <section class="hero">
+        <div>
+          <h1>{{ app_title }}</h1>
+          <p>Read-only local dashboard for ingest, REAL FIRST, L3, L2, and CORE density. Refresh the page to reload current database values.</p>
+        </div>
+        <div class="refresh-note">CMD+R = refresh data</div>
+      </section>
+
+      {% if not data.ok %}
+        <section class="card">
+          <div class="card-header">
+            <h2>Database Error</h2>
+            <span class="pill danger">DB ERROR</span>
+          </div>
+          <div>{{ data.error }}</div>
+        </section>
+      {% else %}
+        <section class="grid overview-grid">
+          <article class="card">
+            <div class="metric-label">INGEST</div>
+            <div class="metric-value">{{ data.overview.raw_ingest }}</div>
+            <div class="metric-sub">raw_ingest count</div>
+          </article>
+          <article class="card">
+            <div class="metric-label">REAL FIRST</div>
+            <div class="metric-value">{{ data.overview.clean_records_real }}</div>
+            <div class="metric-sub">clean_records_real count</div>
+          </article>
+          <article class="card">
+            <div class="metric-label">L3</div>
+            <div class="metric-value">{{ data.overview.l3_clusters_real }}</div>
+            <div class="metric-sub">l3 clusters count</div>
+          </article>
+          <article class="card">
+            <div class="metric-label">L2</div>
+            <div class="metric-value">{{ data.overview.session_records_real_current }}</div>
+            <div class="metric-sub">session_records_real_current count</div>
+          </article>
+        </section>
+
+        <section class="grid content-grid">
+          <div class="stack">
+            <article class="card">
+              <div class="card-header">
+                <h2>CORE Density</h2>
+                <span class="pill {{ 'warn' if data.core_density else 'danger' }}">
+                  {{ data.core_density|length }} rows
+                </span>
+              </div>
+              {% if data.core_density %}
+                <table class="density-table">
+                  <thead>
+                    <tr>
+                      <th>Wind</th>
+                      <th>Kite</th>
+                      <th>Weight</th>
+                      <th>Count</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for row in data.core_density %}
+                      <tr class="{{ 'good' if row.cnt >= 2 else 'bad' }}">
+                        <td>{{ row.wind_knots if row.wind_knots is not none else 'NULL' }}</td>
+                        <td>{{ row.kite_size_m2 if row.kite_size_m2 is not none else 'NULL' }}</td>
+                        <td>{{ row.rider_weight_kg if row.rider_weight_kg is not none else 'NULL' }}</td>
+                        <td>{{ row.cnt }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              {% else %}
+                <div class="empty">No CORE density rows available.</div>
+              {% endif %}
+            </article>
+
+            <article class="card">
+              <div class="card-header">
+                <h2>Wind Distribution</h2>
+                <span class="pill ok">CURRENT VIEW</span>
+              </div>
+              <div class="chart-wrap">
+                <div class="chart-meta">SELECT wind_knots, COUNT(*) FROM clean_records_real_current GROUP BY 1;</div>
+                <canvas id="windChart" aria-label="Wind distribution chart"></canvas>
+              </div>
+            </article>
+
+            <article class="card">
+              <div class="card-header">
+                <h2>Kite Distribution</h2>
+                <span class="pill ok">CURRENT VIEW</span>
+              </div>
+              <div class="chart-wrap">
+                <div class="chart-meta">SELECT kite_size_m2, COUNT(*) FROM clean_records_real_current GROUP BY 1;</div>
+                <canvas id="kiteChart" aria-label="Kite distribution chart"></canvas>
+              </div>
+            </article>
+          </div>
+
+          <div class="stack">
+            <article class="card">
+              <div class="card-header">
+                <h2>INGEST</h2>
+                <span class="pill {{ 'ok' if data.overview.raw_ingest > 0 else 'danger' }}">
+                  {{ 'OK' if data.overview.raw_ingest > 0 else 'EMPTY' }}
+                </span>
+              </div>
+              <div class="metric-value">{{ data.overview.raw_ingest }}</div>
+              <div class="metric-sub">Total raw_ingest rows</div>
+            </article>
+
+            <article class="card">
+              <div class="card-header">
+                <h2>REAL FIRST</h2>
+                <span class="pill {{ 'ok' if data.overview.clean_records_real > 0 else 'warn' }}">
+                  {{ 'ACTIVE' if data.overview.clean_records_real > 0 else 'LOW' }}
+                </span>
+              </div>
+              <div class="metric-value">{{ data.overview.clean_records_real }}</div>
+              <div class="metric-sub">Rows in clean_records_real</div>
+            </article>
+
+            <article class="card">
+              <div class="card-header">
+                <h2>L3</h2>
+                <span class="pill {{ 'ok' if data.overview.l3_clusters_real > 0 else 'warn' }}">
+                  {{ 'BUILT' if data.overview.l3_clusters_real > 0 else 'EMPTY' }}
+                </span>
+              </div>
+              <div class="metric-value">{{ data.overview.l3_clusters_real }}</div>
+              <div class="metric-sub">Rows in l3_correlation_clusters_real</div>
+            </article>
+
+            <article class="card">
+              <div class="card-header">
+                <h2>L2 Status</h2>
+                <span class="pill {{ 'danger' if data.l2_status.count == 0 else 'ok' }}">
+                  {{ '0 SESSIONS' if data.l2_status.count == 0 else 'SESSIONS PRESENT' }}
+                </span>
+              </div>
+              <div class="metric-value">{{ data.l2_status.count }}</div>
+              <div class="metric-sub">{{ data.l2_status.message }}</div>
+            </article>
+          </div>
+        </section>
+
+        <div class="db-path">DB: {{ data.db_path }}</div>
+      {% endif %}
+    </div>
+
+    <script>
+      window.MONITOR_DATA = {{ data_json|safe }};
+    </script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>
