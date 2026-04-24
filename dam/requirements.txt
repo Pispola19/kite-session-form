@@ -1,0 +1,20 @@
+# Dam System Requirements
+# Core dependencies for dam operations
+
+# HTTP client for relay to /submit
+aiohttp>=3.8.0
+
+# AWS SQS client for active engine
+boto3>=1.26.0
+botocore>=1.29.0
+python-dotenv>=1.0.0
+
+# Async utilities
+asyncio-mqtt>=0.13.0  # For future MQTT if needed
+
+# Optional: Kafka client (when activated)
+# confluent-kafka>=2.0.0
+
+# Development/testing dependencies
+pytest>=7.0.0
+pytest-asyncio>=0.21.0

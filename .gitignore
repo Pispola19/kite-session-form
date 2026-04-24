@@ -9,3 +9,9 @@ tabelle_kite_ordinate/
 google_sheet_ingest_reference.py
 google_sheets_webhook.gs
 ux_lab/
+
+# Local secrets
+.env
+dam/.env
+*.log
+__pycache__/
