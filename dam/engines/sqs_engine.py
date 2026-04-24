@@ -214,26 +214,31 @@ class SQSEngine(DamEngine):
     async def get_stats(self) -> DamStats:
         """Get SQS queue statistics"""
         try:
-            # Get queue attributes
             response = self.sqs_client.get_queue_attributes(
                 QueueUrl=self.queue_url,
-                AttributeNames=["ApproximateNumberOfMessages", "ApproximateAgeOfOldestMessage"]
+                AttributeNames=[
+                    "ApproximateNumberOfMessages",
+                    "ApproximateNumberOfMessagesNotVisible",
+                    "ApproximateNumberOfMessagesDelayed"
+                ]
             )
-            
+
             attributes = response.get("Attributes", {})
-            pending_messages = int(attributes.get("ApproximateNumberOfMessages", 0))
-            oldest_age_seconds = int(attributes.get("ApproximateAgeOfOldestMessage", 0))
-            
+            visible = int(attributes.get("ApproximateNumberOfMessages", 0))
+            not_visible = int(attributes.get("ApproximateNumberOfMessagesNotVisible", 0))
+            delayed = int(attributes.get("ApproximateNumberOfMessagesDelayed", 0))
+
+            self._last_error = None
+
             return DamStats(
-                total_messages=0,  # SQS doesn't provide total, only pending
-                pending_messages=pending_messages,
-                oldest_message_age_seconds=oldest_age_seconds,
+                total_messages=visible + not_visible + delayed,
+                pending_messages=visible,
+                oldest_message_age_seconds=0,
                 last_write_at=self._last_write_at,
                 last_release_at=self._last_release_at,
                 last_error=self._last_error,
                 engine_type="SQS"
             )
-            
         except (ClientError, NoCredentialsError) as e:
             self._last_error = str(e)
             logger.error(f"SQS get_stats error: {e}")
@@ -243,7 +248,7 @@ class SQSEngine(DamEngine):
                 oldest_message_age_seconds=0,
                 last_write_at=self._last_write_at,
                 last_release_at=self._last_release_at,
-                last_error=str(e),
+                last_error=self._last_error,
                 engine_type="SQS"
             )
         except Exception as e:
@@ -255,10 +260,10 @@ class SQSEngine(DamEngine):
                 oldest_message_age_seconds=0,
                 last_write_at=self._last_write_at,
                 last_release_at=self._last_release_at,
-                last_error=str(e),
+                last_error=self._last_error,
                 engine_type="SQS"
             )
-    
+
     async def health_check(self) -> bool:
         """Check SQS health"""
         try:
