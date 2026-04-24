@@ -15,3 +15,12 @@ ux_lab/
 dam/.env
 *.log
 __pycache__/
+
+# --- SAFETY LOCAL ONLY ---
+dam/.env.save
+docs/
+ui_extras.safe.js
+
+# Extra sicurezza
+*.env
+*.local
