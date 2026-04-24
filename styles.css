@@ -1004,12 +1004,12 @@ code{
 
 #how,
 #why{
-  margin-top: 10px;
-  padding: 8px 10px;
-  background: rgba(0,0,0,.16);
-  border-radius: 10px;
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  margin-top: 8px;
+  padding: 6px 8px;
+  background: rgba(0,0,0,.10);
+  border-radius: 8px;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
 }
 
 .section--compact .section-title{
@@ -1019,8 +1019,8 @@ code{
 
 #how .section-title,
 #why .section-title{
-  font-size: 15px;
-  margin: 0 0 3px;
+  font-size: 14px;
+  margin: 0 0 2px;
   color: #fff7e8;
   text-shadow: 0 1px 3px rgba(0,0,0,.42);
 }
@@ -1036,9 +1036,9 @@ code{
   color: #fff3d6;
   font-size: 12px;
   font-weight: 500;
-  line-height: 1.25;
+  line-height: 1.18;
   opacity: 0.95;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
   text-shadow: 0 1px 3px rgba(0,0,0,.42);
 }
 
@@ -1048,8 +1048,9 @@ code{
 
 #how .grid-cards,
 #why .grid-cards{
+  display: grid;
   grid-template-columns: 1fr;
-  gap: 4px;
+  gap: 3px;
 }
 
 @media (min-width: 640px){
@@ -1075,14 +1076,17 @@ code{
 #how .ux-card,
 #why .ux-card{
   display: grid;
-  grid-template-columns: 20px minmax(0, 1fr);
-  column-gap: 7px;
+  grid-template-columns: 18px minmax(0, 1fr);
+  column-gap: 6px;
   row-gap: 0;
   align-items: baseline;
+  min-height: 0;
+  margin: 0;
   padding: 0;
-  background: transparent;
-  border-color: transparent;
+  background: none;
+  border: none;
   border-radius: 0;
+  box-shadow: none;
 }
 
 .ux-card__kicker{
@@ -1108,10 +1112,10 @@ code{
 #how .ux-card__kicker,
 #why .ux-card__kicker{
   grid-row: 1 / span 2;
-  width: 17px;
-  height: 17px;
+  width: 16px;
+  height: 16px;
   margin-bottom: 0;
-  border-radius: 7px;
+  border-radius: 6px;
   font-size: 10px;
   line-height: 1;
 }
@@ -1132,7 +1136,7 @@ code{
   color: #fff7e8;
   font-size: 12px;
   margin-bottom: 0;
-  line-height: 1.18;
+  line-height: 1.12;
   text-shadow: 0 1px 3px rgba(0,0,0,.42);
 }
 
@@ -1153,7 +1157,7 @@ code{
 #why .ux-card__text{
   color: #fff3d6;
   font-size: 12px;
-  line-height: 1.18;
+  line-height: 1.12;
   opacity: 0.95;
   text-shadow: 0 1px 3px rgba(0,0,0,.42);
 }
@@ -1161,12 +1165,16 @@ code{
 @media (min-width: 640px){
   #how .grid-cards,
   #why .grid-cards{
-    gap: 5px;
+    gap: 3px;
   }
 
-  #how .ux-card,
+  #how .ux-card{
+    grid-template-columns: 16px minmax(7.5rem, max-content) minmax(0, 1fr);
+    column-gap: 6px;
+  }
+
   #why .ux-card{
-    grid-template-columns: 18px minmax(9rem, max-content) minmax(0, 1fr);
+    grid-template-columns: minmax(9rem, max-content) minmax(0, 1fr);
     column-gap: 8px;
   }
 
@@ -1184,6 +1192,14 @@ code{
   #how .ux-card__text,
   #why .ux-card__text{
     grid-column: 3;
+  }
+
+  #why .ux-card__title{
+    grid-column: 1;
+  }
+
+  #why .ux-card__text{
+    grid-column: 2;
   }
 }
 
