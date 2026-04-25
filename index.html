@@ -42,6 +42,12 @@ Dati reali - Nessuna registrazione - nessun log in</p>
           </div>
         </div>
       </header>
+      <section id="live-spot-home" style="margin:16px 0; padding:12px; border-radius:12px; background:rgba(255,255,255,0.08);">
+        <div style="font-size:14px; opacity:0.7;">LIVE SPOT</div>
+        <div id="ls-spot" style="font-size:18px; font-weight:bold;">-</div>
+        <div id="ls-wind">Vento -</div>
+        <div id="ls-forecast">3–4h -</div>
+      </section>
       <div class="card">
         <div class="card-inner">
           <form id="kiteForm" autocomplete="on" novalidate>
@@ -398,5 +404,31 @@ Dati reali - Nessuna registrazione - nessun log in</p>
       </div>
 
     </div>
+    <script>
+      function refreshHomeLiveSpot() {
+        fetch("assets/live_spot_wind.json?t=" + Date.now(), { cache: "no-store" })
+          .then(function (r) { return r.json(); })
+          .then(function (data) {
+            document.getElementById("ls-spot").textContent = data.spot || "-";
+
+            var wind = (data.wind_knots != null)
+              ? data.wind_knots + " kn " + (data.wind_direction || "-") + "°"
+              : "-";
+
+            document.getElementById("ls-wind").textContent = "Vento " + wind;
+
+            var f = data.forecast_3h;
+            var forecast = (f && f.wind_knots != null)
+              ? f.label + " " + f.wind_knots + " kn " + (f.wind_direction || "-") + "°"
+              : "3–4h -";
+
+            document.getElementById("ls-forecast").textContent = forecast;
+          })
+          .catch(function () {});
+      }
+
+      refreshHomeLiveSpot();
+      setInterval(refreshHomeLiveSpot, 10000);
+    </script>
   </body>
 </html>
