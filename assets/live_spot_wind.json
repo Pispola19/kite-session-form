@@ -1,0 +1,12 @@
+{
+  "confidence": 0.2288888888888889,
+  "label": "Vento stimato",
+  "sources_used": [
+    "open-meteo",
+    "windy"
+  ],
+  "spot": "Punta Trettu",
+  "updated_at": "2026-04-25T08:23:29.358291Z",
+  "wind_direction": 69,
+  "wind_knots": 3
+}
