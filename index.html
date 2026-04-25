@@ -409,11 +409,29 @@ Dati reali - Nessuna registrazione - nessun log in</p>
         fetch("assets/live_spot_wind.json?t=" + Date.now(), { cache: "no-store" })
           .then(function (r) { return r.json(); })
           .then(function (data) {
-            document.getElementById("ls-spot").textContent = data.spot || "-";
-
             var wind = (data.wind_knots != null)
               ? data.wind_knots + " kn " + (data.wind_direction || "-") + "°"
               : "-";
+
+            var level = "";
+            var color = "";
+
+            if (data.wind_knots == null) {
+              level = "—";
+            } else if (data.wind_knots < 8) {
+              level = "Scarso";
+              color = "#e74c3c";
+            } else if (data.wind_knots < 14) {
+              level = "Medio";
+              color = "#f1c40f";
+            } else {
+              level = "Buono";
+              color = "#2ecc71";
+            }
+
+            var spotEl = document.getElementById("ls-spot");
+            spotEl.textContent = (data.spot || "-") + " • " + level;
+            spotEl.style.color = color || "";
 
             document.getElementById("ls-wind").textContent = "Vento " + wind;
 
