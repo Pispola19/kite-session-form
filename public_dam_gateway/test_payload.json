@@ -1,0 +1,21 @@
+{
+  "message_id": "msg_0123456789abcdef0123456789abcdef_canary01",
+  "session_id": "canary_session_001",
+  "technical_id": "canary_tech_001",
+  "event_ts": "2026-04-25T11:00:00+02:00",
+  "src": "form_v1",
+  "weight": "75",
+  "gender": "M",
+  "board": "twintip",
+  "boardSize": "138x42",
+  "level": "intermediate",
+  "kite": "9",
+  "wind": "18",
+  "brand": "Core",
+  "model": "XR",
+  "location": "Stagnone",
+  "water": "flat",
+  "result": "fun",
+  "note": "canary public ingress test",
+  "ts": "2026-04-25T11:00:00+02:00"
+}
