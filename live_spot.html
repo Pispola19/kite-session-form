@@ -400,45 +400,50 @@ Dati reali - Nessuna registrazione - nessun log in</p>
     </div>
     <script>
       (function () {
-        fetch("assets/live_spot_wind.json", { cache: "no-store" })
-          .then(function (response) {
-            if (!response.ok) {
-              throw new Error("live spot wind unavailable");
-            }
-            return response.json();
-          })
-          .then(function (data) {
-            var snapshot = document.getElementById("rider-snapshot");
-            if (!snapshot || !data) {
-              return;
-            }
+        function refreshLiveSpotWind() {
+          fetch("assets/live_spot_wind.json?t=" + Date.now(), { cache: "no-store" })
+            .then(function (response) {
+              if (!response.ok) {
+                throw new Error("live spot wind unavailable");
+              }
+              return response.json();
+            })
+            .then(function (data) {
+              var snapshot = document.getElementById("rider-snapshot");
+              if (!snapshot || !data) {
+                return;
+              }
 
-            var spot = data.spot;
-            var windKnots = data.wind_knots;
-            var windDirectionValue = data.wind_direction;
-            var label = data.label;
-            var confidence = data.confidence;
-            var updatedAt = data.updated_at;
+              var spot = data.spot;
+              var windKnots = data.wind_knots;
+              var windDirectionValue = data.wind_direction;
+              var label = data.label;
+              var confidence = data.confidence;
+              var updatedAt = data.updated_at;
 
-            var spotValue = snapshot.querySelector(".rs-spot-value");
-            var windDirection = snapshot.querySelector(".rs-wind-direction");
-            var windSpeed = snapshot.querySelector(".rs-wind-speed");
+              var spotValue = snapshot.querySelector(".rs-spot-value");
+              var windDirection = snapshot.querySelector(".rs-wind-direction");
+              var windSpeed = snapshot.querySelector(".rs-wind-speed");
 
-            void label;
-            void confidence;
-            void updatedAt;
+              void label;
+              void confidence;
+              void updatedAt;
 
-            if (spotValue && spot != null) {
-              spotValue.textContent = spot;
-            }
-            if (windDirection && windDirectionValue != null) {
-              windDirection.textContent = "Direzione " + windDirectionValue + "°";
-            }
-            if (windSpeed && windKnots != null) {
-              windSpeed.textContent = "Velocità " + windKnots + " kn";
-            }
-          })
-          .catch(function () {});
+              if (spotValue && spot != null) {
+                spotValue.textContent = spot;
+              }
+              if (windDirection && windDirectionValue != null) {
+                windDirection.textContent = "Direzione " + windDirectionValue + "°";
+              }
+              if (windSpeed && windKnots != null) {
+                windSpeed.textContent = "Velocità " + windKnots + " kn";
+              }
+            })
+            .catch(function () {});
+        }
+
+        refreshLiveSpotWind();
+        setInterval(refreshLiveSpotWind, 10000);
       })();
     </script>
 
