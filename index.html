@@ -413,24 +413,24 @@ Dati reali - Nessuna registrazione - nessun log in</p>
               ? data.wind_knots + " kn " + (data.wind_direction || "-") + "°"
               : "-";
 
-            var level = "";
+            var decision = "";
             var color = "";
 
             if (data.wind_knots == null) {
-              level = "—";
+              decision = "—";
             } else if (data.wind_knots < 8) {
-              level = "Scarso";
+              decision = "🔴 NON USCIRE";
               color = "#e74c3c";
             } else if (data.wind_knots < 14) {
-              level = "Medio";
+              decision = "🟡 COSÌ COSÌ";
               color = "#f1c40f";
             } else {
-              level = "Buono";
+              decision = "🟢 VAI";
               color = "#2ecc71";
             }
 
             var spotEl = document.getElementById("ls-spot");
-            spotEl.textContent = (data.spot || "-") + " • " + level;
+            spotEl.textContent = decision + " • " + (data.spot || "-");
             spotEl.style.color = color || "";
 
             document.getElementById("ls-wind").textContent = "Vento " + wind;
