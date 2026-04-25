@@ -420,10 +420,12 @@ Dati reali - Nessuna registrazione - nessun log in</p>
               var label = data.label;
               var confidence = data.confidence;
               var updatedAt = data.updated_at;
+              var forecast3h = data.forecast_3h;
 
               var spotValue = snapshot.querySelector(".rs-spot-value");
               var windDirection = snapshot.querySelector(".rs-wind-direction");
               var windSpeed = snapshot.querySelector(".rs-wind-speed");
+              var forecastValue = snapshot.querySelector(".rs-forecast-value");
 
               void label;
               void confidence;
@@ -437,6 +439,25 @@ Dati reali - Nessuna registrazione - nessun log in</p>
               }
               if (windSpeed && windKnots != null) {
                 windSpeed.textContent = "Velocità " + windKnots + " kn";
+              }
+              if (forecastValue) {
+                var forecastLabel = "3–4h";
+                var forecastKnots = null;
+                var forecastDirection = null;
+
+                if (forecast3h && typeof forecast3h === "object") {
+                  if (forecast3h.label != null) {
+                    forecastLabel = String(forecast3h.label);
+                  }
+                  forecastKnots = forecast3h.wind_knots;
+                  forecastDirection = forecast3h.wind_direction;
+                }
+
+                if (forecastKnots != null && forecastDirection != null) {
+                  forecastValue.textContent = forecastLabel + " " + forecastKnots + " kn " + forecastDirection + "°";
+                } else {
+                  forecastValue.textContent = forecastLabel + " -";
+                }
               }
             })
             .catch(function () {});
