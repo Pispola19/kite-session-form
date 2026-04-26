@@ -27,3 +27,4 @@ ui_extras.safe.js
 
 # temp backups
 *.bak*
+*.jsonl

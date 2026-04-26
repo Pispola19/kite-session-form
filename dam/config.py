@@ -63,6 +63,31 @@ class DamConfig:
         self.relay_poll_interval = float(os.getenv("DAM_RELAY_POLL_INTERVAL", "2.0"))
         self.relay_max_retries = int(os.getenv("DAM_RELAY_MAX_RETRIES", "3"))
         self.relay_retry_delay = float(os.getenv("DAM_RELAY_RETRY_DELAY", "1.0"))
+        self.relay_max_per_minute = int(os.getenv("DAM_RELAY_MAX_PER_MINUTE", "60"))
+        self.relay_token_bucket_capacity = float(os.getenv("DAM_RELAY_TOKEN_BUCKET_CAPACITY", "10"))
+        self.relay_backlog_warning = int(os.getenv("DAM_RELAY_BACKLOG_WARNING", "200"))
+        self.relay_backlog_critical = int(os.getenv("DAM_RELAY_BACKLOG_CRITICAL", "800"))
+        self.relay_rate_normal = int(os.getenv("DAM_RELAY_RATE_NORMAL", "60"))
+        self.relay_rate_warning = int(os.getenv("DAM_RELAY_RATE_WARNING", "30"))
+        self.relay_rate_critical = int(os.getenv("DAM_RELAY_RATE_CRITICAL", "10"))
+        self.relay_circuit_failures = int(os.getenv("DAM_RELAY_CIRCUIT_FAILURES", "5"))
+        self.relay_circuit_sleep = float(os.getenv("DAM_RELAY_CIRCUIT_SLEEP", "60"))
+        self.relay_retry_visibility_1 = int(os.getenv("DAM_RELAY_RETRY_VISIBILITY_1", "60"))
+        self.relay_retry_visibility_2 = int(os.getenv("DAM_RELAY_RETRY_VISIBILITY_2", "120"))
+        self.relay_retry_visibility_max = int(os.getenv("DAM_RELAY_RETRY_VISIBILITY_MAX", "300"))
+        self.relay_state_file = os.getenv(
+            "DAM_RELAY_STATE_FILE",
+            "/Users/PER_TEST/monitor_kite_safe/runtime/relay_state.json",
+        )
+        self.relay_quarantine_path = os.getenv(
+            "DAM_RELAY_QUARANTINE_PATH",
+            "/Users/PER_TEST/raccolta_dati_K_test/dam/quarantine/poison_messages.jsonl",
+        )
+        self.relay_worker_guard_enabled = os.getenv("DAM_RELAY_WORKER_GUARD_ENABLED", "0").strip().lower() in (
+            "1",
+            "true",
+            "yes",
+        )
         
         # Monitor Configuration
         self.monitor_update_interval = float(os.getenv("DAM_MONITOR_UPDATE_INTERVAL", "5.0"))
@@ -97,6 +122,21 @@ class DamConfig:
             "poll_interval": self.relay_poll_interval,
             "max_retries": self.relay_max_retries,
             "retry_delay": self.relay_retry_delay,
+            "max_per_minute": self.relay_max_per_minute,
+            "token_bucket_capacity": self.relay_token_bucket_capacity,
+            "backlog_warning": self.relay_backlog_warning,
+            "backlog_critical": self.relay_backlog_critical,
+            "rate_normal": self.relay_rate_normal,
+            "rate_warning": self.relay_rate_warning,
+            "rate_critical": self.relay_rate_critical,
+            "circuit_failures": self.relay_circuit_failures,
+            "circuit_sleep": self.relay_circuit_sleep,
+            "retry_visibility_1": self.relay_retry_visibility_1,
+            "retry_visibility_2": self.relay_retry_visibility_2,
+            "retry_visibility_max": self.relay_retry_visibility_max,
+            "state_file": self.relay_state_file,
+            "quarantine_path": self.relay_quarantine_path,
+            "worker_guard_enabled": self.relay_worker_guard_enabled,
         }
     
     def is_sqs_active(self) -> bool:
