@@ -310,12 +310,13 @@ Dati reali - Nessuna registrazione - nessun log in</p>
             <span class="rs-wind-value">
               <span class="rs-wind-direction">Direzione -</span>
               <span class="rs-wind-speed">Velocità - kn</span>
+              <span class="rs-wind-gust">Raffiche - kn</span>
             </span>
           </div>
 
           <div class="rs-row rs-forecast-row">
-            <span class="rs-label">Previsione</span>
-            <span class="rs-forecast-value">3–4h -</span>
+            <span class="rs-label">Previsione 3–4h</span>
+            <span class="rs-updated-value">-</span>
           </div>
         </section>
 
@@ -400,63 +401,130 @@ Dati reali - Nessuna registrazione - nessun log in</p>
     </div>
     <script>
       (function () {
+        var LIVE_WIND_ENDPOINT = "http://100.108.166.103:5000/wind/latest";
+
+        function readFirst(source, keys) {
+          if (!source) {
+            return null;
+          }
+          for (var i = 0; i < keys.length; i += 1) {
+            if (source[keys[i]] != null) {
+              return source[keys[i]];
+            }
+          }
+          return null;
+        }
+
+        function normalizeWindPayload(data) {
+          var source = data && (data.latest || data.data || data.wind || data);
+          return {
+            spot: readFirst(source, ["spot", "station", "station_name", "anemometer", "anemometro", "nearest_spot", "location"]),
+            windKnots: readFirst(source, ["wind_knots", "wind_kt", "wind_kts", "wind", "speed_knots", "speed_kt", "avg_knots"]),
+            gustKnots: readFirst(source, ["gust_knots", "gust_kt", "gust_kts", "gust", "raffiche", "raffica_knots", "max_gust_knots"]),
+            windDirection: readFirst(source, ["wind_direction", "direction", "direction_deg", "wind_dir", "wind_dir_deg", "direzione"]),
+            updatedAt: readFirst(source, ["updated_at", "timestamp", "time", "datetime", "observed_at", "ts"])
+          };
+        }
+
+        function formatValue(value) {
+          if (value == null || value === "") {
+            return "-";
+          }
+          return String(value);
+        }
+
+        function formatUpdatedAt(value) {
+          if (!value) {
+            return "-";
+          }
+          var date = new Date(value);
+          if (Number.isNaN(date.getTime())) {
+            return String(value);
+          }
+          return date.toLocaleString("it-IT", {
+            day: "2-digit",
+            month: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit"
+          });
+        }
+
+        function fetchJson(url, timeoutMs) {
+          var controller = typeof AbortController !== "undefined" && timeoutMs ? new AbortController() : null;
+          var timeoutId = controller ? setTimeout(function () {
+            controller.abort();
+          }, timeoutMs) : null;
+
+          return fetch(url, {
+            cache: "no-store",
+            signal: controller ? controller.signal : undefined
+          }).then(function (response) {
+            if (!response.ok) {
+              throw new Error("live spot wind unavailable");
+            }
+            return response.json();
+          }).finally(function () {
+            if (timeoutId) {
+              clearTimeout(timeoutId);
+            }
+          });
+        }
+
+        function getCurrentSpotInput() {
+          var field = document.getElementById("location");
+          return field && field.value ? field.value.trim() : "";
+        }
+
+        function fetchLiveWind() {
+          var spot = getCurrentSpotInput();
+          var url = LIVE_WIND_ENDPOINT + (spot ? "?spot=" + encodeURIComponent(spot) : "");
+          return fetchJson(url, 2500).catch(function () {
+            return {
+              spot: spot || "-",
+              wind_knots: null,
+              gust_knots: null,
+              wind_direction: null,
+              updated_at: null,
+              status: "unavailable"
+            };
+          });
+        }
+
         function refreshLiveSpotWind() {
-          fetch("assets/live_spot_wind.json?t=" + Date.now(), { cache: "no-store" })
-            .then(function (response) {
-              if (!response.ok) {
-                throw new Error("live spot wind unavailable");
-              }
-              return response.json();
-            })
+          fetchLiveWind()
             .then(function (data) {
               var snapshot = document.getElementById("rider-snapshot");
               if (!snapshot || !data) {
                 return;
               }
 
-              var spot = data.spot;
-              var windKnots = data.wind_knots;
-              var windDirectionValue = data.wind_direction;
-              var label = data.label;
-              var confidence = data.confidence;
-              var updatedAt = data.updated_at;
-              var forecast3h = data.forecast_3h;
+              var liveWind = normalizeWindPayload(data);
 
               var spotValue = snapshot.querySelector(".rs-spot-value");
               var windDirection = snapshot.querySelector(".rs-wind-direction");
               var windSpeed = snapshot.querySelector(".rs-wind-speed");
-              var forecastValue = snapshot.querySelector(".rs-forecast-value");
+              var windGust = snapshot.querySelector(".rs-wind-gust");
+              var updatedValue = snapshot.querySelector(".rs-updated-value");
 
-              void label;
-              void confidence;
-              void updatedAt;
-
-              if (spotValue && spot != null) {
-                spotValue.textContent = spot;
+              if (spotValue) {
+                var inputSpot = getCurrentSpotInput();
+                spotValue.textContent = inputSpot || liveWind.spot || "-";
               }
-              if (windDirection && windDirectionValue != null) {
-                windDirection.textContent = "Direzione " + windDirectionValue + "°";
+              if (windDirection) {
+                windDirection.textContent = liveWind.windDirection != null ? "Direzione " + liveWind.windDirection + "°" : "Direzione -";
               }
-              if (windSpeed && windKnots != null) {
-                windSpeed.textContent = "Velocità " + windKnots + " kn";
+              if (windSpeed) {
+                windSpeed.textContent = "Velocità " + formatValue(liveWind.windKnots) + " kn";
               }
-              if (forecastValue) {
-                var forecastLabel = "3–4h";
-                var forecastKnots = null;
-                var forecastDirection = null;
-
-                if (forecast3h && typeof forecast3h === "object") {
-                  if (forecast3h.label != null) {
-                    forecastLabel = String(forecast3h.label);
-                  }
-                  forecastKnots = forecast3h.wind_knots;
-                  forecastDirection = forecast3h.wind_direction;
-                }
-
-                if (forecastKnots != null && forecastDirection != null) {
-                  forecastValue.textContent = forecastLabel + " " + forecastKnots + " kn " + forecastDirection + "°";
+              if (windGust) {
+                windGust.textContent = "Raffiche " + formatValue(liveWind.gustKnots) + " kn";
+              }
+              if (updatedValue) {
+                var f = data && data.forecast_3h;
+                if (f && f.wind_knots != null) {
+                  updatedValue.textContent = "Previsione: " + f.wind_knots + " kn";
                 } else {
-                  forecastValue.textContent = forecastLabel + " -";
+                  updatedValue.textContent = "-";
                 }
               }
             })
