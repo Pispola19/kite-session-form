@@ -398,5 +398,53 @@ Dati reali - Nessuna registrazione - nessun log in</p>
       </div>
 
     </div>
+    <script>
+      (function () {
+        function refreshRiderSnapshotWind() {
+          fetch("assets/live_spot_wind.json?t=" + Date.now(), { cache: "no-store" })
+            .then(function (response) {
+              if (!response.ok) {
+                throw new Error("live spot wind unavailable");
+              }
+              return response.json();
+            })
+            .then(function (data) {
+              var snapshot = document.getElementById("rider-snapshot");
+              if (!snapshot || !data) {
+                return;
+              }
+
+              var spotValue = snapshot.querySelector(".rs-spot-value");
+              var windDirection = snapshot.querySelector(".rs-wind-direction");
+              var windSpeed = snapshot.querySelector(".rs-wind-speed");
+              var forecastValue = snapshot.querySelector(".rs-forecast-value");
+              var forecast3h = data.forecast_3h;
+
+              if (spotValue) {
+                spotValue.textContent = data.spot || "-";
+              }
+              if (windDirection) {
+                windDirection.textContent = data.wind_direction != null ? "Direzione " + data.wind_direction + "°" : "Direzione -";
+              }
+              if (windSpeed) {
+                windSpeed.textContent = data.wind_knots != null ? "Velocità " + data.wind_knots + " kn" : "Velocità - kn";
+              }
+              if (forecastValue) {
+                if (forecast3h && forecast3h.wind_knots != null) {
+                  var forecastLabel = forecast3h.label || "3–4h";
+                  var forecastDirection = forecast3h.wind_direction != null ? forecast3h.wind_direction : "-";
+                  forecastValue.textContent = forecastLabel + " " + forecast3h.wind_knots + " kn " + forecastDirection + "°";
+                } else {
+                  forecastValue.textContent = "3–4h -";
+                }
+              }
+            })
+            .catch(function () {});
+        }
+
+        refreshRiderSnapshotWind();
+        setInterval(refreshRiderSnapshotWind, 10000);
+      })();
+    </script>
   </body>
 </html>

@@ -1,12 +1,18 @@
 {
-  "confidence": 0.2288888888888889,
+  "confidence": 0.2,
+  "forecast_3h": {
+    "confidence": 0.2,
+    "label": "3\u20134h",
+    "source": "placeholder_same_as_resolved",
+    "wind_direction": 72,
+    "wind_knots": 2
+  },
   "label": "Vento stimato",
   "sources_used": [
-    "open-meteo",
-    "windy"
+    "open-meteo"
   ],
-  "spot": "Punta Trettu",
-  "updated_at": "2026-04-25T08:23:29.358291Z",
-  "wind_direction": 69,
-  "wind_knots": 3
+  "spot": "Is Solinas",
+  "updated_at": "2026-04-26T00:07:36.630887Z",
+  "wind_direction": 72,
+  "wind_knots": 2
 }
