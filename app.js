@@ -2150,10 +2150,22 @@
     let localDurableConfirmed = false;
 
     try {
+      const currentFormData = collectFormData();
+      const currentPayload = buildPayload(currentFormData);
       const pendingLocalSubmit = loadPendingLocalSubmit();
-      const formData = pendingLocalSubmit?.payload || collectFormData();
-      const payload = pendingLocalSubmit?.payload || buildPayload(formData);
-      if (!pendingLocalSubmit && !savePendingLocalSubmit(payload)) {
+      if (pendingLocalSubmit) {
+        try {
+          console.warn("stale_pending_local_submit_discarded", {
+            session_id: pendingLocalSubmit.session_id || "",
+            technical_id: pendingLocalSubmit.technical_id || "",
+            created_at: pendingLocalSubmit.created_at || ""
+          });
+        } catch (_) {}
+        clearPendingLocalSubmit();
+      }
+      const formData = currentFormData;
+      const payload = currentPayload;
+      if (!savePendingLocalSubmit(payload)) {
         throw new Error("local_pending_error");
       }
       try {
