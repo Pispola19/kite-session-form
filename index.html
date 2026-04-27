@@ -494,13 +494,13 @@ Dati reali - Nessuna registrazione - nessun log in</p>
           fetchLiveWind()
             .then(function (data) {
               var snapshot = document.getElementById("rider-snapshot");
-              snapshot.classList.remove("live-warning");
-
-              if (data && data.source_type === "derived") {
-                snapshot.classList.add("live-warning");
-              }
               if (!snapshot || !data) {
                 return;
+              }
+
+              snapshot.classList.remove("live-warning");
+              if (["derived", "weather_api", "forecast"].indexOf(data.source_type) !== -1) {
+                snapshot.classList.add("live-warning");
               }
 
               var liveWind = normalizeWindPayload(data);
