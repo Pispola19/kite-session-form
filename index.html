@@ -498,12 +498,12 @@ Dati reali - Nessuna registrazione - nessun log in</p>
                 return;
               }
 
+              var liveWind = normalizeWindPayload(data);
+
               snapshot.classList.remove("live-warning");
-              if (["derived", "weather_api", "forecast"].indexOf(data.source_type) !== -1) {
+              if (liveWind.windKnots == null) {
                 snapshot.classList.add("live-warning");
               }
-
-              var liveWind = normalizeWindPayload(data);
               var spotValue = snapshot.querySelector(".rs-spot-value");
               var windDirection = snapshot.querySelector(".rs-wind-direction");
               var windSpeed = snapshot.querySelector(".rs-wind-speed");
