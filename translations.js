@@ -166,7 +166,8 @@ window.RDK_TRANSLATIONS = {
     why_card_2_title: "Help the community",
     why_card_2_text: "Shared data = better decisions for everyone.",
     why_card_3_title: "Build a real database",
-    why_card_3_text: "An independent reference, based on real sessions."
+    why_card_3_text: "An independent reference, based on real sessions.",
+    contact_label: "Contact:"
   },
 
   it: {
@@ -337,7 +338,8 @@ window.RDK_TRANSLATIONS = {
     why_card_2_title: "Aiuti la community",
     why_card_2_text: "Dati condivisi = decisioni migliori per tutti.",
     why_card_3_title: "Costruisci database reale",
-    why_card_3_text: "Un riferimento indipendente, basato su sessioni vere."
+    why_card_3_text: "Un riferimento indipendente, basato su sessioni vere.",
+    contact_label: "Contatto:"
   },
 
   de: {
@@ -508,7 +510,8 @@ window.RDK_TRANSLATIONS = {
     why_card_2_title: "Der Community helfen",
     why_card_2_text: "Geteilte Daten = bessere Entscheidungen für alle.",
     why_card_3_title: "Echte Datenbank aufbauen",
-    why_card_3_text: "Eine unabhängige Referenz basierend auf realen Sessions."
+    why_card_3_text: "Eine unabhängige Referenz basierend auf realen Sessions.",
+    contact_label: "Kontakt:"
   },
 
   es: {
@@ -679,7 +682,8 @@ window.RDK_TRANSLATIONS = {
     why_card_2_title: "Ayudar a la comunidad",
     why_card_2_text: "Datos compartidos = mejores decisiones para todos.",
     why_card_3_title: "Crear una base de datos real",
-    why_card_3_text: "Una referencia independiente basada en sesiones reales."
+    why_card_3_text: "Una referencia independiente basada en sesiones reales.",
+    contact_label: "Contacto:"
   },
 
   fr: {
@@ -849,6 +853,7 @@ window.RDK_TRANSLATIONS = {
     why_card_2_title: "Aider la communauté",
     why_card_2_text: "Données partagées = meilleures décisions pour tous.",
     why_card_3_title: "Construire une vraie base de données",
-    why_card_3_text: "Une référence indépendante basée sur des sessions réelles."
+    why_card_3_text: "Une référence indépendante basée sur des sessions réelles.",
+    contact_label: "Contact:"
   }
 };
