@@ -1683,7 +1683,7 @@
   }
 
   async function submitPayload(payload){
-    const response = await fetch("http://127.0.0.1:8000/submit", {
+    const response = await fetch("https://nx1smwgmbe.execute-api.us-east-1.amazonaws.com/prod/dam/submit", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
