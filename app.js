@@ -1633,7 +1633,13 @@
       formData.result,
       formData.note
     ].map((value) => value == null ? "" : String(value)).join("\u001f");
-    const digest = `${signatureDigestHex(stableParts)}${signatureDigestHex([...stableParts].reverse().join(""))}`;
+    const reversedParts = [...stableParts].reverse().join("");
+    const digest = [
+      signatureDigestHex(stableParts),
+      signatureDigestHex(reversedParts),
+      signatureDigestHex(`${stableParts}\u001e${reversedParts}`),
+      signatureDigestHex(`${reversedParts}\u001e${stableParts}`)
+    ].join("");
     const sourceId = String(formData.technical_id || formData.session_id || "").slice(0, 12);
     return `msg_${digest}_${sourceId}`;
   }
