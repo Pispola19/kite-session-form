@@ -1283,6 +1283,12 @@ showLiveSpot?.addEventListener("click", async () => {
   renderLiveSpotReadonly(payload);
 
   renderPayloadDebug();
+
+  if (window.matchMedia("(max-width: 760px)").matches) {
+    if (liveSpotPanel && typeof liveSpotPanel.scrollIntoView === "function") {
+      liveSpotPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
 });
 
 languageButtons.forEach((button) => {

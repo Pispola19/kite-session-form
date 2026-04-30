@@ -754,3 +754,26 @@ button {
     min-height: 54px;
   }
 }
+
+@media (max-width: 760px) {
+  .visual-form input:not([type="checkbox"]):not([type="radio"]),
+  .visual-form select {
+    box-sizing: border-box;
+    min-height: 48px;
+    padding-top: 11px;
+    padding-bottom: 11px;
+    line-height: 1.35;
+  }
+
+  .visual-form .note-field textarea {
+    min-height: 120px;
+  }
+
+  .visual-form label {
+    align-items: stretch;
+  }
+
+  .wind-user-block > label {
+    align-self: stretch;
+  }
+}
