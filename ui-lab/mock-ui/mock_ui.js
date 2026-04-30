@@ -18,6 +18,14 @@ const GOOGLE_SECONDARY_CONFIG = {
   TIMEOUT_MS: 25000
 };
 
+const WHATSAPP_SECONDARY_CONFIG = {
+  ENABLE: true,
+  PHONE: "393205316981",
+  FALLBACK_DELAY_MS: 800
+};
+
+const WHATSAPP_SUMMARY_LANGS = Object.freeze(["it", "en", "de", "es", "fr"]);
+
 // Mappa chiavi UI locali (usate in data-i18n / data-i18n-placeholder) -> chiavi legacy
 // presenti in window.RDK_TRANSLATIONS (definito in translations.js).
 // REGOLA: NON contiene stringhe tradotte, solo nomi di chiavi.
@@ -910,6 +918,149 @@ function renderPayloadDebug(payloads = buildMockPayloads()) {
   }
 }
 
+function buildWhatsAppSummaryFromLegacyPayload(legacyPayload) {
+  const lc = String(currentLang || "").toLowerCase();
+  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
+  const lp = legacyPayload && typeof legacyPayload === "object" ? legacyPayload : {};
+  const dash = (v) => (v === null || v === undefined || v === "" ? "-" : String(v));
+
+  const weight = dash(lp.weight);
+  const board = dash(lp.board);
+  const boardSize = dash(lp.boardSize);
+  const level = dash(lp.level);
+  const kite = dash(lp.kite);
+  const brand = dash(lp.brand);
+  const model = dash(lp.model);
+  const wind = dash(lp.wind);
+  const location = dash(lp.location);
+  const water = dash(lp.water);
+  const result = dash(lp.result);
+  const note = dash(lp.note);
+
+  if (lang === "it") {
+    return (
+      `🪁 VENTO LIVE - riepilogo della tua sessione\n\n` +
+      `⚖️ Peso (kg): ${weight}\n` +
+      `📦 Tavola: ${board}\n` +
+      `📏 Misura tavola: ${boardSize}\n` +
+      `🎯 Livello: ${level}\n` +
+      `🪁 Kite (m²): ${kite}\n` +
+      `🏷️ Marca: ${brand}\n` +
+      `🚀 Modello: ${model}\n` +
+      `🌬️ Vento (kn): ${wind}\n` +
+      `📍 Spot: ${location}\n` +
+      `🌊 Acqua: ${water}\n` +
+      `✅ Risultato sessione: ${result}\n` +
+      `Note: ${note}\n\n` +
+      `Puoi salvare questo messaggio come promemoria personale della sessione.`
+    );
+  }
+  if (lang === "en") {
+    return (
+      `🪁 VENTO LIVE - your session summary\n\n` +
+      `⚖️ Weight (kg): ${weight}\n` +
+      `📦 Board type: ${board}\n` +
+      `📏 Board size: ${boardSize}\n` +
+      `🎯 Level: ${level}\n` +
+      `🪁 Kite (m²): ${kite}\n` +
+      `🏷️ Brand: ${brand}\n` +
+      `🚀 Model: ${model}\n` +
+      `🌬️ Wind (kn): ${wind}\n` +
+      `📍 Spot: ${location}\n` +
+      `🌊 Water conditions: ${water}\n` +
+      `✅ Session result: ${result}\n` +
+      `Notes: ${note}\n\n` +
+      `You can save this message as a personal reminder of your session.`
+    );
+  }
+  if (lang === "de") {
+    return (
+      `🪁 VENTO LIVE - Zusammenfassung deiner Session\n\n` +
+      `⚖️ Gewicht (kg): ${weight}\n` +
+      `📦 Boardtyp: ${board}\n` +
+      `📏 Boardgröße: ${boardSize}\n` +
+      `🎯 Level: ${level}\n` +
+      `🪁 Kite (m²): ${kite}\n` +
+      `🏷️ Marke: ${brand}\n` +
+      `🚀 Modell: ${model}\n` +
+      `🌬️ Wind (kn): ${wind}\n` +
+      `📍 Spot: ${location}\n` +
+      `🌊 Wasserbedingungen: ${water}\n` +
+      `✅ Session-Ergebnis: ${result}\n` +
+      `Notizen: ${note}\n\n` +
+      `Du kannst diese Nachricht als persönliche Erinnerung an deine Session speichern.`
+    );
+  }
+  if (lang === "es") {
+    return (
+      `🪁 VENTO LIVE - resumen de tu sesión\n\n` +
+      `⚖️ Peso (kg): ${weight}\n` +
+      `📦 Tipo de tabla: ${board}\n` +
+      `📏 Medida de tabla: ${boardSize}\n` +
+      `🎯 Nivel: ${level}\n` +
+      `🪁 Kite (m²): ${kite}\n` +
+      `🏷️ Marca: ${brand}\n` +
+      `🚀 Modelo: ${model}\n` +
+      `🌬️ Viento (kn): ${wind}\n` +
+      `📍 Spot: ${location}\n` +
+      `🌊 Condiciones del agua: ${water}\n` +
+      `✅ Resultado de la sesión: ${result}\n` +
+      `Notas: ${note}\n\n` +
+      `Puedes guardar este mensaje como recordatorio personal de tu sesión.`
+    );
+  }
+  if (lang === "fr") {
+    return (
+      `🪁 VENTO LIVE - résumé de ta session\n\n` +
+      `⚖️ Poids (kg): ${weight}\n` +
+      `📦 Type de planche: ${board}\n` +
+      `📏 Taille de planche: ${boardSize}\n` +
+      `🎯 Niveau: ${level}\n` +
+      `🪁 Kite (m²): ${kite}\n` +
+      `🏷️ Marque: ${brand}\n` +
+      `🚀 Modèle: ${model}\n` +
+      `🌬️ Vent (kn): ${wind}\n` +
+      `📍 Spot: ${location}\n` +
+      `🌊 Conditions d'eau: ${water}\n` +
+      `✅ Résultat de session: ${result}\n` +
+      `Notes: ${note}\n\n` +
+      `Tu peux garder ce message comme mémo personnel de ta session.`
+    );
+  }
+  return "";
+}
+
+function openWhatsAppSecondary(legacyPayload) {
+  if (WHATSAPP_SECONDARY_CONFIG.ENABLE !== true) {
+    return { ok: true, skipped: true };
+  }
+  const summary = buildWhatsAppSummaryFromLegacyPayload(legacyPayload);
+  const encoded = encodeURIComponent(summary);
+  const phone = String(WHATSAPP_SECONDARY_CONFIG.PHONE || "").replace(/\D/g, "");
+  window.location.href = `whatsapp://send?phone=${phone}&text=` + encoded;
+  window.setTimeout(() => {
+    window.location.href = `https://wa.me/${phone}?text=` + encoded;
+  }, WHATSAPP_SECONDARY_CONFIG.FALLBACK_DELAY_MS);
+  return { ok: true, attempted: true };
+}
+
+function resetVisualFormAfterSuccess() {
+  try {
+    form?.reset();
+  } catch (_) {}
+  if (form) {
+    Array.from(form.querySelectorAll("[data-state-field]")).forEach((el) => {
+      try {
+        el.dispatchEvent(new Event("input", { bubbles: true }));
+        el.dispatchEvent(new Event("change", { bubbles: true }));
+      } catch (_) {}
+    });
+    renderUI();
+    validateRequiredFields();
+  }
+  renderPayloadDebug();
+}
+
 cta?.addEventListener("click", async () => {
   const validation = validateRequiredFields();
   const payloads = buildMockPayloads();
@@ -940,11 +1091,17 @@ cta?.addEventListener("click", async () => {
       googleResult &&
       (googleResult.ok === true || googleResult.probable === true || googleResult.skipped === true);
 
+    openWhatsAppSecondary(payloads.legacyPayload);
+
     if (googleOk) {
-      message.textContent = "Dati inviati alla pipeline primaria. Google Sheet aggiornato.";
+      message.textContent =
+        "Grazie! Dati ricevuti. WhatsApp si apre con il riepilogo della sessione, così puoi salvarlo come promemoria.";
     } else {
-      message.textContent = "Dati salvati nella pipeline primaria. Google Sheet non aggiornato.";
+      message.textContent =
+        "Grazie! Dati ricevuti. Google Sheet non aggiornato, ma il dato è salvo.";
     }
+
+    resetVisualFormAfterSuccess();
   } else {
     message.textContent = "Invio dati non riuscito - riprova";
   }
