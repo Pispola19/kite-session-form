@@ -12,6 +12,12 @@ const SESSION_SUBMIT_CONFIG = {
   TIMEOUT_MS: 4000
 };
 
+const GOOGLE_SECONDARY_CONFIG = {
+  ENABLE: true,
+  WEBHOOK_URL: "https://script.google.com/macros/s/AKfycbyBvRK58kLL13TwOPPNqyAmNn-eRb-lYKzHsfKr1OG0UAVzHzyhG1l2T_svP_it3IICag/exec",
+  TIMEOUT_MS: 25000
+};
+
 // Mappa chiavi UI locali (usate in data-i18n / data-i18n-placeholder) -> chiavi legacy
 // presenti in window.RDK_TRANSLATIONS (definito in translations.js).
 // REGOLA: NON contiene stringhe tradotte, solo nomi di chiavi.
@@ -431,6 +437,110 @@ async function submitSessionPrimary(legacyPayload) {
   }
 }
 
+async function submitSessionToGoogleSecondary(legacyPayload) {
+  if (GOOGLE_SECONDARY_CONFIG.ENABLE !== true) {
+    return { ok: true, skipped: true, reason: "google_secondary_disabled" };
+  }
+
+  const url = String(GOOGLE_SECONDARY_CONFIG.WEBHOOK_URL || "").trim();
+  if (!url) {
+    return { ok: false, error: "google_webhook_missing" };
+  }
+
+  const lp = legacyPayload && typeof legacyPayload === "object" ? legacyPayload : {};
+
+  const googlePayload = {
+    session_id: lp.session_id,
+    technical_id: lp.technical_id,
+    event_ts: lp.event_ts,
+    src: lp.src,
+
+    peso_kg: lp.weight,
+    gender: lp.gender,
+    tavola_tipo: lp.board,
+    tavola_misura: lp.boardSize,
+    livello: lp.level,
+    kite_m2: lp.kite,
+    marca: lp.brand,
+    modello: lp.model,
+    vento_kn: lp.wind,
+    spot: lp.location,
+    acqua: lp.water,
+    risultato: lp.result,
+    note: lp.note
+  };
+
+  return await new Promise((resolve) => {
+    const targetName = `rdk-google-secondary-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    const iframe = document.createElement("iframe");
+    const postForm = document.createElement("form");
+
+    let settled = false;
+    const settle = (value) => {
+      if (settled) return;
+      settled = true;
+      if (value && value.ok === true) {
+        window.setTimeout(() => {
+          cleanup();
+          resolve(value);
+        }, 1000);
+        return;
+      }
+      cleanup();
+      resolve(value);
+    };
+
+    const cleanup = () => {
+      iframe.removeEventListener("load", onLoad);
+      if (timeoutId) window.clearTimeout(timeoutId);
+      try { postForm.remove(); } catch (_) {}
+      try { iframe.remove(); } catch (_) {}
+    };
+
+    const onLoad = () => {
+      settle({ ok: true, probable: true, source: "iframe_load" });
+    };
+
+    const timeoutId = window.setTimeout(() => {
+      settle({ ok: false, error: "google_timeout" });
+    }, GOOGLE_SECONDARY_CONFIG.TIMEOUT_MS);
+
+    try {
+      iframe.id = targetName;
+      iframe.name = targetName;
+      iframe.setAttribute("aria-hidden", "true");
+      iframe.style.display = "none";
+      iframe.style.width = "0";
+      iframe.style.height = "0";
+      iframe.style.border = "0";
+      iframe.addEventListener("load", onLoad);
+
+      postForm.method = "POST";
+      postForm.action = url;
+      postForm.target = targetName;
+      postForm.style.display = "none";
+      postForm.acceptCharset = "UTF-8";
+
+      Object.entries(googlePayload).forEach(([key, value]) => {
+        const input = document.createElement("input");
+        input.type = "hidden";
+        input.name = key;
+        input.value = value == null ? "" : String(value);
+        postForm.appendChild(input);
+      });
+
+      document.body.appendChild(iframe);
+      document.body.appendChild(postForm);
+      postForm.submit();
+    } catch (err) {
+      settle({
+        ok: false,
+        error: err && err.message ? err.message : "google_secondary_failed"
+      });
+    }
+  });
+}
+
 function renderLiveSpotReadonly(payload) {
   LiveSpotReadonlyConnector.renderLiveSpotReadonly(liveSpotPanel, payload);
 }
@@ -819,7 +929,22 @@ cta?.addEventListener("click", async () => {
 
   const primaryResult = await submitSessionPrimary(payloads.legacyPayload);
   if (primaryResult && primaryResult.ok === true) {
-    message.textContent = "Dati inviati correttamente alla pipeline primaria";
+    let googleResult = null;
+    try {
+      googleResult = await submitSessionToGoogleSecondary(payloads.legacyPayload);
+    } catch (err) {
+      googleResult = { ok: false, error: err && err.message ? err.message : "google_secondary_failed" };
+    }
+
+    const googleOk =
+      googleResult &&
+      (googleResult.ok === true || googleResult.probable === true || googleResult.skipped === true);
+
+    if (googleOk) {
+      message.textContent = "Dati inviati alla pipeline primaria. Google Sheet aggiornato.";
+    } else {
+      message.textContent = "Dati salvati nella pipeline primaria. Google Sheet non aggiornato.";
+    }
   } else {
     message.textContent = "Invio dati non riuscito - riprova";
   }
