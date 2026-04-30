@@ -53,6 +53,39 @@ dd {
   padding-left: 24px;
 }
 
+.app-footer {
+  width: 100%;
+  max-width: 1180px;
+  margin: 28px auto 36px;
+  padding-right: 24px;
+  padding-left: 24px;
+  text-align: center;
+  color: rgba(240, 246, 243, 0.6);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.app-footer p {
+  margin: 0;
+}
+
+.app-footer__label {
+  margin-right: 6px;
+  color: rgba(174, 184, 184, 0.95);
+}
+
+.app-footer a {
+  color: var(--teal-soft);
+  font-weight: 700;
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.app-footer a:hover {
+  text-decoration: underline;
+}
+
 .hero__inner {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(220px, 320px);
@@ -676,6 +709,14 @@ button {
   .app-shell {
     padding-right: 16px;
     padding-left: 16px;
+  }
+
+  .app-footer {
+    margin-top: 20px;
+    margin-bottom: 28px;
+    padding-right: 16px;
+    padding-left: 16px;
+    font-size: 12px;
   }
 
   .hero__inner {
