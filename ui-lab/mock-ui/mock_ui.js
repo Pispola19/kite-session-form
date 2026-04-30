@@ -45,7 +45,25 @@ const LEGACY_KEY_MAP = Object.freeze({
   note:      "label_notes",
   submit:    "btn_send",
   spotPh:    "ph_location",
-  notePh:    "ph_notes"
+  notePh:    "ph_notes",
+
+  lsReadonlyBadge:     "live_spot_mock_readonly_badge",
+  lsPanelTitle:        "live_spot_mock_panel_title",
+  lsReadonlyPill:      "live_spot_mock_readonly_pill",
+  lsOverviewHeading:   "live_spot_mock_overview_heading",
+  lsOverviewSpotLabel: "live_spot_mock_overview_spot",
+  lsOverviewConfidence: "live_spot_mock_confidence",
+  lsOverviewUpdated:   "live_spot_mock_last_update",
+  lsWindNowHeading:    "live_spot_mock_wind_now_heading",
+  lsWindSpeed:         "live_spot_mock_wind_speed",
+  lsWindDirection:     "live_spot_mock_wind_direction",
+  lsWindNameLabel:     "live_spot_mock_wind_name_label",
+  lsWindGust:          "live_spot_mock_wind_gust",
+  lsAnemometer:        "live_spot_mock_anemometer",
+  lsForecastHeading:   "live_spot_mock_forecast_heading",
+  lsFc1:               "live_spot_mock_fc_1",
+  lsFc2:               "live_spot_mock_fc_2",
+  lsFc3:               "live_spot_mock_fc_3"
 });
 
 // Mappa value tecnico (legacy) -> chiave label legacy per ogni enum select.
@@ -177,6 +195,68 @@ const LOCAL_FALLBACK = Object.freeze({
 });
 
 const LiveSpotReadonlyConnector = (() => {
+  const DIR_ABBR_16 = Object.freeze([
+    "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
+    "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"
+  ]);
+
+  const DIR_ARROW_16 = Object.freeze([
+    "↑", "↗", "↗", "→", "→", "↘", "↘", "↓",
+    "↓", "↙", "↙", "←", "←", "↖", "↖", "↑"
+  ]);
+
+  function windDirectionPresentationDeg(deg) {
+    if (typeof deg !== "number" || Number.isNaN(deg)) return null;
+    const d = ((deg % 360) + 360) % 360;
+    const idx = Math.round(d / 22.5) % 16;
+    return {
+      arrow: DIR_ARROW_16[idx],
+      abbr: DIR_ABBR_16[idx],
+      idx
+    };
+  }
+
+  function translateLiveSpotLegacy(legacyKey) {
+    const fn = window.__mockUiTranslateLegacy;
+    if (typeof fn !== "function" || !legacyKey) return "";
+    return fn(legacyKey);
+  }
+
+  function formatWindDirectionArrowAbbr(deg) {
+    const pres = windDirectionPresentationDeg(deg);
+    if (!pres) return "---";
+    return `${pres.arrow} ${pres.abbr}`;
+  }
+
+  function formatWindDirectionNameI18n(deg) {
+    const pres = windDirectionPresentationDeg(deg);
+    if (!pres) return "---";
+    const text = translateLiveSpotLegacy(`live_spot_mock_wind_name_${pres.idx}`);
+    return text ? String(text).trim() : "---";
+  }
+
+  function normalizeForecastSlice(raw) {
+    if (!raw || typeof raw !== "object") return null;
+    const wind_knots = typeof raw.wind_knots === "number" ? raw.wind_knots : null;
+    const gust_knots = typeof raw.gust_knots === "number" ? raw.gust_knots : null;
+    const wind_direction = typeof raw.wind_direction === "number" ? raw.wind_direction : null;
+    const forecast_at = typeof raw.forecast_at === "string" ? raw.forecast_at : null;
+    if (
+      wind_knots == null &&
+      gust_knots == null &&
+      wind_direction == null &&
+      forecast_at == null
+    ) {
+      return null;
+    }
+    return { wind_knots, gust_knots, wind_direction, forecast_at };
+  }
+
+  function forecastWindKnShort(fc) {
+    if (!fc || typeof fc !== "object" || fc.wind_knots == null) return "--";
+    return `${fc.wind_knots} kn`;
+  }
+
   const SAMPLE_LIVE_OK = Object.freeze({
     ok: true,
     spot: "Punta Trettu",
@@ -189,6 +269,18 @@ const LiveSpotReadonlyConnector = (() => {
     observed_at: "2026-04-30T12:00:00.000Z",
     updated_at: "2026-04-30T12:05:00.000Z",
     cache: "mock_fresh",
+    forecast_1h: {
+      wind_knots: 17,
+      gust_knots: null,
+      wind_direction: 312,
+      forecast_at: "2026-04-30T13:00:00.000Z"
+    },
+    forecast_2h: {
+      wind_knots: 18,
+      gust_knots: null,
+      wind_direction: 318,
+      forecast_at: "2026-04-30T14:00:00.000Z"
+    },
     forecast_3h: {
       wind_knots: 20,
       gust_knots: 24,
@@ -248,6 +340,8 @@ const LiveSpotReadonlyConnector = (() => {
   function normalizeLiveSpotPayload(data) {
     const raw = (data && typeof data === "object") ? data : {};
     const forecastRaw = raw.forecast_3h && typeof raw.forecast_3h === "object" ? raw.forecast_3h : null;
+    const forecast1Raw = raw.forecast_1h && typeof raw.forecast_1h === "object" ? raw.forecast_1h : null;
+    const forecast2Raw = raw.forecast_2h && typeof raw.forecast_2h === "object" ? raw.forecast_2h : null;
     const sourcesUsedRaw = Array.isArray(raw.sources_used) ? raw.sources_used : null;
     const resolutionRaw = raw.resolution && typeof raw.resolution === "object" ? raw.resolution : null;
 
@@ -270,6 +364,8 @@ const LiveSpotReadonlyConnector = (() => {
       resolution: resolutionRaw ? {
         canonical_spot: typeof resolutionRaw.canonical_spot === "string" ? resolutionRaw.canonical_spot : null
       } : null,
+      forecast_1h: normalizeForecastSlice(forecast1Raw),
+      forecast_2h: normalizeForecastSlice(forecast2Raw),
       forecast_3h: forecastRaw ? {
         wind_knots: typeof forecastRaw.wind_knots === "number" ? forecastRaw.wind_knots : null,
         gust_knots: typeof forecastRaw.gust_knots === "number" ? forecastRaw.gust_knots : null,
@@ -309,18 +405,11 @@ const LiveSpotReadonlyConnector = (() => {
     if (!windNow) return;
     const spotOverview = cards.find((card) => String(card.className || "").includes("status-search")) || null;
 
-    const dtNodes = Array.from(windNow.querySelectorAll("dt"));
-    const ddByKey = new Map();
-    dtNodes.forEach((dt) => {
-      const key = String(dt.textContent || "").trim().toLowerCase();
-      const dd = dt.nextElementSibling;
-      if (dd && dd.tagName === "DD") ddByKey.set(key, dd);
-    });
-
-    const windDd = ddByKey.get("vento");
-    const gustDd = ddByKey.get("raffiche");
-    const dirDd = ddByKey.get("direzione");
-    const providerDd = ddByKey.get("anemometro");
+    const windDd = windNow.querySelector('[data-live-spot-dd="wind"]');
+    const dirDd = windNow.querySelector('[data-live-spot-dd="direction"]');
+    const windNameDd = windNow.querySelector('[data-live-spot-dd="wind_name"]');
+    const gustDd = windNow.querySelector('[data-live-spot-dd="gust"]');
+    const providerDd = windNow.querySelector('[data-live-spot-dd="anemometer"]');
 
     if (windDd) {
       windDd.textContent = p.wind_knots == null ? "-- kn" : `${p.wind_knots} kn`;
@@ -329,41 +418,42 @@ const LiveSpotReadonlyConnector = (() => {
       gustDd.textContent = p.gust_knots == null ? "-- kn" : `${p.gust_knots} kn`;
     }
     if (dirDd) {
-      dirDd.textContent = p.wind_direction == null ? "---" : String(p.wind_direction);
+      dirDd.textContent = formatWindDirectionArrowAbbr(p.wind_direction);
+    }
+    if (windNameDd) {
+      windNameDd.textContent =
+        p.wind_direction == null ? "---" : formatWindDirectionNameI18n(p.wind_direction);
     }
     if (providerDd) {
+      const velLab = translateLiveSpotLegacy("live_spot_mock_vel_short");
+      const gstLab = translateLiveSpotLegacy("live_spot_mock_gust_short");
       const parts = [];
-      if (p.wind_direction != null) parts.push(`Dir ${p.wind_direction}°`);
-      if (p.wind_knots != null) parts.push(`Vel ${p.wind_knots} kn`);
-      if (p.gust_knots != null) parts.push(`Raff ${p.gust_knots} kn`);
+      if (p.wind_knots != null) parts.push(`${velLab || "Vel"} ${p.wind_knots} kn`);
+      if (p.gust_knots != null) parts.push(`${gstLab || "Raff"} ${p.gust_knots} kn`);
       providerDd.textContent = parts.length ? parts.join(" · ") : "--";
     }
 
     if (spotOverview) {
-      const dtNodes2 = Array.from(spotOverview.querySelectorAll("dt"));
-      const ddByKey2 = new Map();
-      dtNodes2.forEach((dt) => {
-        const key = String(dt.textContent || "").trim().toLowerCase();
-        const dd = dt.nextElementSibling;
-        if (dd && dd.tagName === "DD") ddByKey2.set(key, dd);
-      });
-
-      const spotDd = ddByKey2.get("spot");
-      const confDd = ddByKey2.get("affidabilita");
-      const updatedDd = ddByKey2.get("ultimo aggiornamento");
+      const spotDd = spotOverview.querySelector('[data-live-spot-dd="overview_spot"]');
+      const confDd = spotOverview.querySelector('[data-live-spot-dd="overview_confidence"]');
+      const updatedDd = spotOverview.querySelector('[data-live-spot-dd="overview_updated"]');
 
       const resolvedSpot =
         (p.spot && String(p.spot).trim()) ||
         (p.resolution && p.resolution.canonical_spot ? String(p.resolution.canonical_spot).trim() : "") ||
         (p.meta && p.meta.resolution && p.meta.resolution.canonical_spot ? String(p.meta.resolution.canonical_spot).trim() : "");
 
+      const pickSpot = translateLiveSpotLegacy("live_spot_mock_pick_spot");
+
       if (spotDd) {
-        spotDd.textContent = resolvedSpot || "Scegli spot";
+        spotDd.textContent = resolvedSpot || pickSpot || "---";
       }
 
       if (confDd) {
         if (typeof p.confidence === "number" && p.confidence >= 0 && p.confidence <= 1) {
           confDd.textContent = `${Math.round(p.confidence * 100)}%`;
+        } else {
+          confDd.textContent = translateLiveSpotLegacy("live_spot_mock_confidence_pending") || "---";
         }
       }
 
@@ -393,37 +483,19 @@ const LiveSpotReadonlyConnector = (() => {
       }
     }
 
-    const forecast = p.forecast_3h || (p.meta && p.meta.forecast_3h) || null;
+    const fc1 = p.forecast_1h || null;
+    const fc2 = p.forecast_2h || null;
+    const fc3 = p.forecast_3h || (p.meta && p.meta.forecast_3h) || null;
     const hours = panelEl.querySelector(".hours");
     if (!hours) return;
-    const boxes = Array.from(hours.querySelectorAll(":scope > div"));
-    boxes.forEach((box) => {
-      const labelEl = box.querySelector("span");
-      const valueEl = box.querySelector("strong");
-      if (!labelEl || !valueEl) return;
-      const label = String(labelEl.textContent || "").trim();
-
-      if (label === "+1h" || label === "+2h") {
-        valueEl.textContent = "--";
-        return;
-      }
-
-      if (label !== "+3h") return;
-
-      if (!forecast || typeof forecast !== "object" || forecast.wind_knots == null) {
-        valueEl.textContent = "--";
-        return;
-      }
-
-      let text = `${forecast.wind_knots} kn`;
-      if (forecast.wind_direction != null) {
-        text += ` ${forecast.wind_direction}°`;
-      }
-      if (forecast.gust_knots != null) {
-        text += ` raff. ${forecast.gust_knots} kn`;
-      }
-      valueEl.textContent = text;
-    });
+    const setFc = (slot, fc) => {
+      const box = hours.querySelector(`[data-live-spot-fc="${slot}"]`);
+      const valueEl = box ? box.querySelector("strong") : null;
+      if (valueEl) valueEl.textContent = forecastWindKnShort(fc);
+    };
+    setFc("1", fc1);
+    setFc("2", fc2);
+    setFc("3", fc3);
   }
 
   function getReadonlyState() {
@@ -436,12 +508,17 @@ const LiveSpotReadonlyConnector = (() => {
     return SAMPLE_LIVE_OK;
   }
 
+  function getLastNormalizedPayload() {
+    return lastNormalized;
+  }
+
   return {
     normalizeLiveSpotPayload,
     buildLiveSpotReadonlyState,
     renderLiveSpotReadonly,
     getReadonlyState,
-    getSample
+    getSample,
+    getLastNormalizedPayload
   };
 })();
 
@@ -694,6 +771,10 @@ function tLegacy(legacyKey) {
   return "";
 }
 
+window.__mockUiTranslateLegacy = function (legacyKey) {
+  return tLegacy(legacyKey);
+};
+
 function t(key) {
   const legacyKey = LEGACY_KEY_MAP[key];
   if (legacyKey) {
@@ -768,7 +849,11 @@ function populateBoardSizesForType(boardType) {
 function renderUI() {
   document.querySelectorAll("[data-i18n]").forEach((el) => {
     const key = el.getAttribute("data-i18n");
-    if (key) el.textContent = t(key);
+    if (!key) return;
+    const translated = t(key);
+    if (translated) {
+      el.textContent = translated;
+    }
   });
   document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
     const key = el.getAttribute("data-i18n-placeholder");
@@ -807,6 +892,11 @@ function renderUI() {
 
   const kiteInput = formEl.querySelector('[data-state-field="kite.kite"]');
   if (kiteInput) kiteInput.setAttribute("placeholder", shortKiteInputPlaceholder());
+
+  const lsPanel = document.getElementById("liveSpotPanel");
+  if (lsPanel && LiveSpotReadonlyConnector && typeof LiveSpotReadonlyConnector.getLastNormalizedPayload === "function") {
+    LiveSpotReadonlyConnector.renderLiveSpotReadonly(lsPanel, LiveSpotReadonlyConnector.getLastNormalizedPayload());
+  }
 }
 
 const form = document.getElementById("mockSessionForm");
@@ -1283,6 +1373,16 @@ showLiveSpot?.addEventListener("click", async () => {
   renderLiveSpotReadonly(payload);
 
   renderPayloadDebug();
+
+  if (liveSpotPanel) {
+    liveSpotPanel.classList.remove("cockpit--live-updated");
+    window.requestAnimationFrame(() => {
+      liveSpotPanel.classList.add("cockpit--live-updated");
+      window.setTimeout(() => {
+        liveSpotPanel.classList.remove("cockpit--live-updated");
+      }, 700);
+    });
+  }
 
   if (window.matchMedia("(max-width: 760px)").matches) {
     if (liveSpotPanel && typeof liveSpotPanel.scrollIntoView === "function") {

@@ -164,65 +164,69 @@
       <aside class="side-rail" aria-label="Supporto visuale">
         <section class="cockpit" id="liveSpotPanel" aria-labelledby="live-spot-title">
           <div class="section-head">
-            <p class="eyebrow">READ ONLY</p>
-            <h2 id="live-spot-title">Live Spot</h2>
-            <span class="readonly-pill">non influisce sui dati inseriti</span>
+            <p class="eyebrow" data-i18n="lsReadonlyBadge">READ ONLY</p>
+            <h2 id="live-spot-title" data-i18n="lsPanelTitle">Live Spot</h2>
+            <span class="readonly-pill" data-i18n="lsReadonlyPill">non influisce sui dati inseriti</span>
           </div>
 
           <div class="cockpit-grid">
             <article class="info-card status-search">
-              <h3>Spot overview</h3>
+              <h3 data-i18n="lsOverviewHeading">Spot overview</h3>
               <dl>
                 <div>
-                  <dt>Spot</dt>
-                  <dd class="placeholder">Scegli spot</dd>
+                  <dt data-i18n="lsOverviewSpotLabel">Spot</dt>
+                  <dd class="placeholder" data-live-spot-dd="overview_spot">—</dd>
                 </div>
                 <div>
-                  <dt>Affidabilita</dt>
-                  <dd class="placeholder">in attesa</dd>
+                  <dt data-i18n="lsOverviewConfidence">Affidabilità</dt>
+                  <dd class="placeholder" data-live-spot-dd="overview_confidence">—</dd>
                 </div>
                 <div>
-                  <dt>Ultimo aggiornamento</dt>
-                  <dd class="placeholder">--:--</dd>
+                  <dt data-i18n="lsOverviewUpdated">Ultimo aggiornamento</dt>
+                  <dd class="placeholder" data-live-spot-dd="overview_updated">--:--</dd>
                 </div>
               </dl>
             </article>
 
             <article class="info-card status-ok">
-              <h3>Wind now</h3>
+              <h3 data-i18n="lsWindNowHeading">Wind now</h3>
               <dl>
                 <div>
-                  <dt>Vento</dt>
-                  <dd class="placeholder">-- kn</dd>
+                  <dt data-i18n="lsWindSpeed">Vento</dt>
+                  <dd class="placeholder" data-live-spot-dd="wind">-- kn</dd>
                 </div>
                 <div>
-                  <dt>Direzione</dt>
-                  <dd class="placeholder">---</dd>
+                  <dt data-i18n="lsWindDirection">Direzione</dt>
+                  <dd class="placeholder" data-live-spot-dd="direction">---</dd>
                 </div>
                 <div>
-                  <dt>Raffiche</dt>
-                  <dd class="placeholder">-- kn</dd>
+                  <dt data-i18n="lsWindNameLabel">Nome vento</dt>
+                  <dd class="placeholder" data-live-spot-dd="wind_name">---</dd>
                 </div>
                 <div>
-                  <dt>Anemometro</dt>
-                  <dd class="placeholder">mock</dd>
+                  <dt data-i18n="lsWindGust">Raffiche</dt>
+                  <dd class="placeholder" data-live-spot-dd="gust">-- kn</dd>
+                </div>
+                <div>
+                  <dt data-i18n="lsAnemometer">Anemometro</dt>
+                  <dd class="placeholder" data-live-spot-dd="anemometer">--</dd>
                 </div>
               </dl>
             </article>
 
             <article class="info-card">
-              <h3>Next 3 hours</h3>
+              <h3 data-i18n="lsForecastHeading">Next 3 hours</h3>
               <div class="hours">
-                <div>
-                  <span>+1h</span>
+                <div data-live-spot-fc="1">
+                  <span data-i18n="lsFc1">+1h</span>
                   <strong>--</strong>
                 </div>
-                <div>
-                  <span>+2h</span>
+                <div data-live-spot-fc="2">
+                  <span data-i18n="lsFc2">+2h</span>
                   <strong>--</strong>
                 </div>
-                <div>
-                  <span>+3h</span>
+                <div data-live-spot-fc="3">
+                  <span data-i18n="lsFc3">+3h</span>
                   <strong>--</strong>
                 </div>
               </div>
