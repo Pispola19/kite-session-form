@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-04-30T10:00:00.000Z",
+  "weight": "75",
+  "gender": "M",
+  "board": "twintip",
+  "board_size": "138x42",
+  "level": "independent",
+  "kite_size": "9",
+  "brand": "Core",
+  "model": "XR",
+  "wind": "18",
+  "location": "Stagnone",
+  "water": "flat",
+  "result": "good",
+  "notes": "visual check only",
+  "ID": "gs12345678",
+  "src": "form_v1"
+}

@@ -1,0 +1,21 @@
+{
+  "session_id": "case04_session",
+  "technical_id": "case04_technical",
+  "event_ts": "2026-04-30T10:04:00.000Z",
+  "src": "form_v1",
+  "weight": "91",
+  "gender": "M",
+  "board": "foil",
+  "boardSize": "custom 1250 front wing",
+  "level": "independent",
+  "kite": "7",
+  "wind": "16",
+  "brand": "Custom Brand Lab",
+  "model": "Prototype X",
+  "location": "Is Solinas",
+  "water": "flat",
+  "result": "good",
+  "note": "Custom board brand model case",
+  "ts": "2026-04-30T10:04:00.000Z",
+  "message_id": "msg_0f789ab9c25d7071f8266791ef9f8cd1_case04_techn"
+}

@@ -1,0 +1,21 @@
+{
+  "session_id": "20260430_120000_abcd",
+  "technical_id": "00000000-0000-4000-8000-000000000001",
+  "event_ts": "2026-04-30T10:00:00.000Z",
+  "src": "form_v1",
+  "weight": "82",
+  "gender": "M",
+  "board": "twintip",
+  "boardSize": "136x41",
+  "level": "independent",
+  "kite": "10",
+  "wind": "22",
+  "brand": "Duotone",
+  "model": "Dice",
+  "location": "Punta Trettu",
+  "water": "chop_light",
+  "result": "good",
+  "note": "Mock session for payload compatibility check",
+  "ts": "2026-04-30T10:00:00.000Z",
+  "message_id": "msg_mock_payload_0001"
+}

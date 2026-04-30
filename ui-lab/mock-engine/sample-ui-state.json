@@ -1,0 +1,44 @@
+{
+  "rider": {
+    "weight": "82",
+    "gender": "M",
+    "level": "independent"
+  },
+  "board": {
+    "board": "twintip",
+    "boardSize": "136x41"
+  },
+  "kite": {
+    "kite": "10",
+    "brand": "Duotone",
+    "model": "Dice"
+  },
+  "windUserInput": {
+    "wind": "22"
+  },
+  "spot": {
+    "location": "Punta Trettu"
+  },
+  "water": {
+    "water": "chop_light"
+  },
+  "result": {
+    "result": "good"
+  },
+  "note": {
+    "note": "Mock session for payload compatibility check"
+  },
+  "readonly": {
+    "liveWind": {
+      "speed": "25",
+      "gust": "30",
+      "direction": "NW",
+      "updated_at": "2026-04-30T10:00:00.000Z",
+      "provider": "mock"
+    }
+  },
+  "meta": {
+    "ui_version": "ui_lab_mock_v1",
+    "submit_channel": "mock"
+  }
+}

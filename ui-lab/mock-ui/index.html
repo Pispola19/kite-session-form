@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>VENTO LIVE visual wireframe</title>
-    <link rel="stylesheet" href="ui-lab/mock-ui/styles.css">
+    <link rel="stylesheet" href="styles.css">
   </head>
   <body>
     <header class="hero">
@@ -25,7 +25,7 @@
           </div>
         </nav>
         <div class="hero__identity" aria-hidden="true">
-          <img src="ui-lab/mock-ui/assets/kiteboarder-tribal.png" alt="">
+          <img src="assets/kiteboarder-tribal.png" alt="">
         </div>
       </div>
     </header>
@@ -41,8 +41,7 @@
           <fieldset class="form-block form-block-spot">
             <legend>Spot</legend>
             <label class="field-spot">
-              <span>Spot</span>
-              <input type="text" placeholder="Nome spot" data-state-field="spot.location">
+              <input type="text" data-i18n-placeholder="spotPh" aria-label="Spot" data-state-field="spot.location">
             </label>
             <button class="live-spot-button" id="showLiveSpot" type="button">Vedi Live Spot</button>
             <p class="live-spot-message" id="liveSpotMessage" aria-live="polite"></p>
@@ -51,101 +50,79 @@
           <fieldset class="form-block">
             <legend>Rider</legend>
             <label class="field-weight is-required">
-              <span>Peso</span>
+              <span data-i18n="weight"></span>
               <input type="text" placeholder="kg" data-state-field="rider.weight" data-required="true">
             </label>
             <label class="field-gender">
-              <span>Gender</span>
-              <select data-state-field="rider.gender">
-                <option value="">seleziona</option>
-                <option value="M">male</option>
-                <option value="F">female</option>
-              </select>
+              <span data-i18n="gender"></span>
+              <select data-state-field="rider.gender"></select>
             </label>
             <label class="field-level is-required">
-              <span>Livello</span>
-              <select data-state-field="rider.level" data-required="true">
-                <option value="">seleziona livello</option>
-                <option value="beginner">beginner</option>
-                <option value="intermediate">intermediate</option>
-                <option value="advanced">advanced</option>
-              </select>
+              <span data-i18n="level"></span>
+              <select data-state-field="rider.level" data-required="true"></select>
             </label>
           </fieldset>
 
           <fieldset class="form-block">
             <legend>Tavola</legend>
             <label class="field-board is-required">
-              <span>Tipo tavola</span>
-              <select data-state-field="board.board" data-required="true">
-                <option value="">seleziona tavola</option>
-                <option value="twintip">twintip</option>
-                <option value="surfboard">surfboard</option>
-                <option value="foil">foil</option>
-              </select>
+              <span data-i18n="boardType"></span>
+              <select data-state-field="board.board" data-required="true"></select>
             </label>
             <label class="field-board-size">
-              <span>Misura tavola</span>
-              <input type="text" placeholder="es. 136x40" data-state-field="board.boardSize">
+              <span data-i18n="boardSize"></span>
+              <select data-state-field="board.boardSize"></select>
             </label>
           </fieldset>
 
           <fieldset class="form-block">
             <legend>Kite</legend>
-            <label class="field-kite-size is-required">
-              <span>Misura kite</span>
-              <input type="text" placeholder="m2" data-state-field="kite.kite" data-required="true">
-            </label>
-            <label class="field-brand">
-              <span>Brand</span>
-              <input type="text" placeholder="brand" data-state-field="kite.brand">
-            </label>
-            <label class="field-model">
-              <span>Model</span>
-              <input type="text" placeholder="model" data-state-field="kite.model">
+            <div class="kite-row">
+              <label class="field-kite-size is-required">
+                <span data-i18n="kiteSize"></span>
+                <input type="text" placeholder="m2" data-state-field="kite.kite" data-required="true">
+              </label>
+              <label class="field-brand field-kite-brand">
+                <span data-i18n="brand"></span>
+                <select data-state-field="kite.brand"></select>
+              </label>
+            </div>
+            <label class="field-model field-kite-model">
+              <span data-i18n="model"></span>
+              <select data-state-field="kite.model"></select>
             </label>
           </fieldset>
 
           <fieldset class="form-block wind-user-block">
             <legend>Condizioni</legend>
             <label class="field-wind is-required">
-              <span>Vento stimato</span>
+              <span data-i18n="wind"></span>
               <input type="text" placeholder="kn" data-state-field="windUserInput.wind" data-required="true">
             </label>
             <label class="field-water">
-              <span>Condizioni acqua</span>
-              <select data-state-field="water.water">
-                <option value="">seleziona acqua</option>
-                <option value="flat">flat</option>
-                <option value="chop">chop</option>
-                <option value="waves">waves</option>
-              </select>
+              <span data-i18n="water"></span>
+              <select data-state-field="water.water"></select>
             </label>
-            <p class="field-hint">Separato dal Live Spot: questo e' il vento dichiarato.</p>
+            <p class="field-hint" data-i18n="windHint"></p>
           </fieldset>
 
           <fieldset class="form-block">
             <legend>Esito</legend>
             <label class="field-result is-required">
-              <span>Risultato sessione</span>
-              <select data-state-field="result.result" data-required="true">
-                <option value="">seleziona risultato</option>
-                <option value="underpowered">underpowered</option>
-                <option value="good">good</option>
-                <option value="overpowered">overpowered</option>
-              </select>
+              <span data-i18n="result"></span>
+              <select data-state-field="result.result" data-required="true"></select>
             </label>
           </fieldset>
 
           <fieldset class="form-block note-block">
             <legend>Note</legend>
             <label class="field-note wide-field note-field">
-              <textarea rows="4" placeholder="note" aria-label="Note" data-state-field="note.note"></textarea>
+              <textarea rows="4" data-i18n-placeholder="notePh" aria-label="Note" data-state-field="note.note"></textarea>
             </label>
           </fieldset>
 
           <div class="cta-row">
-            <button type="button" id="visualCta">INVIA SESSIONE</button>
+            <button type="button" id="visualCta" data-i18n="submit"></button>
             <p id="visualCtaMessage" class="cta-message" aria-live="polite">mock visuale - nessun invio</p>
           </div>
 
@@ -263,7 +240,9 @@
       </aside>
     </main>
 
-    <script src="ui-lab/mock-engine/mock_engine.browser.js" defer></script>
-    <script src="ui-lab/mock-ui/mock_ui.js" defer></script>
+    <script src="../../translations.js" defer></script>
+    <script src="../mock-engine/mock_engine.browser.js" defer></script>
+    <script src="static_data.js" defer></script>
+    <script src="mock_ui.js" defer></script>
   </body>
 </html>

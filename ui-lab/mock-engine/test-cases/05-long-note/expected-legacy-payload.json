@@ -1,0 +1,21 @@
+{
+  "session_id": "case05_session",
+  "technical_id": "case05_technical",
+  "event_ts": "2026-04-30T10:05:00.000Z",
+  "src": "form_v1",
+  "weight": "58",
+  "gender": "F",
+  "board": "twintip",
+  "boardSize": "132x39",
+  "level": "advanced",
+  "kite": "9",
+  "wind": "24",
+  "brand": "Core",
+  "model": "XR",
+  "location": "Porto Botte",
+  "water": "chop_strong",
+  "result": "overpowered",
+  "note": "Long note case: gusty session with several lulls, strong chop near the launch area, rider changed stance pressure during the run, and the final judgment must remain tied only to the explicit result field.",
+  "ts": "2026-04-30T10:05:00.000Z",
+  "message_id": "msg_a169e7a72b3d053780c9ae49e66b30c9_case05_techn"
+}

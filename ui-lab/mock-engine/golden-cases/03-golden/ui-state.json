@@ -1,0 +1,44 @@
+{
+  "rider": {
+    "weight": "74",
+    "gender": "M",
+    "level": "beginner"
+  },
+  "board": {
+    "board": "twintip",
+    "boardSize": "test"
+  },
+  "kite": {
+    "kite": "12",
+    "brand": "Anon Brand",
+    "model": "Anon Model"
+  },
+  "windUserInput": {
+    "wind": "22"
+  },
+  "spot": {
+    "location": "anon_spot"
+  },
+  "water": {
+    "water": "flat"
+  },
+  "result": {
+    "result": "good"
+  },
+  "note": {
+    "note": "anon_note"
+  },
+  "readonly": {
+    "liveWind": {
+      "speed": "99",
+      "gust": "99",
+      "direction": "ANON",
+      "updated_at": "2026-04-17T22:27:43.091Z",
+      "provider": "mock"
+    }
+  },
+  "meta": {
+    "ui_version": "ui_lab_mock_v1",
+    "submit_channel": "mock"
+  }
+}

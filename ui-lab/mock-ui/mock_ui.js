@@ -1,0 +1,848 @@
+"use strict";
+
+const LIVE_SPOT_CONFIG = {
+  ENABLE_REAL: true,
+  BASE_URL: "https://rap-massachusetts-ringtones-nursery.trycloudflare.com",
+  TIMEOUT_MS: 2500
+};
+
+const SESSION_SUBMIT_CONFIG = {
+  ENABLE_REAL_SUBMIT: true,
+  PRIMARY_URL: "http://127.0.0.1:8000/submit",
+  TIMEOUT_MS: 4000
+};
+
+// Mappa chiavi UI locali (usate in data-i18n / data-i18n-placeholder) -> chiavi legacy
+// presenti in window.RDK_TRANSLATIONS (definito in translations.js).
+// REGOLA: NON contiene stringhe tradotte, solo nomi di chiavi.
+const LEGACY_KEY_MAP = Object.freeze({
+  spot:      "label_location",
+  weight:    "label_weight",
+  gender:    "label_gender",
+  level:     "label_level",
+  boardType: "label_board",
+  boardSize: "label_board_size",
+  kiteSize:  "label_kite_size",
+  brand:     "label_brand",
+  model:     "label_model",
+  wind:      "label_wind",
+  water:     "label_water",
+  result:    "label_result",
+  note:      "label_notes",
+  submit:    "btn_send",
+  spotPh:    "ph_location",
+  notePh:    "ph_notes"
+});
+
+// Mappa value tecnico (legacy) -> chiave label legacy per ogni enum select.
+// Il VALUE resta SEMPRE quello legacy: cambia solo la label visibile.
+const OPTION_KEY_MAP = Object.freeze({
+  level: {
+    beginner:    "opt_level_beginner",
+    independent: "opt_level_independent",
+    advanced:    "opt_level_advanced"
+  },
+  board: {
+    twintip:   "opt_board_twintip",
+    surfboard: "opt_board_surfboard",
+    foil:      "opt_board_foil"
+  },
+  gender: {
+    M: "opt_gender_male",
+    F: "opt_gender_female"
+  },
+  water: {
+    flat:        "opt_water_flat",
+    chop_light:  "opt_water_chop_light",
+    chop:        "opt_water_chop",
+    chop_strong: "opt_water_chop_strong",
+    small_waves: "opt_water_small_waves",
+    waves:       "opt_water_waves",
+    big_waves:   "opt_water_big_waves"
+  },
+  result: {
+    underpowered: "opt_result_underpowered",
+    good:         "opt_result_good",
+    powered:      "opt_result_powered",
+    overpowered:  "opt_result_overpowered",
+    survival:     "opt_result_survival"
+  }
+});
+
+// Prompt option ("seleziona ...") per ciascun select, mappato per data-state-field
+const PROMPT_KEY_MAP = Object.freeze({
+  "rider.gender":  "opt_gender_prompt",
+  "rider.level":   "opt_level_prompt",
+  "board.board":   "opt_board_prompt",
+  "board.boardSize": "opt_board_size_prompt",
+  "water.water":   "opt_water_prompt",
+  "result.result": "opt_result_prompt",
+  "kite.brand":    "opt_brand_prompt",
+  "kite.model":    "opt_model_prompt"
+});
+
+// Stringhe non coperte da window.RDK_TRANSLATIONS: fallback locale puro UI mock.
+// NON contengono value tecnici, solo testo libero che non ha equivalente legacy.
+const LOCAL_FALLBACK = Object.freeze({
+  windHint: "Separate from Live Spot: this is the declared wind."
+});
+
+const LiveSpotReadonlyConnector = (() => {
+  const SAMPLE_LIVE_OK = Object.freeze({
+    ok: true,
+    spot: "Punta Trettu",
+    wind_knots: 18,
+    gust_knots: 22,
+    wind_direction: 315,
+    source: "mock_open_meteo",
+    source_type: "forecast",
+    confidence: 0.78,
+    observed_at: "2026-04-30T12:00:00.000Z",
+    updated_at: "2026-04-30T12:05:00.000Z",
+    cache: "mock_fresh",
+    forecast_3h: {
+      wind_knots: 20,
+      gust_knots: 24,
+      wind_direction: 320,
+      forecast_at: "2026-04-30T15:00:00.000Z"
+    }
+  });
+
+  const SAMPLE_LIVE_NULL = Object.freeze({
+    ok: true,
+    spot: "Punta Trettu",
+    wind_knots: null,
+    gust_knots: null,
+    wind_direction: null,
+    source: "mock_open_meteo",
+    source_type: "forecast",
+    confidence: null,
+    observed_at: null,
+    updated_at: "2026-04-30T12:05:00.000Z",
+    cache: "mock_no_data",
+    forecast_3h: null
+  });
+
+  const SAMPLE_LIVE_ERROR_SAFE = Object.freeze({
+    ok: true,
+    spot: "Punta Trettu",
+    wind_knots: null,
+    gust_knots: null,
+    wind_direction: null,
+    source: null,
+    source_type: null,
+    confidence: null,
+    observed_at: null,
+    updated_at: "2026-04-30T12:05:00.000Z",
+    cache: "error_safe_response",
+    error: "MockError",
+    forecast_3h: null
+  });
+
+  const READONLY_DEFAULT = Object.freeze({
+    spot: "",
+    wind_knots: null,
+    gust_knots: null,
+    wind_direction: null,
+    source: null,
+    source_type: null,
+    confidence: null,
+    observed_at: null,
+    updated_at: "",
+    cache: "mock_no_data",
+    error: null,
+    forecast_3h: null
+  });
+
+  let lastNormalized = READONLY_DEFAULT;
+
+  function normalizeLiveSpotPayload(data) {
+    const raw = (data && typeof data === "object") ? data : {};
+    const forecastRaw = raw.forecast_3h && typeof raw.forecast_3h === "object" ? raw.forecast_3h : null;
+    const sourcesUsedRaw = Array.isArray(raw.sources_used) ? raw.sources_used : null;
+    const resolutionRaw = raw.resolution && typeof raw.resolution === "object" ? raw.resolution : null;
+
+    const normalized = {
+      ok: Boolean(raw.ok),
+      spot: typeof raw.spot === "string" ? raw.spot : "",
+      wind_knots: typeof raw.wind_knots === "number" ? raw.wind_knots : null,
+      gust_knots: typeof raw.gust_knots === "number" ? raw.gust_knots : null,
+      wind_direction: typeof raw.wind_direction === "number" ? raw.wind_direction : null,
+      source: typeof raw.source === "string" ? raw.source : null,
+      sources_used: sourcesUsedRaw
+        ? sourcesUsedRaw.map((v) => String(v || "").trim()).filter(Boolean)
+        : null,
+      source_type: typeof raw.source_type === "string" ? raw.source_type : null,
+      confidence: typeof raw.confidence === "number" ? raw.confidence : null,
+      observed_at: typeof raw.observed_at === "string" ? raw.observed_at : null,
+      updated_at: typeof raw.updated_at === "string" ? raw.updated_at : "",
+      cache: typeof raw.cache === "string" ? raw.cache : "mock_no_data",
+      error: typeof raw.error === "string" ? raw.error : null,
+      resolution: resolutionRaw ? {
+        canonical_spot: typeof resolutionRaw.canonical_spot === "string" ? resolutionRaw.canonical_spot : null
+      } : null,
+      forecast_3h: forecastRaw ? {
+        wind_knots: typeof forecastRaw.wind_knots === "number" ? forecastRaw.wind_knots : null,
+        gust_knots: typeof forecastRaw.gust_knots === "number" ? forecastRaw.gust_knots : null,
+        wind_direction: typeof forecastRaw.wind_direction === "number" ? forecastRaw.wind_direction : null,
+        forecast_at: typeof forecastRaw.forecast_at === "string" ? forecastRaw.forecast_at : null
+      } : null
+    };
+
+    lastNormalized = Object.freeze(normalized);
+    return lastNormalized;
+  }
+
+  function buildLiveSpotReadonlyState(normalizedPayload) {
+    const p = normalizedPayload || READONLY_DEFAULT;
+    return {
+      speed: p.wind_knots,
+      gust: p.gust_knots,
+      direction: p.wind_direction == null ? "" : String(p.wind_direction),
+      updated_at: p.updated_at || "",
+      provider: p.source || "mock_visual",
+      meta: {
+        cache: p.cache || "mock_no_data",
+        confidence: p.confidence,
+        source_type: p.source_type,
+        observed_at: p.observed_at,
+        error: p.error,
+        forecast_3h: p.forecast_3h
+      }
+    };
+  }
+
+  function renderLiveSpotReadonly(panelEl, normalizedPayload) {
+    if (!panelEl) return;
+    const p = normalizedPayload || READONLY_DEFAULT;
+    const cards = Array.from(panelEl.querySelectorAll(".info-card"));
+    const windNow = cards.find((card) => String(card.className || "").includes("status-ok")) || null;
+    if (!windNow) return;
+    const spotOverview = cards.find((card) => String(card.className || "").includes("status-search")) || null;
+
+    const dtNodes = Array.from(windNow.querySelectorAll("dt"));
+    const ddByKey = new Map();
+    dtNodes.forEach((dt) => {
+      const key = String(dt.textContent || "").trim().toLowerCase();
+      const dd = dt.nextElementSibling;
+      if (dd && dd.tagName === "DD") ddByKey.set(key, dd);
+    });
+
+    const windDd = ddByKey.get("vento");
+    const gustDd = ddByKey.get("raffiche");
+    const dirDd = ddByKey.get("direzione");
+    const providerDd = ddByKey.get("anemometro");
+
+    if (windDd) {
+      windDd.textContent = p.wind_knots == null ? "-- kn" : `${p.wind_knots} kn`;
+    }
+    if (gustDd) {
+      gustDd.textContent = p.gust_knots == null ? "-- kn" : `${p.gust_knots} kn`;
+    }
+    if (dirDd) {
+      dirDd.textContent = p.wind_direction == null ? "---" : String(p.wind_direction);
+    }
+    if (providerDd) {
+      const parts = [];
+      if (p.wind_direction != null) parts.push(`Dir ${p.wind_direction}°`);
+      if (p.wind_knots != null) parts.push(`Vel ${p.wind_knots} kn`);
+      if (p.gust_knots != null) parts.push(`Raff ${p.gust_knots} kn`);
+      providerDd.textContent = parts.length ? parts.join(" · ") : "--";
+    }
+
+    if (spotOverview) {
+      const dtNodes2 = Array.from(spotOverview.querySelectorAll("dt"));
+      const ddByKey2 = new Map();
+      dtNodes2.forEach((dt) => {
+        const key = String(dt.textContent || "").trim().toLowerCase();
+        const dd = dt.nextElementSibling;
+        if (dd && dd.tagName === "DD") ddByKey2.set(key, dd);
+      });
+
+      const spotDd = ddByKey2.get("spot");
+      const confDd = ddByKey2.get("affidabilita");
+      const updatedDd = ddByKey2.get("ultimo aggiornamento");
+
+      const resolvedSpot =
+        (p.spot && String(p.spot).trim()) ||
+        (p.resolution && p.resolution.canonical_spot ? String(p.resolution.canonical_spot).trim() : "") ||
+        (p.meta && p.meta.resolution && p.meta.resolution.canonical_spot ? String(p.meta.resolution.canonical_spot).trim() : "");
+
+      if (spotDd) {
+        spotDd.textContent = resolvedSpot || "Scegli spot";
+      }
+
+      if (confDd) {
+        if (typeof p.confidence === "number" && p.confidence >= 0 && p.confidence <= 1) {
+          confDd.textContent = `${Math.round(p.confidence * 100)}%`;
+        }
+      }
+
+      if (updatedDd) {
+        const rawTs =
+          (p.updated_at && String(p.updated_at).trim()) ||
+          (p.observed_at && String(p.observed_at).trim()) ||
+          (p.meta && p.meta.updated_at ? String(p.meta.updated_at).trim() : "") ||
+          (p.meta && p.meta.observed_at ? String(p.meta.observed_at).trim() : "");
+
+        let display = "--:--";
+        if (rawTs) {
+          const d = new Date(rawTs);
+          if (!Number.isNaN(d.getTime())) {
+            display = d.toLocaleTimeString("it-IT", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: false
+            });
+          } else {
+            const m = rawTs.match(/T(\\d{2}:\\d{2})/);
+            display = m ? m[1] : String(rawTs).slice(0, 5);
+            if (!display.includes(":")) display = "--:--";
+          }
+        }
+        updatedDd.textContent = display;
+      }
+    }
+
+    const forecast = p.forecast_3h || (p.meta && p.meta.forecast_3h) || null;
+    const hours = panelEl.querySelector(".hours");
+    if (!hours) return;
+    const boxes = Array.from(hours.querySelectorAll(":scope > div"));
+    boxes.forEach((box) => {
+      const labelEl = box.querySelector("span");
+      const valueEl = box.querySelector("strong");
+      if (!labelEl || !valueEl) return;
+      const label = String(labelEl.textContent || "").trim();
+
+      if (label === "+1h" || label === "+2h") {
+        valueEl.textContent = "--";
+        return;
+      }
+
+      if (label !== "+3h") return;
+
+      if (!forecast || typeof forecast !== "object" || forecast.wind_knots == null) {
+        valueEl.textContent = "--";
+        return;
+      }
+
+      let text = `${forecast.wind_knots} kn`;
+      if (forecast.wind_direction != null) {
+        text += ` ${forecast.wind_direction}°`;
+      }
+      if (forecast.gust_knots != null) {
+        text += ` raff. ${forecast.gust_knots} kn`;
+      }
+      valueEl.textContent = text;
+    });
+  }
+
+  function getReadonlyState() {
+    return buildLiveSpotReadonlyState(lastNormalized);
+  }
+
+  function getSample(kind) {
+    if (kind === "null") return SAMPLE_LIVE_NULL;
+    if (kind === "error_safe") return SAMPLE_LIVE_ERROR_SAFE;
+    return SAMPLE_LIVE_OK;
+  }
+
+  return {
+    normalizeLiveSpotPayload,
+    buildLiveSpotReadonlyState,
+    renderLiveSpotReadonly,
+    getReadonlyState,
+    getSample
+  };
+})();
+
+async function fetchLiveSpotReal(spot) {
+  if (!LIVE_SPOT_CONFIG.ENABLE_REAL) return null;
+  if (!spot) return null;
+
+  const url =
+    LIVE_SPOT_CONFIG.BASE_URL +
+    "/wind/latest?spot=" +
+    encodeURIComponent(spot);
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), LIVE_SPOT_CONFIG.TIMEOUT_MS);
+
+    const res = await fetch(url, { signal: controller.signal });
+    clearTimeout(timeout);
+
+    if (!res.ok) throw new Error("HTTP_" + res.status);
+
+    return await res.json();
+  } catch (err) {
+    return {
+      ok: true,
+      wind_knots: null,
+      gust_knots: null,
+      wind_direction: null,
+      cache: "ui_fetch_error",
+      error: err.message
+    };
+  }
+}
+
+async function submitSessionPrimary(legacyPayload) {
+  if (!SESSION_SUBMIT_CONFIG.ENABLE_REAL_SUBMIT) {
+    return { ok: true, skipped: true, reason: "real_submit_disabled" };
+  }
+
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), SESSION_SUBMIT_CONFIG.TIMEOUT_MS);
+
+  try {
+    const res = await fetch(SESSION_SUBMIT_CONFIG.PRIMARY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(legacyPayload),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeout);
+
+    let data = null;
+    try {
+      data = await res.json();
+    } catch (_) {
+      data = null;
+    }
+
+    if (!res.ok) {
+      return {
+        ok: false,
+        error: "HTTP_" + res.status,
+        response: data
+      };
+    }
+
+    return data || { ok: true };
+
+  } catch (err) {
+    clearTimeout(timeout);
+    return {
+      ok: false,
+      error: err && err.message ? err.message : "submit_failed"
+    };
+  }
+}
+
+function renderLiveSpotReadonly(payload) {
+  LiveSpotReadonlyConnector.renderLiveSpotReadonly(liveSpotPanel, payload);
+}
+
+let currentLang = "it";
+
+if (typeof window.RDK_TRANSLATIONS === "undefined") {
+  console.warn("[mock_ui] window.RDK_TRANSLATIONS non disponibile: assicurati di caricare translations.js prima di mock_ui.js. Uso fallback EN minimi.");
+}
+
+if (typeof window.MOCK_DATA === "undefined") {
+  console.warn("[mock_ui] MOCK_DATA non disponibile: assicurati di caricare static_data.js prima di mock_ui.js. Uso fallback minimi.");
+}
+
+const MOCK_DATA = window.MOCK_DATA || Object.freeze({
+  CANONICAL_VALUES: {
+    level: {
+      beginner: "Beginner",
+      independent: "Independent",
+      advanced: "Advanced"
+    },
+    water: {
+      flat: "Flat",
+      chop_light: "Chop light",
+      chop: "Chop",
+      chop_strong: "Chop strong",
+      small_waves: "Small waves",
+      waves: "Waves",
+      big_waves: "Big waves"
+    },
+    result: {
+      underpowered: "Underpowered",
+      good: "Good",
+      powered: "Powered",
+      overpowered: "Overpowered",
+      survival: "Survival"
+    },
+    board: {
+      twintip: "Twintip",
+      surfboard: "Surfboard",
+      foil: "Foil"
+    },
+    gender: {
+      M: "Male",
+      F: "Female"
+    }
+  },
+  BRAND_LIST: [],
+  MODELS_BY_BRAND: {}
+});
+
+const OPTION_VALUES = {
+  level:  Object.keys(MOCK_DATA.CANONICAL_VALUES.level),
+  water:  Object.keys(MOCK_DATA.CANONICAL_VALUES.water),
+  result: Object.keys(MOCK_DATA.CANONICAL_VALUES.result),
+  board:  Object.keys(MOCK_DATA.CANONICAL_VALUES.board),
+  gender: Object.keys(MOCK_DATA.CANONICAL_VALUES.gender),
+  brand:  MOCK_DATA.BRAND_LIST,
+  model:  []
+};
+
+function tLegacy(legacyKey) {
+  const T = window.RDK_TRANSLATIONS;
+  if (!T || !legacyKey) return "";
+  const dict = T[currentLang] || T.en || T.it;
+  if (dict && Object.prototype.hasOwnProperty.call(dict, legacyKey)) return dict[legacyKey];
+  if (T.en && Object.prototype.hasOwnProperty.call(T.en, legacyKey)) return T.en[legacyKey];
+  return "";
+}
+
+function t(key) {
+  const legacyKey = LEGACY_KEY_MAP[key];
+  if (legacyKey) {
+    const v = tLegacy(legacyKey);
+    if (v) return v;
+  }
+  const direct = tLegacy(key);
+  if (direct) return direct;
+  if (Object.prototype.hasOwnProperty.call(LOCAL_FALLBACK, key)) {
+    return LOCAL_FALLBACK[key];
+  }
+  return "";
+}
+
+function tOption(category, value) {
+  const map = OPTION_KEY_MAP[category];
+  if (!map) return value;
+  const legacyKey = map[value];
+  if (!legacyKey) return value;
+  return tLegacy(legacyKey) || value;
+}
+
+function tPrompt(path) {
+  const legacyKey = PROMPT_KEY_MAP[path];
+  if (!legacyKey) return "";
+  return tLegacy(legacyKey) || "";
+}
+
+function populateSelect(field, values, labels, promptText) {
+  if (!field) return;
+  const previous = String(field.value || "");
+  field.innerHTML = "";
+  const defaultOption = document.createElement("option");
+  defaultOption.value = "";
+  defaultOption.textContent = promptText;
+  field.appendChild(defaultOption);
+  values.forEach((value, index) => {
+    const opt = document.createElement("option");
+    opt.value = value;
+    opt.textContent = labels && labels[index] != null ? labels[index] : value;
+    field.appendChild(opt);
+  });
+  if (previous && values.includes(previous)) {
+    field.value = previous;
+  }
+}
+
+function populateModelsForBrand(brandValue) {
+  const modelField = document.querySelector('[data-state-field="kite.model"]');
+  const brandKey = String(brandValue || "");
+  const models = (MOCK_DATA.MODELS_BY_BRAND && MOCK_DATA.MODELS_BY_BRAND[brandKey]) || [];
+  populateSelect(modelField, models, models, tPrompt("kite.model"));
+}
+
+function populateBoardSizesForType(boardType) {
+  const boardSizeField = document.querySelector('[data-state-field="board.boardSize"]');
+  const typeKey = String(boardType || "");
+  const sizes = (MOCK_DATA.BOARD_SIZE_BY_TYPE && MOCK_DATA.BOARD_SIZE_BY_TYPE[typeKey]) || [];
+  populateSelect(boardSizeField, sizes, sizes, tPrompt("board.boardSize"));
+}
+
+function renderUI() {
+  document.querySelectorAll("[data-i18n]").forEach((el) => {
+    const key = el.getAttribute("data-i18n");
+    if (key) el.textContent = t(key);
+  });
+  document.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+    const key = el.getAttribute("data-i18n-placeholder");
+    if (key) el.setAttribute("placeholder", t(key));
+  });
+
+  const formEl = document.getElementById("mockSessionForm");
+  if (!formEl) return;
+
+  const cv = MOCK_DATA.CANONICAL_VALUES;
+  const selectsSpec = [
+    { path: "rider.gender",  values: OPTION_VALUES.gender, category: "gender", canonical: cv.gender },
+    { path: "rider.level",   values: OPTION_VALUES.level,  category: "level",  canonical: cv.level },
+    { path: "board.board",   values: OPTION_VALUES.board,  category: "board",  canonical: cv.board },
+    { path: "water.water",   values: OPTION_VALUES.water,  category: "water",  canonical: cv.water },
+    { path: "result.result", values: OPTION_VALUES.result, category: "result", canonical: cv.result },
+    { path: "kite.brand",    values: OPTION_VALUES.brand,  category: null,     canonical: null }
+  ];
+  selectsSpec.forEach((spec) => {
+    const field = formEl.querySelector(`[data-state-field="${spec.path}"]`);
+    let labels;
+    if (spec.category) {
+      labels = spec.values.map((v) => tOption(spec.category, v) || (spec.canonical && spec.canonical[v]) || v);
+    } else {
+      labels = spec.values;
+    }
+    const promptText = tPrompt(spec.path);
+    populateSelect(field, spec.values, labels, promptText);
+  });
+
+  const boardTypeField = formEl.querySelector('[data-state-field="board.board"]');
+  populateBoardSizesForType(boardTypeField ? boardTypeField.value : "");
+
+  const brandField = formEl.querySelector('[data-state-field="kite.brand"]');
+  populateModelsForBrand(brandField ? brandField.value : "");
+}
+
+const form = document.getElementById("mockSessionForm");
+const cta = document.getElementById("visualCta");
+const message = document.getElementById("visualCtaMessage");
+const showLiveSpot = document.getElementById("showLiveSpot");
+const liveSpotPanel = document.getElementById("liveSpotPanel");
+const liveSpotMessage = document.getElementById("liveSpotMessage");
+const languageButtons = Array.from(document.querySelectorAll(".language-button"));
+const uiStatePreview = document.getElementById("uiStatePreview");
+const payloadContractPreview = document.getElementById("payloadContractPreview");
+const legacyPayloadPreview = document.getElementById("legacyPayloadPreview");
+const readonlyLeakStatus = document.getElementById("readonlyLeakStatus");
+const endpointCallsStatus = document.getElementById("endpointCallsStatus");
+
+const REQUIRED_FIELDS = Object.freeze([
+  "rider.weight",
+  "board.board",
+  "rider.level",
+  "kite.kite",
+  "windUserInput.wind",
+  "result.result"
+]);
+
+const endpointCalls = 0;
+const MOCK_FIXED_META = Object.freeze({
+  session_id: "ui_mock_session_0001",
+  technical_id: "ui_mock_technical_0001",
+  event_ts: "2026-04-30T00:00:00.000Z",
+  src: "form_v1",
+  ts: "2026-04-30T00:00:00.000Z"
+});
+
+function readField(path) {
+  const field = form?.querySelector(`[data-state-field="${path}"]`);
+  return String(field?.value ?? "").trim();
+}
+
+const FormStateLayer = Object.freeze({
+  read() {
+    const readonlyState = LiveSpotReadonlyConnector.getReadonlyState();
+    return {
+      rider: {
+        weight: readField("rider.weight"),
+        gender: readField("rider.gender") || null,
+        level: readField("rider.level")
+      },
+      board: {
+        board: readField("board.board"),
+        boardSize: readField("board.boardSize")
+      },
+      kite: {
+        kite: readField("kite.kite"),
+        brand: readField("kite.brand"),
+        model: readField("kite.model")
+      },
+      windUserInput: {
+        wind: readField("windUserInput.wind")
+      },
+      spot: {
+        location: readField("spot.location")
+      },
+      water: {
+        water: readField("water.water")
+      },
+      result: {
+        result: readField("result.result")
+      },
+      note: {
+        note: readField("note.note")
+      },
+      readonly: {
+        liveWind: {
+          speed: readonlyState.speed,
+          gust: readonlyState.gust,
+          direction: readonlyState.direction,
+          updated_at: readonlyState.updated_at,
+          provider: readonlyState.provider,
+          meta: readonlyState.meta
+        }
+      },
+      meta: {
+        ui_version: "mock_ui_v3_state_layer",
+        submit_channel: "mock"
+      }
+    };
+  }
+});
+
+function setInvalid(field, invalid) {
+  const wrapper = field?.closest("label");
+  wrapper?.classList.toggle("is-invalid", Boolean(invalid));
+}
+
+function validateRequiredFields() {
+  const missing = [];
+
+  REQUIRED_FIELDS.forEach((path) => {
+    const field = form?.querySelector(`[data-state-field="${path}"]`);
+    const invalid = !String(field?.value ?? "").trim();
+    setInvalid(field, invalid);
+    if (invalid) missing.push(path);
+  });
+
+  return {
+    ok: missing.length === 0,
+    missing
+  };
+}
+
+function buildMockPayloads() {
+  if (!window.MockEngine) {
+    return {
+      error: "MockEngine non disponibile",
+      uiState: FormStateLayer.read(),
+      payloadContract: null,
+      legacyPayload: null,
+      readonlyLeak: { ok: true, leaked_fields: [] }
+    };
+  }
+
+  const uiState = FormStateLayer.read();
+  const payloadContract = window.MockEngine.buildPayloadContractV1(uiState, MOCK_FIXED_META);
+  const legacyPayload = window.MockEngine.toLegacyPayload(payloadContract);
+  const readonlyLeak = window.MockEngine.assertNoReadonlyLeak(legacyPayload);
+
+  return {
+    uiState,
+    payloadContract,
+    legacyPayload,
+    readonlyLeak
+  };
+}
+
+function renderPayloadDebug(payloads = buildMockPayloads()) {
+  if (payloads.error && message) {
+    message.textContent = payloads.error;
+  }
+  if (uiStatePreview) {
+    uiStatePreview.textContent = JSON.stringify(payloads.uiState, null, 2);
+  }
+  if (payloadContractPreview) {
+    payloadContractPreview.textContent = JSON.stringify(payloads.payloadContract || {}, null, 2);
+  }
+  if (legacyPayloadPreview) {
+    legacyPayloadPreview.textContent = JSON.stringify(payloads.legacyPayload || {}, null, 2);
+  }
+  if (readonlyLeakStatus) {
+    readonlyLeakStatus.textContent = String(!payloads.readonlyLeak.ok);
+  }
+  if (endpointCallsStatus) {
+    endpointCallsStatus.textContent = String(endpointCalls);
+  }
+}
+
+cta?.addEventListener("click", async () => {
+  const validation = validateRequiredFields();
+  const payloads = buildMockPayloads();
+  renderPayloadDebug(payloads);
+
+  if (!message) return;
+
+  if (payloads.error) {
+    message.textContent = payloads.error;
+    return;
+  }
+
+  if (!validation.ok) {
+    message.textContent = "Compila i campi obbligatori evidenziati";
+    return;
+  }
+
+  const primaryResult = await submitSessionPrimary(payloads.legacyPayload);
+  if (primaryResult && primaryResult.ok === true) {
+    message.textContent = "Sessione inviata alla pipeline primaria";
+  } else {
+    message.textContent = "Invio pipeline primaria fallito";
+  }
+});
+
+form?.addEventListener("input", (event) => {
+  const field = event.target?.closest?.("[data-state-field]");
+  if (field?.dataset.required === "true") {
+    setInvalid(field, !String(field.value || "").trim());
+  }
+  renderPayloadDebug();
+});
+
+form?.addEventListener("change", (event) => {
+  const field = event.target?.closest?.("[data-state-field]");
+  if (field?.dataset.required === "true") {
+    setInvalid(field, !String(field.value || "").trim());
+  }
+  if (field && field.getAttribute("data-state-field") === "kite.brand") {
+    populateModelsForBrand(field.value);
+  }
+  if (field && field.getAttribute("data-state-field") === "board.board") {
+    populateBoardSizesForType(field.value);
+  }
+  renderPayloadDebug();
+});
+
+showLiveSpot?.addEventListener("click", async () => {
+  const uiState = FormStateLayer.read();
+  const spot = uiState?.spot?.location || "";
+
+  let payload;
+
+  if (LIVE_SPOT_CONFIG.ENABLE_REAL) {
+    const realData = await fetchLiveSpotReal(spot);
+    payload = LiveSpotReadonlyConnector.normalizeLiveSpotPayload(realData);
+  } else {
+    payload = LiveSpotReadonlyConnector.normalizeLiveSpotPayload(
+      LiveSpotReadonlyConnector.getSample()
+    );
+  }
+
+  renderLiveSpotReadonly(payload);
+
+  renderPayloadDebug();
+});
+
+languageButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    languageButtons.forEach((item) => {
+      item.classList.toggle("is-active", item === button);
+      item.setAttribute("aria-pressed", item === button ? "true" : "false");
+    });
+    const langCode = String(button.getAttribute("data-language") || "IT").toLowerCase();
+    const T = window.RDK_TRANSLATIONS;
+    if (T && T[langCode]) {
+      currentLang = langCode;
+    } else if (T && T.en) {
+      currentLang = "en";
+    } else {
+      currentLang = "it";
+    }
+    renderUI();
+    renderPayloadDebug();
+  });
+});
+
+renderUI();
+validateRequiredFields();
+renderPayloadDebug();

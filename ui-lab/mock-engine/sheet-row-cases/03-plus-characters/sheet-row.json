@@ -1,0 +1,18 @@
+{
+  "timestamp": "2026-04-30T10:20:00.000Z",
+  "weight": "100",
+  "gender": "M",
+  "board": "twintip",
+  "board_size": "140x43",
+  "level": "independent",
+  "kite_size": "12",
+  "brand": "Duotone+Kiteboarding",
+  "model": "Evo+SLS",
+  "wind": "20",
+  "location": "Punta+trettu",
+  "water": "flat",
+  "result": "good",
+  "notes": "words+with+plus",
+  "ID": "gsabcdef0",
+  "src": "form_v1"
+}

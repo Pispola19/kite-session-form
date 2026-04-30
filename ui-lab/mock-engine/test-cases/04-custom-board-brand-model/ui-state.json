@@ -1,0 +1,44 @@
+{
+  "rider": {
+    "weight": "91",
+    "gender": "M",
+    "level": "independent"
+  },
+  "board": {
+    "board": "foil",
+    "boardSize": "custom 1250 front wing"
+  },
+  "kite": {
+    "kite": "7",
+    "brand": "Custom Brand Lab",
+    "model": "Prototype X"
+  },
+  "windUserInput": {
+    "wind": "16"
+  },
+  "spot": {
+    "location": "Is Solinas"
+  },
+  "water": {
+    "water": "flat"
+  },
+  "result": {
+    "result": "good"
+  },
+  "note": {
+    "note": "Custom board brand model case"
+  },
+  "readonly": {
+    "liveWind": {
+      "speed": "16",
+      "gust": "19",
+      "direction": "SW",
+      "updated_at": "2026-04-30T10:04:00.000Z",
+      "provider": "mock"
+    }
+  },
+  "meta": {
+    "ui_version": "ui_lab_mock_v1",
+    "submit_channel": "mock"
+  }
+}

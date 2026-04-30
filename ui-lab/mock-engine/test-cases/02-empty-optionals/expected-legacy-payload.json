@@ -1,0 +1,21 @@
+{
+  "session_id": "case02_session",
+  "technical_id": "case02_technical",
+  "event_ts": "2026-04-30T10:02:00.000Z",
+  "src": "form_v1",
+  "weight": "70",
+  "gender": null,
+  "board": "twintip",
+  "boardSize": "",
+  "level": "beginner",
+  "kite": "12",
+  "wind": "14",
+  "brand": "",
+  "model": "",
+  "location": "",
+  "water": "",
+  "result": "underpowered",
+  "note": "",
+  "ts": "2026-04-30T10:02:00.000Z",
+  "message_id": "msg_ae0a239a667888f08b69cf5d7a106ec1_case02_techn"
+}

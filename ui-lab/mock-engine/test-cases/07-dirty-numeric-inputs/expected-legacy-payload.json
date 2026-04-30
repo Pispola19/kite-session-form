@@ -1,0 +1,21 @@
+{
+  "session_id": "case07_session",
+  "technical_id": "case07_technical",
+  "event_ts": "2026-04-30T10:07:00.000Z",
+  "src": "form_v1",
+  "weight": "75",
+  "gender": "F",
+  "board": "twintip",
+  "boardSize": "134x40",
+  "level": "beginner",
+  "kite": "9",
+  "wind": "18",
+  "brand": "Naish",
+  "model": "Pivot",
+  "location": "La Caletta",
+  "water": "small_waves",
+  "result": "powered",
+  "note": "Dirty numeric input case",
+  "ts": "2026-04-30T10:07:00.000Z",
+  "message_id": "msg_1cacc07f06e5380f4aa7747503fefaf5_case07_techn"
+}

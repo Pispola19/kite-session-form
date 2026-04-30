@@ -1,0 +1,44 @@
+{
+  "rider": {
+    "weight": "75",
+    "gender": "M",
+    "level": "intermediate"
+  },
+  "board": {
+    "board": "twintip",
+    "boardSize": "138x42"
+  },
+  "kite": {
+    "kite": "9",
+    "brand": "Core",
+    "model": "XR"
+  },
+  "windUserInput": {
+    "wind": "18"
+  },
+  "spot": {
+    "location": "Stagnone"
+  },
+  "water": {
+    "water": "flat"
+  },
+  "result": {
+    "result": "fun"
+  },
+  "note": {
+    "note": "canary public ingress test"
+  },
+  "readonly": {
+    "liveWind": {
+      "speed": "25",
+      "gust": "30",
+      "direction": "W",
+      "updated_at": "2026-04-27T16:00:00.000Z",
+      "provider": "mock"
+    }
+  },
+  "meta": {
+    "ui_version": "ui_lab_mock_v1",
+    "submit_channel": "mock"
+  }
+}

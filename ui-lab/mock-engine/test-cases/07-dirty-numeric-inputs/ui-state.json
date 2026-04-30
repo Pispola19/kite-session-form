@@ -1,0 +1,44 @@
+{
+  "rider": {
+    "weight": "75 kg",
+    "gender": "F",
+    "level": "beginner"
+  },
+  "board": {
+    "board": "twintip",
+    "boardSize": "134x40"
+  },
+  "kite": {
+    "kite": "9 m",
+    "brand": "Naish",
+    "model": "Pivot"
+  },
+  "windUserInput": {
+    "wind": "18 nodi"
+  },
+  "spot": {
+    "location": "La Caletta"
+  },
+  "water": {
+    "water": "small_waves"
+  },
+  "result": {
+    "result": "powered"
+  },
+  "note": {
+    "note": "Dirty numeric input case"
+  },
+  "readonly": {
+    "liveWind": {
+      "speed": "20",
+      "gust": "24",
+      "direction": "E",
+      "updated_at": "2026-04-30T10:07:00.000Z",
+      "provider": "mock"
+    }
+  },
+  "meta": {
+    "ui_version": "ui_lab_mock_v1",
+    "submit_channel": "mock"
+  }
+}

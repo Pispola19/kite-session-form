@@ -1,0 +1,21 @@
+{
+  "session_id": "case03_session",
+  "technical_id": "case03_technical",
+  "event_ts": "2026-04-30T10:03:00.000Z",
+  "src": "form_v1",
+  "weight": "64",
+  "gender": null,
+  "board": "surfboard",
+  "boardSize": "5'8",
+  "level": "advanced",
+  "kite": "8",
+  "wind": "28",
+  "brand": "North",
+  "model": "Orbit",
+  "location": "Porto Pollo",
+  "water": "waves",
+  "result": "powered",
+  "note": "Explicit gender null case",
+  "ts": "2026-04-30T10:03:00.000Z",
+  "message_id": "msg_73890b382823524a1fb93691aa50181d_case03_techn"
+}

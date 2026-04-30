@@ -1,0 +1,21 @@
+{
+  "session_id": "case06_session",
+  "technical_id": "case06_technical",
+  "event_ts": "2026-04-30T10:06:00.000Z",
+  "src": "form_v1",
+  "weight": "76",
+  "gender": "M",
+  "board": "twintip",
+  "boardSize": "138x42",
+  "level": "independent",
+  "kite": "11",
+  "wind": "18",
+  "brand": "Slingshot",
+  "model": "Code",
+  "location": "Punta Trettu",
+  "water": "chop",
+  "result": "good",
+  "note": "Live wind differs from user input",
+  "ts": "2026-04-30T10:06:00.000Z",
+  "message_id": "msg_491b2a39c749e8b9cbc92b191853eb99_case06_techn"
+}

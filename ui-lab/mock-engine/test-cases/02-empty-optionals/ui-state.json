@@ -1,0 +1,38 @@
+{
+  "rider": {
+    "weight": "70",
+    "gender": null,
+    "level": "beginner"
+  },
+  "board": {
+    "board": "twintip",
+    "boardSize": ""
+  },
+  "kite": {
+    "kite": "12",
+    "brand": "",
+    "model": ""
+  },
+  "windUserInput": {
+    "wind": "14"
+  },
+  "spot": {
+    "location": ""
+  },
+  "water": {
+    "water": ""
+  },
+  "result": {
+    "result": "underpowered"
+  },
+  "note": {
+    "note": ""
+  },
+  "readonly": {
+    "liveWind": null
+  },
+  "meta": {
+    "ui_version": "ui_lab_mock_v1",
+    "submit_channel": "mock"
+  }
+}
