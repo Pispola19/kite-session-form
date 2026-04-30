@@ -613,6 +613,7 @@ const languageButtons = Array.from(document.querySelectorAll(".language-button")
 const uiStatePreview = document.getElementById("uiStatePreview");
 const payloadContractPreview = document.getElementById("payloadContractPreview");
 const legacyPayloadPreview = document.getElementById("legacyPayloadPreview");
+const userDataPreview = document.getElementById("userDataPreview");
 const readonlyLeakStatus = document.getElementById("readonlyLeakStatus");
 const endpointCallsStatus = document.getElementById("endpointCallsStatus");
 
@@ -633,6 +634,29 @@ const MOCK_FIXED_META = Object.freeze({
   src: "form_v1",
   ts: "2026-04-30T00:00:00.000Z"
 });
+
+function buildRuntimeMeta() {
+  const now = new Date();
+  const iso = now.toISOString();
+
+  const months = ["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+  const compactDate =
+    String(now.getUTCDate()).padStart(2, "0") +
+    months[now.getUTCMonth()] +
+    String(now.getUTCHours()).padStart(2, "0") +
+    String(now.getUTCMinutes()).padStart(2, "0");
+
+  const randomPart = Math.random().toString(36).slice(2, 10);
+  const randomPart2 = Math.random().toString(36).slice(2, 10);
+
+  return {
+    session_id: compactDate + randomPart,
+    technical_id: randomPart + randomPart2,
+    event_ts: iso,
+    ts: iso,
+    src: "form_v1"
+  };
+}
 
 function readField(path) {
   const field = form?.querySelector(`[data-state-field="${path}"]`);
@@ -723,7 +747,8 @@ function buildMockPayloads() {
   }
 
   const uiState = FormStateLayer.read();
-  const payloadContract = window.MockEngine.buildPayloadContractV1(uiState, MOCK_FIXED_META);
+  const runtimeMeta = buildRuntimeMeta();
+  const payloadContract = window.MockEngine.buildPayloadContractV1(uiState, runtimeMeta);
   const legacyPayload = window.MockEngine.toLegacyPayload(payloadContract);
   const readonlyLeak = window.MockEngine.assertNoReadonlyLeak(legacyPayload);
 
@@ -747,6 +772,25 @@ function renderPayloadDebug(payloads = buildMockPayloads()) {
   }
   if (legacyPayloadPreview) {
     legacyPayloadPreview.textContent = JSON.stringify(payloads.legacyPayload || {}, null, 2);
+  }
+  if (userDataPreview) {
+    const lp = payloads.legacyPayload || {};
+    const show = (value) => value === null || value === undefined || value === "" ? "-" : String(value);
+    const lines = [
+      `⚖️ Weight (kg): ${show(lp.weight)}`,
+      `📦 Board type: ${show(lp.board)}`,
+      `📏 Board size: ${show(lp.boardSize)}`,
+      `🎯 Level: ${show(lp.level)}`,
+      `🪁 Kite (m²): ${show(lp.kite)}`,
+      `🏷️ Brand: ${show(lp.brand)}`,
+      `🚀 Model: ${show(lp.model)}`,
+      `🌬️ Wind (kts): ${show(lp.wind)}`,
+      `📍 Spot: ${show(lp.location)}`,
+      `🌊 Water conditions: ${show(lp.water)}`,
+      `✅ Session result: ${show(lp.result)}`,
+      `Notes: ${show(lp.note)}`
+    ];
+    userDataPreview.textContent = lines.join("\n");
   }
   if (readonlyLeakStatus) {
     readonlyLeakStatus.textContent = String(!payloads.readonlyLeak.ok);
@@ -775,9 +819,9 @@ cta?.addEventListener("click", async () => {
 
   const primaryResult = await submitSessionPrimary(payloads.legacyPayload);
   if (primaryResult && primaryResult.ok === true) {
-    message.textContent = "Sessione inviata alla pipeline primaria";
+    message.textContent = "Dati inviati correttamente alla pipeline primaria";
   } else {
-    message.textContent = "Invio pipeline primaria fallito";
+    message.textContent = "Invio dati non riuscito - riprova";
   }
 });
 
