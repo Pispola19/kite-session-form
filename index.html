@@ -42,7 +42,7 @@
             <legend>Spot</legend>
             <label class="field-spot">
               <span>Spot</span>
-              <input type="text" placeholder="Nome spot" data-state-field="spot.location">
+              <input type="text" placeholder="es. Is Solinas" data-state-field="spot.location">
             </label>
             <button class="live-spot-button" id="showLiveSpot" type="button">Vedi Live Spot</button>
             <p class="live-spot-message" id="liveSpotMessage" aria-live="polite"></p>
@@ -94,7 +94,7 @@
             <legend>Kite</legend>
             <label class="field-kite-size is-required">
               <span>Misura kite</span>
-              <input type="text" placeholder="m2" data-state-field="kite.kite" data-required="true">
+              <input type="text" placeholder="Kite" data-state-field="kite.kite" data-required="true">
             </label>
             <label class="field-brand">
               <span>Brand</span>
@@ -148,6 +148,8 @@
             <button type="button" id="visualCta">INVIA SESSIONE</button>
             <p id="visualCtaMessage" class="cta-message" aria-live="polite">Pronta per invio alla pipeline primaria</p>
           </div>
+
+          <div id="thankYouBanner" class="thank-you-banner" hidden role="status"></div>
 
           <section class="payload-debug" id="payloadDebug" aria-label="Anteprima dati">
             <h3>Anteprima payload in uscita</h3>

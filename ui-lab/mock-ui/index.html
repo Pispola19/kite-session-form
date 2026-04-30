@@ -41,7 +41,7 @@
           <fieldset class="form-block form-block-spot">
             <legend>Spot</legend>
             <label class="field-spot">
-              <input type="text" data-i18n-placeholder="spotPh" aria-label="Spot" data-state-field="spot.location">
+              <input type="text" placeholder="es. Is Solinas" aria-label="Spot" data-state-field="spot.location">
             </label>
             <button class="live-spot-button" id="showLiveSpot" type="button">Vedi Live Spot</button>
             <p class="live-spot-message" id="liveSpotMessage" aria-live="polite"></p>
@@ -80,7 +80,7 @@
             <div class="kite-row">
               <label class="field-kite-size is-required">
                 <span data-i18n="kiteSize"></span>
-                <input type="text" placeholder="m2" data-state-field="kite.kite" data-required="true">
+                <input type="text" placeholder="Kite" data-state-field="kite.kite" data-required="true">
               </label>
               <label class="field-brand field-kite-brand">
                 <span data-i18n="brand"></span>
@@ -125,6 +125,8 @@
             <button type="button" id="visualCta" data-i18n="submit"></button>
             <p id="visualCtaMessage" class="cta-message" aria-live="polite">Pronta per invio alla pipeline primaria</p>
           </div>
+
+          <div id="thankYouBanner" class="thank-you-banner" hidden role="status"></div>
 
           <section class="payload-debug" id="payloadDebug" aria-label="Anteprima dati">
             <h3>Anteprima payload in uscita</h3>

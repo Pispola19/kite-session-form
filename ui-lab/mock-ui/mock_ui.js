@@ -95,6 +95,81 @@ const PROMPT_KEY_MAP = Object.freeze({
   "kite.model":    "opt_model_prompt"
 });
 
+// Testo corto solo per prima option dei select (valori tecnici degli option restano invariati).
+const SHORT_SELECT_PROMPTS = Object.freeze({
+  it: Object.freeze({
+    "rider.gender": "-",
+    "rider.level": "Livello",
+    "board.board": "Tipo",
+    "board.boardSize": "Misura",
+    "water.water": "Acqua",
+    "result.result": "Risultato",
+    "kite.brand": "Marca",
+    "kite.model": "Modello"
+  }),
+  en: Object.freeze({
+    "rider.gender": "-",
+    "rider.level": "Level",
+    "board.board": "Board",
+    "board.boardSize": "Size",
+    "water.water": "Water",
+    "result.result": "Result",
+    "kite.brand": "Brand",
+    "kite.model": "Model"
+  }),
+  de: Object.freeze({
+    "rider.gender": "-",
+    "rider.level": "Level",
+    "board.board": "Board",
+    "board.boardSize": "Größe",
+    "water.water": "Wasser",
+    "result.result": "Ergebnis",
+    "kite.brand": "Marke",
+    "kite.model": "Modell"
+  }),
+  es: Object.freeze({
+    "rider.gender": "-",
+    "rider.level": "Nivel",
+    "board.board": "Tabla",
+    "board.boardSize": "Talla",
+    "water.water": "Agua",
+    "result.result": "Resultado",
+    "kite.brand": "Marca",
+    "kite.model": "Modelo"
+  }),
+  fr: Object.freeze({
+    "rider.gender": "-",
+    "rider.level": "Niveau",
+    "board.board": "Planche",
+    "board.boardSize": "Taille",
+    "water.water": "Eau",
+    "result.result": "Résultat",
+    "kite.brand": "Marque",
+    "kite.model": "Modèle"
+  })
+});
+
+function shortPromptForSelectPath(path) {
+  const lc = String(currentLang || "").toLowerCase();
+  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
+  const bucket = SHORT_SELECT_PROMPTS[lang] || SHORT_SELECT_PROMPTS.it;
+  return bucket[path] || "";
+}
+
+const SHORT_KITE_PLACEHOLDER = Object.freeze({
+  it: "Kite",
+  en: "Kite",
+  de: "Kite",
+  es: "Kite",
+  fr: "Kite"
+});
+
+function shortKiteInputPlaceholder() {
+  const lc = String(currentLang || "").toLowerCase();
+  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
+  return SHORT_KITE_PLACEHOLDER[lang] || SHORT_KITE_PLACEHOLDER.it;
+}
+
 // Stringhe non coperte da window.RDK_TRANSLATIONS: fallback locale puro UI mock.
 // NON contengono value tecnici, solo testo libero che non ha equivalente legacy.
 const LOCAL_FALLBACK = Object.freeze({
@@ -670,14 +745,24 @@ function populateModelsForBrand(brandValue) {
   const modelField = document.querySelector('[data-state-field="kite.model"]');
   const brandKey = String(brandValue || "");
   const models = (MOCK_DATA.MODELS_BY_BRAND && MOCK_DATA.MODELS_BY_BRAND[brandKey]) || [];
-  populateSelect(modelField, models, models, tPrompt("kite.model"));
+  populateSelect(
+    modelField,
+    models,
+    models,
+    shortPromptForSelectPath("kite.model") || tPrompt("kite.model")
+  );
 }
 
 function populateBoardSizesForType(boardType) {
   const boardSizeField = document.querySelector('[data-state-field="board.boardSize"]');
   const typeKey = String(boardType || "");
   const sizes = (MOCK_DATA.BOARD_SIZE_BY_TYPE && MOCK_DATA.BOARD_SIZE_BY_TYPE[typeKey]) || [];
-  populateSelect(boardSizeField, sizes, sizes, tPrompt("board.boardSize"));
+  populateSelect(
+    boardSizeField,
+    sizes,
+    sizes,
+    shortPromptForSelectPath("board.boardSize") || tPrompt("board.boardSize")
+  );
 }
 
 function renderUI() {
@@ -710,7 +795,7 @@ function renderUI() {
     } else {
       labels = spec.values;
     }
-    const promptText = tPrompt(spec.path);
+    const promptText = shortPromptForSelectPath(spec.path) || tPrompt(spec.path);
     populateSelect(field, spec.values, labels, promptText);
   });
 
@@ -719,6 +804,9 @@ function renderUI() {
 
   const brandField = formEl.querySelector('[data-state-field="kite.brand"]');
   populateModelsForBrand(brandField ? brandField.value : "");
+
+  const kiteInput = formEl.querySelector('[data-state-field="kite.kite"]');
+  if (kiteInput) kiteInput.setAttribute("placeholder", shortKiteInputPlaceholder());
 }
 
 const form = document.getElementById("mockSessionForm");
@@ -734,6 +822,52 @@ const legacyPayloadPreview = document.getElementById("legacyPayloadPreview");
 const userDataPreview = document.getElementById("userDataPreview");
 const readonlyLeakStatus = document.getElementById("readonlyLeakStatus");
 const endpointCallsStatus = document.getElementById("endpointCallsStatus");
+const thankYouBanner = document.getElementById("thankYouBanner");
+
+const THANK_YOU_BANNER_MESSAGES = Object.freeze({
+  it: Object.freeze({
+    title: "Grazie!",
+    phrase:
+      "Il tuo dato è stato ricevuto. Ogni sessione aiuta VENTO LIVE a diventare più utile per tutti i rider."
+  }),
+  en: Object.freeze({
+    title: "Thank you!",
+    phrase:
+      "Your data has been received. Every session helps VENTO LIVE become more useful for all riders."
+  }),
+  de: Object.freeze({
+    title: "Danke!",
+    phrase:
+      "Deine Daten wurden empfangen. Jede Session hilft VENTO LIVE, für alle Rider nützlicher zu werden."
+  }),
+  es: Object.freeze({
+    title: "¡Gracias!",
+    phrase:
+      "Tus datos han sido recibidos. Cada sesión ayuda a que VENTO LIVE sea más útil para todos los riders."
+  }),
+  fr: Object.freeze({
+    title: "Merci !",
+    phrase:
+      "Tes données ont bien été reçues. Chaque session aide VENTO LIVE à devenir plus utile pour tous les riders."
+  })
+});
+
+function renderThankYouBanner() {
+  if (!thankYouBanner) return;
+  const lc = String(currentLang || "").toLowerCase();
+  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
+  const copy = THANK_YOU_BANNER_MESSAGES[lang] || THANK_YOU_BANNER_MESSAGES.it;
+  thankYouBanner.innerHTML =
+    `<strong class="thank-you-banner__title">${copy.title}</strong>` +
+    `<p class="thank-you-banner__text">${copy.phrase}</p>`;
+  thankYouBanner.hidden = false;
+}
+
+function hideThankYouBanner() {
+  if (!thankYouBanner) return;
+  thankYouBanner.hidden = true;
+  thankYouBanner.innerHTML = "";
+}
 
 const REQUIRED_FIELDS = Object.freeze([
   "rider.weight",
@@ -1062,6 +1196,7 @@ function resetVisualFormAfterSuccess() {
 }
 
 cta?.addEventListener("click", async () => {
+  hideThankYouBanner();
   const validation = validateRequiredFields();
   const payloads = buildMockPayloads();
   renderPayloadDebug(payloads);
@@ -1094,20 +1229,20 @@ cta?.addEventListener("click", async () => {
     openWhatsAppSecondary(payloads.legacyPayload);
 
     if (googleOk) {
-      message.textContent =
-        "Grazie! Dati ricevuti. WhatsApp si apre con il riepilogo della sessione, così puoi salvarlo come promemoria.";
+      message.textContent = "Dati ricevuti. WhatsApp si apre con il riepilogo.";
     } else {
-      message.textContent =
-        "Grazie! Dati ricevuti. Google Sheet non aggiornato, ma il dato è salvo.";
+      message.textContent = "Dati ricevuti. Google Sheet non aggiornato.";
     }
 
     resetVisualFormAfterSuccess();
+    renderThankYouBanner();
   } else {
     message.textContent = "Invio dati non riuscito - riprova";
   }
 });
 
 form?.addEventListener("input", (event) => {
+  hideThankYouBanner();
   const field = event.target?.closest?.("[data-state-field]");
   if (field?.dataset.required === "true") {
     setInvalid(field, !String(field.value || "").trim());
@@ -1116,6 +1251,7 @@ form?.addEventListener("input", (event) => {
 });
 
 form?.addEventListener("change", (event) => {
+  hideThankYouBanner();
   const field = event.target?.closest?.("[data-state-field]");
   if (field?.dataset.required === "true") {
     setInvalid(field, !String(field.value || "").trim());
@@ -1151,6 +1287,7 @@ showLiveSpot?.addEventListener("click", async () => {
 
 languageButtons.forEach((button) => {
   button.addEventListener("click", () => {
+    hideThankYouBanner();
     languageButtons.forEach((item) => {
       item.classList.toggle("is-active", item === button);
       item.setAttribute("aria-pressed", item === button ? "true" : "false");
