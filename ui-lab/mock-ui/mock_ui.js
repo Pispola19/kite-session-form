@@ -210,6 +210,20 @@ function declaredWindHint() {
   return WIND_DECLARED_HINT_BY_LANG[lang] || WIND_DECLARED_HINT_BY_LANG.it;
 }
 
+const FORECAST_MISSING_BY_LANG = Object.freeze({
+  it: "N.P.",
+  en: "N.A.",
+  de: "k.A.",
+  es: "N.D.",
+  fr: "N.D."
+});
+
+function forecastMissingLabel() {
+  const lc = String(currentLang || "").toLowerCase();
+  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
+  return FORECAST_MISSING_BY_LANG[lang] || FORECAST_MISSING_BY_LANG.it;
+}
+
 const LIVE_SPOT_BUTTON_UI = Object.freeze({
   it: Object.freeze({ idle: "Vedi Live Spot", loading: "Cerco vento…", message: "Aggiornamento Live Spot…" }),
   en: Object.freeze({ idle: "View Live Spot", loading: "Fetching wind…", message: "Updating Live Spot…" }),
@@ -474,20 +488,13 @@ const LiveSpotReadonlyConnector = (() => {
         p.wind_direction == null ? "---" : formatWindDirectionNameI18n(p.wind_direction);
     }
     if (providerDd) {
-      const src = p.source ? String(p.source).trim() : "";
-      const suParts = Array.isArray(p.sources_used) ? p.sources_used.map((x) => String(x || "").trim()).filter(Boolean) : [];
-      const suJoined = suParts.length ? suParts.join(", ") : "";
-
-      if (src || suJoined) {
-        providerDd.textContent = suJoined ? (src ? `${src} · ${suJoined}` : suJoined) : src;
-      } else {
-        const velLab = translateLiveSpotLegacy("live_spot_mock_vel_short");
-        const gstLab = translateLiveSpotLegacy("live_spot_mock_gust_short");
-        const parts = [];
-        if (p.wind_knots != null) parts.push(`${velLab || "Vel"} ${p.wind_knots} kn`);
-        if (p.gust_knots != null) parts.push(`${gstLab || "Raff"} ${p.gust_knots} kn`);
-        providerDd.textContent = parts.length ? parts.join(" · ") : "--";
-      }
+      const missing = forecastMissingLabel();
+      const dir = p.wind_direction == null
+        ? missing
+        : `${p.wind_direction}° ${formatWindDirectionArrowAbbr(p.wind_direction)}`;
+      const wind = p.wind_knots == null ? missing : `${p.wind_knots} kn`;
+      const gust = p.gust_knots == null ? missing : `${p.gust_knots} kn`;
+      providerDd.textContent = `Dir ${dir} · Vel ${wind} · Raff ${gust}`;
     }
 
     if (spotOverview) {
@@ -548,29 +555,27 @@ const LiveSpotReadonlyConnector = (() => {
     const setFc = (slot, fc) => {
       const box = hours.querySelector(`[data-live-spot-fc="${slot}"]`);
       if (!box) return;
-      const valueEl = box ? box.querySelector("strong") : null;
-      if (valueEl) valueEl.textContent = forecastWindKnShort(fc);
+      const missing = forecastMissingLabel();
+      const hasFc = fc && typeof fc === "object";
+      const hasDirection = hasFc && fc.wind_direction != null;
+      const valueEl = box.querySelector("strong");
+      if (valueEl) valueEl.textContent = hasFc && fc.wind_knots != null ? forecastWindKnShort(fc) : missing;
       let directionEl = box.querySelector(".forecast-direction");
       let windNameEl = box.querySelector(".forecast-name");
-      if (slot === "3" && fc && typeof fc === "object" && fc.wind_direction != null) {
-        if (!directionEl) {
-          directionEl = document.createElement("span");
-          directionEl.className = "forecast-direction";
-          box.appendChild(directionEl);
-        }
-        if (!windNameEl) {
-          windNameEl = document.createElement("span");
-          windNameEl.className = "forecast-name";
-          box.appendChild(windNameEl);
-        }
-        directionEl.hidden = false;
-        windNameEl.hidden = false;
-        directionEl.textContent = formatWindDirectionArrowAbbr(fc.wind_direction);
-        windNameEl.textContent = formatWindDirectionNameI18n(fc.wind_direction);
-      } else {
-        if (directionEl) directionEl.hidden = true;
-        if (windNameEl) windNameEl.hidden = true;
+      if (!directionEl) {
+        directionEl = document.createElement("span");
+        directionEl.className = "forecast-direction";
+        box.appendChild(directionEl);
       }
+      if (!windNameEl) {
+        windNameEl = document.createElement("span");
+        windNameEl.className = "forecast-name";
+        box.appendChild(windNameEl);
+      }
+      directionEl.hidden = false;
+      windNameEl.hidden = false;
+      directionEl.textContent = hasDirection ? formatWindDirectionArrowAbbr(fc.wind_direction) : missing;
+      windNameEl.textContent = hasDirection ? formatWindDirectionNameI18n(fc.wind_direction) : missing;
     };
     setFc("1", fc1);
     setFc("2", fc2);
