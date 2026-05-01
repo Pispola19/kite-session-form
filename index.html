@@ -86,7 +86,9 @@
             </label>
             <label class="field-board-size">
               <span>Misura tavola</span>
-              <input type="text" placeholder="es. 136x40" data-state-field="board.boardSize">
+              <select data-state-field="board.boardSize">
+                <option value="">Misura</option>
+              </select>
             </label>
           </fieldset>
 
@@ -98,11 +100,15 @@
             </label>
             <label class="field-brand">
               <span>Brand</span>
-              <input type="text" placeholder="brand" data-state-field="kite.brand">
+              <select data-state-field="kite.brand">
+                <option value="">Marca</option>
+              </select>
             </label>
             <label class="field-model">
               <span>Model</span>
-              <input type="text" placeholder="model" data-state-field="kite.model">
+              <select data-state-field="kite.model">
+                <option value="">Modello</option>
+              </select>
             </label>
           </fieldset>
 
@@ -275,7 +281,9 @@
       </p>
     </footer>
 
+    <script src="translations.js" defer></script>
     <script src="ui-lab/mock-engine/mock_engine.browser.js" defer></script>
+    <script src="ui-lab/mock-ui/static_data.js" defer></script>
     <script src="ui-lab/mock-ui/mock_ui.js" defer></script>
   </body>
 </html>
