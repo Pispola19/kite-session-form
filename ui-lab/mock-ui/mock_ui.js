@@ -190,6 +190,20 @@ function shortKiteInputPlaceholder() {
   return SHORT_KITE_PLACEHOLDER[lang] || SHORT_KITE_PLACEHOLDER.it;
 }
 
+const SPOT_PLACEHOLDER_BY_LANG = Object.freeze({
+  it: "es. Is Solinas",
+  en: "e.g. Is Solinas",
+  de: "z. B. Is Solinas",
+  es: "ej. Is Solinas",
+  fr: "ex. Is Solinas"
+});
+
+function spotInputPlaceholder() {
+  const lc = String(currentLang || "").toLowerCase();
+  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
+  return SPOT_PLACEHOLDER_BY_LANG[lang] || SPOT_PLACEHOLDER_BY_LANG.it;
+}
+
 // Stringhe non coperte da window.RDK_TRANSLATIONS: fallback locale puro UI mock.
 // NON contengono value tecnici, solo testo libero che non ha equivalente legacy.
 const LOCAL_FALLBACK = Object.freeze({
@@ -238,23 +252,9 @@ function liveSpotUiStrings() {
   return LIVE_SPOT_BUTTON_UI[lang] || LIVE_SPOT_BUTTON_UI.it;
 }
 
-const CTA_PIPELINE_HINT_BY_LANG = Object.freeze({
-  it: "Pronta per invio alla pipeline primaria",
-  en: "Ready to send to the primary pipeline",
-  de: "Bereit zum Senden an die primäre Pipeline",
-  es: "Lista para enviar a la canalización primaria",
-  fr: "Prête à envoyer vers le pipeline principal"
-});
-
-function ctaPipelineHint() {
-  const lc = String(currentLang || "").toLowerCase();
-  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
-  return CTA_PIPELINE_HINT_BY_LANG[lang] || CTA_PIPELINE_HINT_BY_LANG.it;
-}
-
 function syncCtaIdlePipelineMessage() {
   if (thankYouBanner && !thankYouBanner.hidden) return;
-  if (message) message.textContent = ctaPipelineHint();
+  if (message) message.textContent = "";
 }
 
 const LiveSpotReadonlyConnector = (() => {
@@ -868,6 +868,7 @@ window.__mockUiTranslateLegacy = function (legacyKey) {
 
 function t(key) {
   if (key === "windHint") return declaredWindHint();
+  if (key === "spotPh") return spotInputPlaceholder();
   const legacyKey = LEGACY_KEY_MAP[key];
   if (legacyKey) {
     const v = tLegacy(legacyKey);
