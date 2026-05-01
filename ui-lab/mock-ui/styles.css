@@ -694,6 +694,10 @@ button {
   font-weight: 700;
 }
 
+.cta-message.is-error {
+  color: rgba(217, 105, 105, 0.95);
+}
+
 .payload-debug {
   width: min(100%, 620px);
   margin-top: 2px;

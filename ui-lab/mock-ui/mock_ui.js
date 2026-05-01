@@ -218,6 +218,23 @@ const WIND_DECLARED_HINT_BY_LANG = Object.freeze({
   fr: "Séparé du Live Spot : c’est le vent que tu saisis toi-même."
 });
 
+const REQUIRED_FIELD_LABEL_KEYS = Object.freeze({
+  "rider.weight": "weight",
+  "board.board": "boardType",
+  "rider.level": "level",
+  "kite.kite": "kiteSize",
+  "windUserInput.wind": "wind",
+  "result.result": "result"
+});
+
+const REQUIRED_FIELD_MESSAGE_BY_LANG = Object.freeze({
+  it: "Compila il campo {field}",
+  en: "Fill in the {field} field",
+  de: "Fülle das Feld {field} aus",
+  es: "Completa el campo {field}",
+  fr: "Renseigne le champ {field}"
+});
+
 function declaredWindHint() {
   const lc = String(currentLang || "").toLowerCase();
   const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
@@ -254,7 +271,10 @@ function liveSpotUiStrings() {
 
 function syncCtaIdlePipelineMessage() {
   if (thankYouBanner && !thankYouBanner.hidden) return;
-  if (message) message.textContent = "";
+  if (message) {
+    message.textContent = "";
+    message.classList.remove("is-error");
+  }
 }
 
 const LiveSpotReadonlyConnector = (() => {
@@ -1176,6 +1196,29 @@ function setInvalid(field, invalid) {
   wrapper?.classList.toggle("is-invalid", Boolean(invalid));
 }
 
+function requiredFieldMessage(path) {
+  const labelKey = REQUIRED_FIELD_LABEL_KEYS[path];
+  const label = labelKey ? t(labelKey) : "";
+  const field = label || path;
+  const lc = String(currentLang || "").toLowerCase();
+  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
+  const template = REQUIRED_FIELD_MESSAGE_BY_LANG[lang] || REQUIRED_FIELD_MESSAGE_BY_LANG.it;
+  return template.replace("{field}", field);
+}
+
+function focusRequiredField(path) {
+  const field = form?.querySelector(`[data-state-field="${path}"]`);
+  if (!field) return;
+  if (typeof field.scrollIntoView === "function") {
+    field.scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+  try {
+    field.focus({ preventScroll: true });
+  } catch (_) {
+    field.focus();
+  }
+}
+
 function validateRequiredFields() {
   const missing = [];
 
@@ -1408,6 +1451,7 @@ function resetVisualFormAfterSuccess() {
 
 cta?.addEventListener("click", async () => {
   hideThankYouBanner();
+  message?.classList.remove("is-error");
   const validation = validateRequiredFields();
   const payloads = buildMockPayloads();
   renderPayloadDebug(payloads);
@@ -1420,7 +1464,10 @@ cta?.addEventListener("click", async () => {
   }
 
   if (!validation.ok) {
-    message.textContent = "Compila i campi obbligatori evidenziati";
+    const firstMissing = validation.missing[0];
+    message.textContent = requiredFieldMessage(firstMissing);
+    message.classList.add("is-error");
+    focusRequiredField(firstMissing);
     return;
   }
 
