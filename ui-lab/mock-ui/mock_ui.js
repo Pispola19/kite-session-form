@@ -2,7 +2,7 @@
 
 const LIVE_SPOT_CONFIG = {
   ENABLE_REAL: true,
-  BASE_URL: "https://themes-gray-determination-unified.trycloudflare.com",
+  BASE_URL: "https://classroom-denver-category-initially.trycloudflare.com",
   TIMEOUT_MS: 2500
 };
 
