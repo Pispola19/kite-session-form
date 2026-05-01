@@ -1356,38 +1356,52 @@ form?.addEventListener("change", (event) => {
 });
 
 showLiveSpot?.addEventListener("click", async () => {
-  const uiState = FormStateLayer.read();
-  const spot = uiState?.spot?.location || "";
-
-  let payload;
-
-  if (LIVE_SPOT_CONFIG.ENABLE_REAL) {
-    const realData = await fetchLiveSpotReal(spot);
-    payload = LiveSpotReadonlyConnector.normalizeLiveSpotPayload(realData);
-  } else {
-    payload = LiveSpotReadonlyConnector.normalizeLiveSpotPayload(
-      LiveSpotReadonlyConnector.getSample()
-    );
+  const originalLiveSpotText = showLiveSpot.textContent || "Vedi Live Spot";
+  showLiveSpot.disabled = true;
+  showLiveSpot.classList.add("is-loading");
+  showLiveSpot.textContent = "Cerco vento…";
+  if (liveSpotMessage) {
+    liveSpotMessage.textContent = "Aggiornamento Live Spot…";
   }
 
-  renderLiveSpotReadonly(payload);
+  try {
+    const uiState = FormStateLayer.read();
+    const spot = uiState?.spot?.location || "";
 
-  renderPayloadDebug();
+    let payload;
 
-  if (liveSpotPanel) {
-    liveSpotPanel.classList.remove("cockpit--live-updated");
-    window.requestAnimationFrame(() => {
-      liveSpotPanel.classList.add("cockpit--live-updated");
-      window.setTimeout(() => {
-        liveSpotPanel.classList.remove("cockpit--live-updated");
-      }, 700);
-    });
-  }
-
-  if (window.matchMedia("(max-width: 760px)").matches) {
-    if (liveSpotPanel && typeof liveSpotPanel.scrollIntoView === "function") {
-      liveSpotPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (LIVE_SPOT_CONFIG.ENABLE_REAL) {
+      const realData = await fetchLiveSpotReal(spot);
+      payload = LiveSpotReadonlyConnector.normalizeLiveSpotPayload(realData);
+    } else {
+      payload = LiveSpotReadonlyConnector.normalizeLiveSpotPayload(
+        LiveSpotReadonlyConnector.getSample()
+      );
     }
+
+    renderLiveSpotReadonly(payload);
+
+    renderPayloadDebug();
+
+    if (liveSpotPanel) {
+      liveSpotPanel.classList.remove("cockpit--live-updated");
+      window.requestAnimationFrame(() => {
+        liveSpotPanel.classList.add("cockpit--live-updated");
+        window.setTimeout(() => {
+          liveSpotPanel.classList.remove("cockpit--live-updated");
+        }, 700);
+      });
+    }
+
+    if (window.matchMedia("(max-width: 760px)").matches) {
+      if (liveSpotPanel && typeof liveSpotPanel.scrollIntoView === "function") {
+        liveSpotPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  } finally {
+    showLiveSpot.disabled = false;
+    showLiveSpot.classList.remove("is-loading");
+    showLiveSpot.textContent = originalLiveSpotText || "Vedi Live Spot";
   }
 });
 

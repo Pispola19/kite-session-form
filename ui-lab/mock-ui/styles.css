@@ -479,6 +479,16 @@ label {
   font-weight: 900;
 }
 
+.live-spot-button.is-loading {
+  opacity: 0.85;
+  transform: translateY(1px);
+  cursor: wait;
+}
+
+.live-spot-button:active {
+  transform: translateY(1px) scale(0.99);
+}
+
 .live-spot-message {
   flex: 0 0 100%;
   min-height: 18px;
@@ -735,6 +745,10 @@ button {
     padding-right: 16px;
     padding-left: 16px;
     font-size: 12px;
+  }
+
+  .live-spot-button {
+    min-height: 48px;
   }
 
   .hero__inner {
