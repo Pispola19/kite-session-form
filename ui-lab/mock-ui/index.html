@@ -39,19 +39,20 @@
 
         <form class="visual-form" id="mockSessionForm" novalidate>
           <fieldset class="form-block form-block-spot">
-            <legend>Spot</legend>
+            <legend data-t-legacy="live_spot_spot">Spot</legend>
             <label class="field-spot">
-              <input type="text" placeholder="es. Is Solinas" aria-label="Spot" data-state-field="spot.location">
+              <span data-i18n="spot">Spot</span>
+              <input type="text" data-i18n-placeholder="spotPh" aria-label="Spot" data-state-field="spot.location">
             </label>
             <button class="live-spot-button" id="showLiveSpot" type="button">Vedi Live Spot</button>
             <p class="live-spot-message" id="liveSpotMessage" aria-live="polite"></p>
           </fieldset>
 
           <fieldset class="form-block">
-            <legend>Rider</legend>
+            <legend data-t-legacy="live_spot_rider">Rider</legend>
             <label class="field-weight is-required">
               <span data-i18n="weight"></span>
-              <input type="text" placeholder="kg" data-state-field="rider.weight" data-required="true">
+              <input type="text" data-i18n-placeholder="weightPh" data-state-field="rider.weight" data-required="true">
             </label>
             <label class="field-gender">
               <span data-i18n="gender"></span>
@@ -64,7 +65,7 @@
           </fieldset>
 
           <fieldset class="form-block">
-            <legend>Tavola</legend>
+            <legend data-t-legacy="label_board">Tavola</legend>
             <label class="field-board is-required">
               <span data-i18n="boardType"></span>
               <select data-state-field="board.board" data-required="true"></select>
@@ -76,7 +77,7 @@
           </fieldset>
 
           <fieldset class="form-block">
-            <legend>Kite</legend>
+            <legend data-t-legacy="label_kite_size">Kite</legend>
             <div class="kite-row">
               <label class="field-kite-size is-required">
                 <span data-i18n="kiteSize"></span>
@@ -94,10 +95,10 @@
           </fieldset>
 
           <fieldset class="form-block wind-user-block">
-            <legend>Condizioni</legend>
+            <legend data-t-legacy="section_context">Condizioni</legend>
             <label class="field-wind is-required">
               <span data-i18n="wind"></span>
-              <input type="text" placeholder="kn" data-state-field="windUserInput.wind" data-required="true">
+              <input type="text" data-i18n-placeholder="windPh" data-state-field="windUserInput.wind" data-required="true">
             </label>
             <label class="field-water">
               <span data-i18n="water"></span>
@@ -107,7 +108,7 @@
           </fieldset>
 
           <fieldset class="form-block">
-            <legend>Esito</legend>
+            <legend data-t-legacy="label_result">Esito</legend>
             <label class="field-result is-required">
               <span data-i18n="result"></span>
               <select data-state-field="result.result" data-required="true"></select>
@@ -115,7 +116,7 @@
           </fieldset>
 
           <fieldset class="form-block note-block">
-            <legend>Note</legend>
+            <legend data-t-legacy="label_notes">Note</legend>
             <label class="field-note wide-field note-field">
               <textarea rows="4" data-i18n-placeholder="notePh" aria-label="Note" data-state-field="note.note"></textarea>
             </label>

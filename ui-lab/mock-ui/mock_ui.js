@@ -45,6 +45,8 @@ const LEGACY_KEY_MAP = Object.freeze({
   note:      "label_notes",
   submit:    "btn_send",
   spotPh:    "ph_location",
+  weightPh:  "ph_weight",
+  windPh:    "ph_wind",
   notePh:    "ph_notes",
 
   lsReadonlyBadge:     "live_spot_mock_readonly_badge",
@@ -193,6 +195,53 @@ function shortKiteInputPlaceholder() {
 const LOCAL_FALLBACK = Object.freeze({
   windHint: "Separate from Live Spot: this is the declared wind."
 });
+
+const WIND_DECLARED_HINT_BY_LANG = Object.freeze({
+  it: "Separato dal Live Spot: questo è il vento dichiarato.",
+  en: "Separate from Live Spot: this is the wind you enter yourself.",
+  de: "Getrennt vom Live Spot: das ist der Wind, den du selbst einträgst.",
+  es: "Separado del Live Spot: este es el viento que declaras tú.",
+  fr: "Séparé du Live Spot : c’est le vent que tu saisis toi-même."
+});
+
+function declaredWindHint() {
+  const lc = String(currentLang || "").toLowerCase();
+  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
+  return WIND_DECLARED_HINT_BY_LANG[lang] || WIND_DECLARED_HINT_BY_LANG.it;
+}
+
+const LIVE_SPOT_BUTTON_UI = Object.freeze({
+  it: Object.freeze({ idle: "Vedi Live Spot", loading: "Cerco vento…", message: "Aggiornamento Live Spot…" }),
+  en: Object.freeze({ idle: "View Live Spot", loading: "Fetching wind…", message: "Updating Live Spot…" }),
+  de: Object.freeze({ idle: "Live Spot anzeigen", loading: "Wind wird geladen…", message: "Live Spot wird aktualisiert…" }),
+  es: Object.freeze({ idle: "Ver Live Spot", loading: "Buscando viento…", message: "Actualizando Live Spot…" }),
+  fr: Object.freeze({ idle: "Voir Live Spot", loading: "Recherche du vent…", message: "Mise à jour du Live Spot…" })
+});
+
+function liveSpotUiStrings() {
+  const lc = String(currentLang || "").toLowerCase();
+  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
+  return LIVE_SPOT_BUTTON_UI[lang] || LIVE_SPOT_BUTTON_UI.it;
+}
+
+const CTA_PIPELINE_HINT_BY_LANG = Object.freeze({
+  it: "Pronta per invio alla pipeline primaria",
+  en: "Ready to send to the primary pipeline",
+  de: "Bereit zum Senden an die primäre Pipeline",
+  es: "Lista para enviar a la canalización primaria",
+  fr: "Prête à envoyer vers le pipeline principal"
+});
+
+function ctaPipelineHint() {
+  const lc = String(currentLang || "").toLowerCase();
+  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
+  return CTA_PIPELINE_HINT_BY_LANG[lang] || CTA_PIPELINE_HINT_BY_LANG.it;
+}
+
+function syncCtaIdlePipelineMessage() {
+  if (thankYouBanner && !thankYouBanner.hidden) return;
+  if (message) message.textContent = ctaPipelineHint();
+}
 
 const LiveSpotReadonlyConnector = (() => {
   const DIR_ABBR_16 = Object.freeze([
@@ -425,12 +474,20 @@ const LiveSpotReadonlyConnector = (() => {
         p.wind_direction == null ? "---" : formatWindDirectionNameI18n(p.wind_direction);
     }
     if (providerDd) {
-      const velLab = translateLiveSpotLegacy("live_spot_mock_vel_short");
-      const gstLab = translateLiveSpotLegacy("live_spot_mock_gust_short");
-      const parts = [];
-      if (p.wind_knots != null) parts.push(`${velLab || "Vel"} ${p.wind_knots} kn`);
-      if (p.gust_knots != null) parts.push(`${gstLab || "Raff"} ${p.gust_knots} kn`);
-      providerDd.textContent = parts.length ? parts.join(" · ") : "--";
+      const src = p.source ? String(p.source).trim() : "";
+      const suParts = Array.isArray(p.sources_used) ? p.sources_used.map((x) => String(x || "").trim()).filter(Boolean) : [];
+      const suJoined = suParts.length ? suParts.join(", ") : "";
+
+      if (src || suJoined) {
+        providerDd.textContent = suJoined ? (src ? `${src} · ${suJoined}` : suJoined) : src;
+      } else {
+        const velLab = translateLiveSpotLegacy("live_spot_mock_vel_short");
+        const gstLab = translateLiveSpotLegacy("live_spot_mock_gust_short");
+        const parts = [];
+        if (p.wind_knots != null) parts.push(`${velLab || "Vel"} ${p.wind_knots} kn`);
+        if (p.gust_knots != null) parts.push(`${gstLab || "Raff"} ${p.gust_knots} kn`);
+        providerDd.textContent = parts.length ? parts.join(" · ") : "--";
+      }
     }
 
     if (spotOverview) {
@@ -776,6 +833,7 @@ window.__mockUiTranslateLegacy = function (legacyKey) {
 };
 
 function t(key) {
+  if (key === "windHint") return declaredWindHint();
   const legacyKey = LEGACY_KEY_MAP[key];
   if (legacyKey) {
     const v = tLegacy(legacyKey);
@@ -860,6 +918,17 @@ function renderUI() {
     if (key) el.setAttribute("placeholder", t(key));
   });
 
+  document.querySelectorAll("[data-t-legacy]").forEach((el) => {
+    const key = el.getAttribute("data-t-legacy");
+    if (!key) return;
+    const v = tLegacy(key);
+    if (v) el.textContent = v;
+  });
+
+  if (showLiveSpot) {
+    showLiveSpot.textContent = liveSpotUiStrings().idle;
+  }
+
   const formEl = document.getElementById("mockSessionForm");
   if (!formEl) return;
 
@@ -892,6 +961,17 @@ function renderUI() {
 
   const kiteInput = formEl.querySelector('[data-state-field="kite.kite"]');
   if (kiteInput) kiteInput.setAttribute("placeholder", shortKiteInputPlaceholder());
+
+  const spotInput = formEl.querySelector('[data-state-field="spot.location"]');
+  if (spotInput) {
+    const lab = t("spot");
+    if (lab) spotInput.setAttribute("aria-label", lab);
+  }
+  const noteTa = formEl.querySelector('[data-state-field="note.note"]');
+  if (noteTa) {
+    const labNote = t("note");
+    if (labNote) noteTa.setAttribute("aria-label", labNote);
+  }
 
   const lsPanel = document.getElementById("liveSpotPanel");
   if (lsPanel && LiveSpotReadonlyConnector && typeof LiveSpotReadonlyConnector.getLastNormalizedPayload === "function") {
@@ -1117,9 +1197,13 @@ function renderPayloadDebug(payloads = buildMockPayloads()) {
   }
   if (userDataPreview) {
     const lp = payloads.legacyPayload || {};
+    const st = payloads.uiState && typeof payloads.uiState === "object" ? payloads.uiState : null;
     const show = (value) => value === null || value === undefined || value === "" ? "-" : String(value);
+    const lw = st && st.readonly && st.readonly.liveWind ? st.readonly.liveWind : null;
+    const meta = lw && lw.meta && typeof lw.meta === "object" ? lw.meta : null;
     const lines = [
       `⚖️ Weight (kg): ${show(lp.weight)}`,
+      `Gender: ${show(st && st.rider ? st.rider.gender : null)}`,
       `📦 Board type: ${show(lp.board)}`,
       `📏 Board size: ${show(lp.boardSize)}`,
       `🎯 Level: ${show(lp.level)}`,
@@ -1130,7 +1214,9 @@ function renderPayloadDebug(payloads = buildMockPayloads()) {
       `📍 Spot: ${show(lp.location)}`,
       `🌊 Water conditions: ${show(lp.water)}`,
       `✅ Session result: ${show(lp.result)}`,
-      `Notes: ${show(lp.note)}`
+      `Notes: ${show(lp.note)}`,
+      "---",
+      `Live Spot (readonly, non inviato): wind kn ${show(lw ? lw.speed : null)}, gust ${show(lw ? lw.gust : null)}, dir° ${show(lw ? lw.direction : null)}, provider ${show(lw ? lw.provider : null)}, cache ${show(meta ? meta.cache : null)}`
     ];
     userDataPreview.textContent = lines.join("\n");
   }
@@ -1356,12 +1442,12 @@ form?.addEventListener("change", (event) => {
 });
 
 showLiveSpot?.addEventListener("click", async () => {
-  const originalLiveSpotText = showLiveSpot.textContent || "Vedi Live Spot";
+  const lsUi = liveSpotUiStrings();
   showLiveSpot.disabled = true;
   showLiveSpot.classList.add("is-loading");
-  showLiveSpot.textContent = "Cerco vento…";
+  showLiveSpot.textContent = lsUi.loading;
   if (liveSpotMessage) {
-    liveSpotMessage.textContent = "Aggiornamento Live Spot…";
+    liveSpotMessage.textContent = lsUi.message;
   }
 
   try {
@@ -1401,7 +1487,7 @@ showLiveSpot?.addEventListener("click", async () => {
   } finally {
     showLiveSpot.disabled = false;
     showLiveSpot.classList.remove("is-loading");
-    showLiveSpot.textContent = originalLiveSpotText || "Vedi Live Spot";
+    showLiveSpot.textContent = liveSpotUiStrings().idle;
   }
 });
 
@@ -1423,9 +1509,11 @@ languageButtons.forEach((button) => {
     }
     renderUI();
     renderPayloadDebug();
+    syncCtaIdlePipelineMessage();
   });
 });
 
 renderUI();
 validateRequiredFields();
 renderPayloadDebug();
+syncCtaIdlePipelineMessage();

@@ -39,119 +39,89 @@
 
         <form class="visual-form" id="mockSessionForm" novalidate>
           <fieldset class="form-block form-block-spot">
-            <legend>Spot</legend>
+            <legend data-t-legacy="live_spot_spot">Spot</legend>
             <label class="field-spot">
-              <span>Spot</span>
-              <input type="text" placeholder="es. Is Solinas" data-state-field="spot.location">
+              <span data-i18n="spot">Spot</span>
+              <input type="text" data-i18n-placeholder="spotPh" data-state-field="spot.location" aria-label="Spot">
             </label>
             <button class="live-spot-button" id="showLiveSpot" type="button">Vedi Live Spot</button>
             <p class="live-spot-message" id="liveSpotMessage" aria-live="polite"></p>
           </fieldset>
 
           <fieldset class="form-block">
-            <legend>Rider</legend>
+            <legend data-t-legacy="live_spot_rider">Rider</legend>
             <label class="field-weight is-required">
-              <span>Peso</span>
-              <input type="text" placeholder="kg" data-state-field="rider.weight" data-required="true">
+              <span data-i18n="weight">Peso</span>
+              <input type="text" data-i18n-placeholder="weightPh" data-state-field="rider.weight" data-required="true">
             </label>
             <label class="field-gender">
-              <span>Gender</span>
-              <select data-state-field="rider.gender">
-                <option value="">seleziona</option>
-                <option value="M">male</option>
-                <option value="F">female</option>
-              </select>
+              <span data-i18n="gender">Gender</span>
+              <select data-state-field="rider.gender"></select>
             </label>
             <label class="field-level is-required">
-              <span>Livello</span>
-              <select data-state-field="rider.level" data-required="true">
-                <option value="">seleziona livello</option>
-                <option value="beginner">beginner</option>
-                <option value="intermediate">intermediate</option>
-                <option value="advanced">advanced</option>
-              </select>
+              <span data-i18n="level">Livello</span>
+              <select data-state-field="rider.level" data-required="true"></select>
             </label>
           </fieldset>
 
           <fieldset class="form-block">
-            <legend>Tavola</legend>
+            <legend data-t-legacy="label_board">Tavola</legend>
             <label class="field-board is-required">
-              <span>Tipo tavola</span>
-              <select data-state-field="board.board" data-required="true">
-                <option value="">seleziona tavola</option>
-                <option value="twintip">twintip</option>
-                <option value="surfboard">surfboard</option>
-                <option value="foil">foil</option>
-              </select>
+              <span data-i18n="boardType">Tipo tavola</span>
+              <select data-state-field="board.board" data-required="true"></select>
             </label>
             <label class="field-board-size">
-              <span>Misura tavola</span>
-              <select data-state-field="board.boardSize">
-                <option value="">Misura</option>
-              </select>
+              <span data-i18n="boardSize">Misura tavola</span>
+              <select data-state-field="board.boardSize"></select>
             </label>
           </fieldset>
 
           <fieldset class="form-block">
-            <legend>Kite</legend>
+            <legend data-t-legacy="label_kite_size">Kite</legend>
             <label class="field-kite-size is-required">
-              <span>Misura kite</span>
+              <span data-i18n="kiteSize">Misura kite</span>
               <input type="text" placeholder="Kite" data-state-field="kite.kite" data-required="true">
             </label>
             <label class="field-brand">
-              <span>Brand</span>
-              <select data-state-field="kite.brand">
-                <option value="">Marca</option>
-              </select>
+              <span data-i18n="brand">Brand</span>
+              <select data-state-field="kite.brand"></select>
             </label>
             <label class="field-model">
-              <span>Model</span>
-              <select data-state-field="kite.model">
-                <option value="">Modello</option>
-              </select>
+              <span data-i18n="model">Model</span>
+              <select data-state-field="kite.model"></select>
             </label>
           </fieldset>
 
           <fieldset class="form-block wind-user-block">
-            <legend>Condizioni</legend>
+            <legend data-t-legacy="section_context">Condizioni</legend>
             <label class="field-wind is-required">
-              <span>Vento stimato</span>
-              <input type="text" placeholder="kn" data-state-field="windUserInput.wind" data-required="true">
+              <span data-i18n="wind">Vento stimato</span>
+              <input type="text" data-i18n-placeholder="windPh" data-state-field="windUserInput.wind" data-required="true">
             </label>
             <label class="field-water">
-              <span>Condizioni acqua</span>
-              <select data-state-field="water.water">
-                <option value="">seleziona acqua</option>
-                <option value="flat">flat</option>
-                <option value="chop">chop</option>
-                <option value="waves">waves</option>
-              </select>
+              <span data-i18n="water">Condizioni acqua</span>
+              <select data-state-field="water.water"></select>
             </label>
-            <p class="field-hint">Separato dal Live Spot: questo e' il vento dichiarato.</p>
+            <p class="field-hint" data-i18n="windHint">Separato dal Live Spot: questo e' il vento dichiarato.</p>
           </fieldset>
 
           <fieldset class="form-block">
-            <legend>Esito</legend>
+            <legend data-t-legacy="label_result">Esito</legend>
             <label class="field-result is-required">
-              <span>Risultato sessione</span>
-              <select data-state-field="result.result" data-required="true">
-                <option value="">seleziona risultato</option>
-                <option value="underpowered">underpowered</option>
-                <option value="good">good</option>
-                <option value="overpowered">overpowered</option>
-              </select>
+              <span data-i18n="result">Risultato sessione</span>
+              <select data-state-field="result.result" data-required="true"></select>
             </label>
           </fieldset>
 
           <fieldset class="form-block note-block">
-            <legend>Note</legend>
+            <legend data-t-legacy="label_notes">Note</legend>
             <label class="field-note wide-field note-field">
-              <textarea rows="4" placeholder="note" aria-label="Note" data-state-field="note.note"></textarea>
+              <textarea rows="4" data-i18n-placeholder="notePh" aria-label="Note" data-state-field="note.note"></textarea>
             </label>
           </fieldset>
 
           <div class="cta-row">
-            <button type="button" id="visualCta">INVIA SESSIONE</button>
+            <button type="button" id="visualCta" data-i18n="submit">INVIA SESSIONE</button>
             <p id="visualCtaMessage" class="cta-message" aria-live="polite">Pronta per invio alla pipeline primaria</p>
           </div>
 

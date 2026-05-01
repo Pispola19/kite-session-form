@@ -6,6 +6,7 @@
 
   const WHATSAPP_NUMBER = "393345280521";
   const GOOGLE_SHEETS_WEBHOOK_URL = "https://script.google.com/macros/s/AKfycbyBvRK58kLL13TwOPPNqyAmNn-eRb-lYKzHsfKr1OG0UAVzHzyhG1l2T_svP_it3IICag/exec";
+  const GOOGLE_SECONDARY_ENABLED = true;
   const BOARD_SIZE_OTHER = "__rdk_other__";
   const BRAND_OTHER = "__brand_other__";
   const MODEL_OTHER = "__model_other__";
@@ -2174,13 +2175,9 @@
       if (!savePendingLocalSubmit(payload)) {
         throw new Error("local_pending_error");
       }
-      try {
-        await submitPayload(payload);
-        localDurableConfirmed = true;
-        clearPendingLocalSubmit();
-      } catch (localSubmitError) {
-        console.warn("local_submit_unavailable_pending_retained", localSubmitError);
-      }
+      await submitPayload(payload);
+      localDurableConfirmed = true;
+      clearPendingLocalSubmit();
       sessionDataToSend = payload;
       clearPendingGoogleSubmit();
       saveLastSession(sessionDataToSend);
@@ -2191,19 +2188,19 @@
       }
 
       console.log("Submitting:", sessionDataToSend);
-      const submitResult = await submitSessionToGoogleSheets(sessionDataToSend);
-      const isCertainSuccess = submitResult?.ok === true;
-      const isProbableSuccess = submitResult?.probable === true;
-
-      if (!isCertainSuccess && !isProbableSuccess) {
-        throw new Error("google_submit_error");
+      if (GOOGLE_SECONDARY_ENABLED) {
+        try {
+          await submitSessionToGoogleSheets(sessionDataToSend);
+        } catch (googleSubmitError) {
+          console.warn("google_secondary_submit_failed", googleSubmitError);
+        }
       }
 
       console.log("Sent session_id:", sessionDataToSend.session_id);
       markFirstSubmitDone();
       renderUIState({ name: "post_submit_panel" });
       playSendFeedback();
-      renderUIState({ name: "submit_result", status: isCertainSuccess ? "success" : "probable" });
+      renderUIState({ name: "submit_result", status: "success" });
       shouldAutoCloseModal = true;
       shouldResetForm = true;
       shouldOpenWhatsApp = true;
