@@ -2,7 +2,7 @@
 
 const LIVE_SPOT_CONFIG = {
   ENABLE_REAL: true,
-  BASE_URL: "https://rap-massachusetts-ringtones-nursery.trycloudflare.com",
+  BASE_URL: "https://themes-gray-determination-unified.trycloudflare.com",
   TIMEOUT_MS: 2500
 };
 
