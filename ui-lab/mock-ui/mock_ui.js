@@ -8,7 +8,7 @@ const LIVE_SPOT_CONFIG = {
 
 const SESSION_SUBMIT_CONFIG = {
   ENABLE_REAL_SUBMIT: true,
-  PRIMARY_URL: "http://127.0.0.1:8000/submit",
+  PRIMARY_URL: "https://nx1smwgmbe.execute-api.us-east-1.amazonaws.com/prod/dam/submit",
   TIMEOUT_MS: 4000
 };
 
