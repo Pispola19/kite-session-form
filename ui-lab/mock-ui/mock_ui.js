@@ -547,8 +547,30 @@ const LiveSpotReadonlyConnector = (() => {
     if (!hours) return;
     const setFc = (slot, fc) => {
       const box = hours.querySelector(`[data-live-spot-fc="${slot}"]`);
+      if (!box) return;
       const valueEl = box ? box.querySelector("strong") : null;
       if (valueEl) valueEl.textContent = forecastWindKnShort(fc);
+      let directionEl = box.querySelector(".forecast-direction");
+      let windNameEl = box.querySelector(".forecast-name");
+      if (slot === "3" && fc && typeof fc === "object" && fc.wind_direction != null) {
+        if (!directionEl) {
+          directionEl = document.createElement("span");
+          directionEl.className = "forecast-direction";
+          box.appendChild(directionEl);
+        }
+        if (!windNameEl) {
+          windNameEl = document.createElement("span");
+          windNameEl.className = "forecast-name";
+          box.appendChild(windNameEl);
+        }
+        directionEl.hidden = false;
+        windNameEl.hidden = false;
+        directionEl.textContent = formatWindDirectionArrowAbbr(fc.wind_direction);
+        windNameEl.textContent = formatWindDirectionNameI18n(fc.wind_direction);
+      } else {
+        if (directionEl) directionEl.hidden = true;
+        if (windNameEl) windNameEl.hidden = true;
+      }
     };
     setFc("1", fc1);
     setFc("2", fc2);

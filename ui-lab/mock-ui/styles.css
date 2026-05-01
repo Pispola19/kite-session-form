@@ -333,8 +333,8 @@ dd {
 }
 
 .hours div {
-  min-height: 58px;
-  padding: 8px;
+  min-height: 86px;
+  padding: 9px 8px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: rgba(18, 54, 71, 0.72);
@@ -348,8 +348,30 @@ dd {
 
 .hours strong {
   display: block;
-  margin-top: 7px;
+  margin-top: 6px;
   font-size: 18px;
+  line-height: 1.15;
+}
+
+.hours .forecast-direction {
+  margin-top: 5px;
+  color: var(--paper);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.15;
+  white-space: nowrap;
+}
+
+.hours .forecast-name {
+  margin-top: 2px;
+  font-size: 12px;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.hours .forecast-direction[hidden],
+.hours .forecast-name[hidden] {
+  display: none;
 }
 
 .visual-form {
