@@ -2,7 +2,7 @@
 
 const LIVE_SPOT_CONFIG = {
   ENABLE_REAL: true,
-  BASE_URL: "https://classroom-denver-category-initially.trycloudflare.com",
+  BASE_URL: "https://earning-assist-issue-proposition.trycloudflare.com",
   TIMEOUT_MS: 2500
 };
 
