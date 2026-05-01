@@ -572,6 +572,13 @@ const LiveSpotReadonlyConnector = (() => {
         windNameEl.className = "forecast-name";
         box.appendChild(windNameEl);
       }
+      if (!hasFc) {
+        directionEl.hidden = true;
+        windNameEl.hidden = true;
+        directionEl.textContent = "";
+        windNameEl.textContent = "";
+        return;
+      }
       directionEl.hidden = false;
       windNameEl.hidden = false;
       directionEl.textContent = hasDirection ? formatWindDirectionArrowAbbr(fc.wind_direction) : missing;
