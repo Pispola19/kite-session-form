@@ -277,6 +277,36 @@ h1 {
   font-weight: 800;
 }
 
+.live-spot-view-switch {
+  display: inline-flex;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border: 1px solid rgba(142, 219, 211, 0.32);
+  border-radius: 8px;
+  background: rgba(6, 23, 35, 0.42);
+}
+
+.live-spot-view-button {
+  min-height: 28px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--warm-gray);
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.live-spot-view-button + .live-spot-view-button {
+  border-left: 1px solid rgba(142, 219, 211, 0.2);
+}
+
+.live-spot-view-button.is-active {
+  background: rgba(35, 184, 170, 0.18);
+  color: var(--teal-soft);
+}
+
 .cockpit-grid {
   display: grid;
   gap: 10px;

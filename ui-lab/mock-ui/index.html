@@ -166,27 +166,13 @@
           <div class="section-head">
             <p class="eyebrow" data-i18n="lsReadonlyBadge">READ ONLY</p>
             <h2 id="live-spot-title" data-i18n="lsPanelTitle">Live Spot</h2>
+            <div class="live-spot-view-switch" role="group" aria-label="Vista Live Spot">
+              <button type="button" class="live-spot-view-button is-active" data-live-spot-view="kite" aria-pressed="true">KITER</button>
+              <button type="button" class="live-spot-view-button" data-live-spot-view="meteo" aria-pressed="false">METEO</button>
+            </div>
           </div>
 
           <div class="cockpit-grid">
-            <article class="info-card status-search">
-              <h3 data-i18n="lsOverviewHeading">Spot overview</h3>
-              <dl>
-                <div>
-                  <dt data-i18n="lsOverviewSpotLabel">Spot</dt>
-                  <dd class="placeholder" data-live-spot-dd="overview_spot">—</dd>
-                </div>
-                <div>
-                  <dt data-i18n="lsOverviewConfidence">Affidabilità</dt>
-                  <dd class="placeholder" data-live-spot-dd="overview_confidence">—</dd>
-                </div>
-                <div>
-                  <dt data-i18n="lsOverviewUpdated">Ultimo aggiornamento</dt>
-                  <dd class="placeholder" data-live-spot-dd="overview_updated">--:--</dd>
-                </div>
-              </dl>
-            </article>
-
             <article class="info-card status-ok">
               <h3 data-i18n="lsWindNowHeading">Wind now</h3>
               <dl>
@@ -209,6 +195,24 @@
                 <div>
                   <dt data-i18n="lsAnemometer">Anemometro</dt>
                   <dd class="placeholder" data-live-spot-dd="anemometer">--</dd>
+                </div>
+              </dl>
+            </article>
+
+            <article class="info-card status-search">
+              <h3 data-i18n="lsOverviewHeading">Spot overview</h3>
+              <dl>
+                <div>
+                  <dt data-i18n="lsOverviewSpotLabel">Spot</dt>
+                  <dd class="placeholder" data-live-spot-dd="overview_spot">—</dd>
+                </div>
+                <div>
+                  <dt data-i18n="lsOverviewConfidence">Affidabilità</dt>
+                  <dd class="placeholder" data-live-spot-dd="overview_confidence">—</dd>
+                </div>
+                <div>
+                  <dt data-i18n="lsOverviewUpdated">Ultimo aggiornamento</dt>
+                  <dd class="placeholder" data-live-spot-dd="overview_updated">--:--</dd>
                 </div>
               </dl>
             </article>

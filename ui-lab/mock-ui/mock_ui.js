@@ -255,6 +255,25 @@ function forecastMissingLabel() {
   return FORECAST_MISSING_BY_LANG[lang] || FORECAST_MISSING_BY_LANG.it;
 }
 
+const LIVE_SPOT_VIEW_MODE = Object.freeze({
+  KITE: "kite",
+  METEO: "meteo"
+});
+
+const LIVE_SPOT_VIEW_UI_BY_LANG = Object.freeze({
+  it: Object.freeze({ group: "Vista Live Spot", kite: "KITER", meteo: "METEO" }),
+  en: Object.freeze({ group: "Live Spot view", kite: "KITER", meteo: "METEO" }),
+  de: Object.freeze({ group: "Live-Spot-Ansicht", kite: "KITER", meteo: "METEO" }),
+  es: Object.freeze({ group: "Vista Live Spot", kite: "KITER", meteo: "METEO" }),
+  fr: Object.freeze({ group: "Vue Live Spot", kite: "KITER", meteo: "METEO" })
+});
+
+function liveSpotViewUiStrings() {
+  const lc = String(currentLang || "").toLowerCase();
+  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
+  return LIVE_SPOT_VIEW_UI_BY_LANG[lang] || LIVE_SPOT_VIEW_UI_BY_LANG.it;
+}
+
 const LIVE_SPOT_BUTTON_UI = Object.freeze({
   it: Object.freeze({ idle: "Vedi Live Spot", loading: "Cerco vento…", message: "Aggiornamento Live Spot…" }),
   en: Object.freeze({ idle: "View Live Spot", loading: "Fetching wind…", message: "Updating Live Spot…" }),
@@ -299,16 +318,38 @@ const LiveSpotReadonlyConnector = (() => {
     };
   }
 
+  function windDirectionDisplayDeg(deg, mode) {
+    if (typeof deg !== "number" || Number.isNaN(deg)) return null;
+    const d = ((deg % 360) + 360) % 360;
+    return mode === LIVE_SPOT_VIEW_MODE.KITE ? (d + 180) % 360 : d;
+  }
+
   function translateLiveSpotLegacy(legacyKey) {
     const fn = window.__mockUiTranslateLegacy;
     if (typeof fn !== "function" || !legacyKey) return "";
     return fn(legacyKey);
   }
 
-  function formatWindDirectionArrowAbbr(deg) {
-    const pres = windDirectionPresentationDeg(deg);
+  function formatWindDirectionArrow(deg, mode) {
+    const displayDeg = windDirectionDisplayDeg(deg, mode);
+    const pres = windDirectionPresentationDeg(displayDeg);
     if (!pres) return "---";
-    return `${pres.arrow} ${pres.abbr}`;
+    return pres.arrow;
+  }
+
+  function formatWindDirectionDegreesAbbr(deg) {
+    const fromDeg = windDirectionDisplayDeg(deg, LIVE_SPOT_VIEW_MODE.METEO);
+    const pres = windDirectionPresentationDeg(fromDeg);
+    if (fromDeg == null || !pres) return "---";
+    const degText = Number.isInteger(fromDeg) ? String(fromDeg) : String(Number(fromDeg.toFixed(1)));
+    return `${degText}° ${pres.abbr}`;
+  }
+
+  function formatWindDirectionForMode(deg, mode) {
+    if (mode === LIVE_SPOT_VIEW_MODE.KITE) {
+      return formatWindDirectionArrow(deg, LIVE_SPOT_VIEW_MODE.KITE);
+    }
+    return formatWindDirectionDegreesAbbr(deg);
   }
 
   function formatWindDirectionNameI18n(deg) {
@@ -501,7 +542,7 @@ const LiveSpotReadonlyConnector = (() => {
       gustDd.textContent = p.gust_knots == null ? "-- kn" : `${p.gust_knots} kn`;
     }
     if (dirDd) {
-      dirDd.textContent = formatWindDirectionArrowAbbr(p.wind_direction);
+      dirDd.textContent = formatWindDirectionForMode(p.wind_direction, liveSpotViewMode);
     }
     if (windNameDd) {
       windNameDd.textContent =
@@ -511,7 +552,7 @@ const LiveSpotReadonlyConnector = (() => {
       const missing = forecastMissingLabel();
       const dir = p.wind_direction == null
         ? missing
-        : `${p.wind_direction}° ${formatWindDirectionArrowAbbr(p.wind_direction)}`;
+        : formatWindDirectionDegreesAbbr(p.wind_direction);
       const wind = p.wind_knots == null ? missing : `${p.wind_knots} kn`;
       const gust = p.gust_knots == null ? missing : `${p.gust_knots} kn`;
       providerDd.textContent = `Dir ${dir} · Vel ${wind} · Raff ${gust}`;
@@ -601,7 +642,7 @@ const LiveSpotReadonlyConnector = (() => {
       }
       directionEl.hidden = false;
       windNameEl.hidden = false;
-      directionEl.textContent = hasDirection ? formatWindDirectionArrowAbbr(fc.wind_direction) : missing;
+      directionEl.textContent = hasDirection ? formatWindDirectionForMode(fc.wind_direction, liveSpotViewMode) : missing;
       windNameEl.textContent = hasDirection ? formatWindDirectionNameI18n(fc.wind_direction) : missing;
     };
     setFc("1", fc1);
@@ -817,6 +858,7 @@ function renderLiveSpotReadonly(payload) {
 }
 
 let currentLang = "it";
+let liveSpotViewMode = LIVE_SPOT_VIEW_MODE.KITE;
 
 if (typeof window.RDK_TRANSLATIONS === "undefined") {
   console.warn("[mock_ui] window.RDK_TRANSLATIONS non disponibile: assicurati di caricare translations.js prima di mock_ui.js. Uso fallback EN minimi.");
@@ -983,6 +1025,7 @@ function renderUI() {
   if (showLiveSpot) {
     showLiveSpot.textContent = liveSpotUiStrings().idle;
   }
+  syncLiveSpotViewControls();
 
   const formEl = document.getElementById("mockSessionForm");
   if (!formEl) return;
@@ -1041,6 +1084,7 @@ const showLiveSpot = document.getElementById("showLiveSpot");
 const liveSpotPanel = document.getElementById("liveSpotPanel");
 const liveSpotMessage = document.getElementById("liveSpotMessage");
 const languageButtons = Array.from(document.querySelectorAll(".language-button"));
+const liveSpotViewButtons = Array.from(document.querySelectorAll("[data-live-spot-view]"));
 const uiStatePreview = document.getElementById("uiStatePreview");
 const payloadContractPreview = document.getElementById("payloadContractPreview");
 const legacyPayloadPreview = document.getElementById("legacyPayloadPreview");
@@ -1048,6 +1092,31 @@ const userDataPreview = document.getElementById("userDataPreview");
 const readonlyLeakStatus = document.getElementById("readonlyLeakStatus");
 const endpointCallsStatus = document.getElementById("endpointCallsStatus");
 const thankYouBanner = document.getElementById("thankYouBanner");
+
+function normalizeLiveSpotViewMode(mode) {
+  return mode === LIVE_SPOT_VIEW_MODE.METEO ? LIVE_SPOT_VIEW_MODE.METEO : LIVE_SPOT_VIEW_MODE.KITE;
+}
+
+function syncLiveSpotViewControls() {
+  const copy = liveSpotViewUiStrings();
+  const currentMode = normalizeLiveSpotViewMode(liveSpotViewMode);
+  const switcher = document.querySelector(".live-spot-view-switch");
+  if (switcher && copy.group) {
+    switcher.setAttribute("aria-label", copy.group);
+  }
+
+  liveSpotViewButtons.forEach((button) => {
+    const mode = normalizeLiveSpotViewMode(button.getAttribute("data-live-spot-view"));
+    const isActive = mode === currentMode;
+    button.textContent = mode === LIVE_SPOT_VIEW_MODE.METEO ? copy.meteo : copy.kite;
+    button.classList.toggle("is-active", isActive);
+    button.setAttribute("aria-pressed", isActive ? "true" : "false");
+  });
+
+  if (liveSpotPanel && LiveSpotReadonlyConnector && typeof LiveSpotReadonlyConnector.getLastNormalizedPayload === "function") {
+    LiveSpotReadonlyConnector.renderLiveSpotReadonly(liveSpotPanel, LiveSpotReadonlyConnector.getLastNormalizedPayload());
+  }
+}
 
 const THANK_YOU_BANNER_MESSAGES = Object.freeze({
   it: Object.freeze({
@@ -1571,6 +1640,13 @@ showLiveSpot?.addEventListener("click", async () => {
     showLiveSpot.classList.remove("is-loading");
     showLiveSpot.textContent = liveSpotUiStrings().idle;
   }
+});
+
+liveSpotViewButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    liveSpotViewMode = normalizeLiveSpotViewMode(button.getAttribute("data-live-spot-view"));
+    syncLiveSpotViewControls();
+  });
 });
 
 languageButtons.forEach((button) => {
