@@ -41,7 +41,7 @@
           <fieldset class="form-block form-block-spot">
             <legend data-t-legacy="live_spot_spot">Spot</legend>
             <label class="field-spot">
-              <input type="text" data-i18n-placeholder="spotPh" data-state-field="spot.location" aria-label="Spot">
+              <input type="text" data-i18n-placeholder="spotPh" aria-label="Spot" data-state-field="spot.location">
             </label>
             <button class="live-spot-button" id="showLiveSpot" type="button">Vedi Live Spot</button>
             <p class="live-spot-message" id="liveSpotMessage" aria-live="polite"></p>
@@ -50,15 +50,15 @@
           <fieldset class="form-block">
             <legend data-t-legacy="live_spot_rider">Rider</legend>
             <label class="field-weight is-required">
-              <span data-i18n="weight">Peso</span>
+              <span data-i18n="weight"></span>
               <input type="text" data-i18n-placeholder="weightPh" data-state-field="rider.weight" data-required="true">
             </label>
             <label class="field-gender">
-              <span data-i18n="gender">Gender</span>
+              <span data-i18n="gender"></span>
               <select data-state-field="rider.gender"></select>
             </label>
             <label class="field-level is-required">
-              <span data-i18n="level">Livello</span>
+              <span data-i18n="level"></span>
               <select data-state-field="rider.level" data-required="true"></select>
             </label>
           </fieldset>
@@ -66,27 +66,29 @@
           <fieldset class="form-block">
             <legend data-t-legacy="label_board">Tavola</legend>
             <label class="field-board is-required">
-              <span data-i18n="boardType">Tipo tavola</span>
+              <span data-i18n="boardType"></span>
               <select data-state-field="board.board" data-required="true"></select>
             </label>
             <label class="field-board-size">
-              <span data-i18n="boardSize">Misura tavola</span>
+              <span data-i18n="boardSize"></span>
               <select data-state-field="board.boardSize"></select>
             </label>
           </fieldset>
 
           <fieldset class="form-block">
             <legend data-t-legacy="label_kite_size">Kite</legend>
-            <label class="field-kite-size is-required">
-              <span data-i18n="kiteSize">Misura kite</span>
-              <input type="text" placeholder="Kite" data-state-field="kite.kite" data-required="true">
-            </label>
-            <label class="field-brand">
-              <span data-i18n="brand">Brand</span>
-              <select data-state-field="kite.brand"></select>
-            </label>
-            <label class="field-model">
-              <span data-i18n="model">Model</span>
+            <div class="kite-row">
+              <label class="field-kite-size is-required">
+                <span data-i18n="kiteSize"></span>
+                <input type="text" placeholder="Kite" data-state-field="kite.kite" data-required="true">
+              </label>
+              <label class="field-brand field-kite-brand">
+                <span data-i18n="brand"></span>
+                <select data-state-field="kite.brand"></select>
+              </label>
+            </div>
+            <label class="field-model field-kite-model">
+              <span data-i18n="model"></span>
               <select data-state-field="kite.model"></select>
             </label>
           </fieldset>
@@ -94,20 +96,20 @@
           <fieldset class="form-block wind-user-block">
             <legend data-t-legacy="section_context">Condizioni</legend>
             <label class="field-wind is-required">
-              <span data-i18n="wind">Vento stimato</span>
+              <span data-i18n="wind"></span>
               <input type="text" data-i18n-placeholder="windPh" data-state-field="windUserInput.wind" data-required="true">
             </label>
             <label class="field-water">
-              <span data-i18n="water">Condizioni acqua</span>
+              <span data-i18n="water"></span>
               <select data-state-field="water.water"></select>
             </label>
-            <p class="field-hint" data-i18n="windHint">Separato dal Live Spot: questo e' il vento dichiarato.</p>
+            <p class="field-hint" data-i18n="windHint"></p>
           </fieldset>
 
           <fieldset class="form-block">
             <legend data-t-legacy="label_result">Esito</legend>
             <label class="field-result is-required">
-              <span data-i18n="result">Risultato sessione</span>
+              <span data-i18n="result"></span>
               <select data-state-field="result.result" data-required="true"></select>
             </label>
           </fieldset>
@@ -120,7 +122,7 @@
           </fieldset>
 
           <div class="cta-row">
-            <button type="button" id="visualCta" data-i18n="submit">INVIA SESSIONE</button>
+            <button type="button" id="visualCta" data-i18n="submit"></button>
             <p id="visualCtaMessage" class="cta-message" aria-live="polite"></p>
           </div>
 
@@ -164,27 +166,13 @@
           <div class="section-head">
             <p class="eyebrow" data-i18n="lsReadonlyBadge">READ ONLY</p>
             <h2 id="live-spot-title" data-i18n="lsPanelTitle">Live Spot</h2>
+            <div class="live-spot-view-switch" role="group" aria-label="Vista Live Spot">
+              <button type="button" class="live-spot-view-button is-active" data-live-spot-view="kite" aria-pressed="true">KITER</button>
+              <button type="button" class="live-spot-view-button" data-live-spot-view="meteo" aria-pressed="false">METEO</button>
+            </div>
           </div>
 
           <div class="cockpit-grid">
-            <article class="info-card status-search">
-              <h3 data-i18n="lsOverviewHeading">Spot overview</h3>
-              <dl>
-                <div>
-                  <dt data-i18n="lsOverviewSpotLabel">Spot</dt>
-                  <dd class="placeholder" data-live-spot-dd="overview_spot">-</dd>
-                </div>
-                <div>
-                  <dt data-i18n="lsOverviewConfidence">Affidabilita</dt>
-                  <dd class="placeholder" data-live-spot-dd="overview_confidence">-</dd>
-                </div>
-                <div>
-                  <dt data-i18n="lsOverviewUpdated">Ultimo aggiornamento</dt>
-                  <dd class="placeholder" data-live-spot-dd="overview_updated">--:--</dd>
-                </div>
-              </dl>
-            </article>
-
             <article class="info-card status-ok">
               <h3 data-i18n="lsWindNowHeading">Wind now</h3>
               <dl>
@@ -207,6 +195,24 @@
                 <div>
                   <dt data-i18n="lsAnemometer">Anemometro</dt>
                   <dd class="placeholder" data-live-spot-dd="anemometer">--</dd>
+                </div>
+              </dl>
+            </article>
+
+            <article class="info-card status-search">
+              <h3 data-i18n="lsOverviewHeading">Spot overview</h3>
+              <dl>
+                <div>
+                  <dt data-i18n="lsOverviewSpotLabel">Spot</dt>
+                  <dd class="placeholder" data-live-spot-dd="overview_spot">—</dd>
+                </div>
+                <div>
+                  <dt data-i18n="lsOverviewConfidence">Affidabilità</dt>
+                  <dd class="placeholder" data-live-spot-dd="overview_confidence">—</dd>
+                </div>
+                <div>
+                  <dt data-i18n="lsOverviewUpdated">Ultimo aggiornamento</dt>
+                  <dd class="placeholder" data-live-spot-dd="overview_updated">--:--</dd>
                 </div>
               </dl>
             </article>
