@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>VENTO LIVE visual wireframe</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="hero">
+      <div class="app-shell hero__inner">
+        <div class="hero__copy">
+          <p class="eyebrow">VENTO LIVE</p>
+          <h1>VENTO LIVE</h1>
+          <p class="hero__subtitle">Live wind for kiters</p>
+        </div>
+        <nav class="language-switch" aria-label="Selettore lingua">
+          <span class="language-switch__badge">Lingua</span>
+          <div class="language-switch__buttons">
+            <button class="language-button is-active" type="button" data-language="IT" aria-pressed="true">IT 🇮🇹</button>
+            <button class="language-button" type="button" data-language="EN" aria-pressed="false">EN 🇬🇧</button>
+            <button class="language-button" type="button" data-language="DE" aria-pressed="false">DE 🇩🇪</button>
+            <button class="language-button" type="button" data-language="ES" aria-pressed="false">ES 🇪🇸</button>
+            <button class="language-button" type="button" data-language="FR" aria-pressed="false">FR 🇫🇷</button>
+          </div>
+        </nav>
+        <div class="hero__identity" aria-hidden="true">
+          <img src="assets/kiteboarder-tribal.png" alt="">
+        </div>
+      </div>
+    </header>
+
+    <main class="app-shell page-shell">
+      <section class="session" aria-labelledby="session-title">
+        <div class="section-head">
+          <p class="eyebrow">FORM KITER</p>
+          <h2 id="session-title">Nuova sessione</h2>
+        </div>
+
+        <form class="visual-form" id="mockSessionForm" novalidate>
+          <fieldset class="form-block form-block-spot">
+            <legend data-t-legacy="live_spot_spot">Spot</legend>
+            <label class="field-spot">
+              <input type="text" data-i18n-placeholder="spotPh" aria-label="Spot" data-state-field="spot.location">
+            </label>
+            <button class="live-spot-button" id="showLiveSpot" type="button">Vedi Live Spot</button>
+            <p class="live-spot-message" id="liveSpotMessage" aria-live="polite"></p>
+          </fieldset>
+
+          <fieldset class="form-block">
+            <legend data-t-legacy="live_spot_rider">Rider</legend>
+            <label class="field-weight is-required">
+              <span data-i18n="weight"></span>
+              <input type="text" data-i18n-placeholder="weightPh" data-state-field="rider.weight" data-required="true">
+            </label>
+            <label class="field-gender">
+              <span data-i18n="gender"></span>
+              <select data-state-field="rider.gender"></select>
+            </label>
+            <label class="field-level is-required">
+              <span data-i18n="level"></span>
+              <select data-state-field="rider.level" data-required="true"></select>
+            </label>
+          </fieldset>
+
+          <fieldset class="form-block">
+            <legend data-t-legacy="label_board">Tavola</legend>
+            <label class="field-board is-required">
+              <span data-i18n="boardType"></span>
+              <select data-state-field="board.board" data-required="true"></select>
+            </label>
+            <label class="field-board-size">
+              <span data-i18n="boardSize"></span>
+              <select data-state-field="board.boardSize"></select>
+            </label>
+          </fieldset>
+
+          <fieldset class="form-block">
+            <legend data-t-legacy="label_kite_size">Kite</legend>
+            <div class="kite-row">
+              <label class="field-kite-size is-required">
+                <span data-i18n="kiteSize"></span>
+                <input type="text" placeholder="Kite" data-state-field="kite.kite" data-required="true">
+              </label>
+              <label class="field-brand field-kite-brand">
+                <span data-i18n="brand"></span>
+                <select data-state-field="kite.brand"></select>
+              </label>
+            </div>
+            <label class="field-model field-kite-model">
+              <span data-i18n="model"></span>
+              <select data-state-field="kite.model"></select>
+            </label>
+          </fieldset>
+
+          <fieldset class="form-block wind-user-block">
+            <legend data-t-legacy="section_context">Condizioni</legend>
+            <label class="field-wind is-required">
+              <span data-i18n="wind"></span>
+              <input type="text" data-i18n-placeholder="windPh" data-state-field="windUserInput.wind" data-required="true">
+            </label>
+            <label class="field-water">
+              <span data-i18n="water"></span>
+              <select data-state-field="water.water"></select>
+            </label>
+            <p class="field-hint" data-i18n="windHint"></p>
+          </fieldset>
+
+          <fieldset class="form-block">
+            <legend data-t-legacy="label_result">Esito</legend>
+            <label class="field-result is-required">
+              <span data-i18n="result"></span>
+              <select data-state-field="result.result" data-required="true"></select>
+            </label>
+          </fieldset>
+
+          <fieldset class="form-block note-block">
+            <legend data-t-legacy="label_notes">Note</legend>
+            <label class="field-note wide-field note-field">
+              <textarea rows="4" data-i18n-placeholder="notePh" aria-label="Note" data-state-field="note.note"></textarea>
+            </label>
+          </fieldset>
+
+          <div class="cta-row">
+            <button type="button" id="visualCta" data-i18n="submit"></button>
+            <p id="visualCtaMessage" class="cta-message" aria-live="polite"></p>
+          </div>
+
+          <div id="thankYouBanner" class="thank-you-banner" hidden role="status"></div>
+
+          <section class="payload-debug" id="payloadDebug" aria-label="Anteprima dati">
+            <h3>Anteprima payload in uscita</h3>
+            <pre id="userDataPreview">-</pre>
+            <div id="technicalDebugPanel" hidden>
+              <div class="payload-debug__grid">
+                <section>
+                  <h3>UiState</h3>
+                  <pre id="uiStatePreview">{}</pre>
+                </section>
+                <section>
+                  <h3>PayloadContractV1</h3>
+                  <pre id="payloadContractPreview">{}</pre>
+                </section>
+                <section>
+                  <h3>LegacyPayload</h3>
+                  <pre id="legacyPayloadPreview">{}</pre>
+                </section>
+              </div>
+              <dl class="payload-debug__status">
+                <div>
+                  <dt>readonly_leak</dt>
+                  <dd id="readonlyLeakStatus">false</dd>
+                </div>
+                <div>
+                  <dt>endpoint_calls</dt>
+                  <dd id="endpointCallsStatus">0</dd>
+                </div>
+              </dl>
+            </div>
+          </section>
+        </form>
+      </section>
+
+      <aside class="side-rail" aria-label="Supporto visuale">
+        <section class="cockpit" id="liveSpotPanel" aria-labelledby="live-spot-title">
+          <div class="section-head">
+            <p class="eyebrow" data-i18n="lsReadonlyBadge">READ ONLY</p>
+            <h2 id="live-spot-title" data-i18n="lsPanelTitle">Live Spot</h2>
+            <div class="live-spot-view-switch" role="group" aria-label="Vista Live Spot">
+              <button type="button" class="live-spot-view-button is-active" data-live-spot-view="kite" aria-pressed="true">KITER</button>
+              <button type="button" class="live-spot-view-button" data-live-spot-view="meteo" aria-pressed="false">METEO</button>
+            </div>
+          </div>
+
+          <div class="cockpit-grid">
+            <article class="info-card status-ok">
+              <h3 data-i18n="lsWindNowHeading">Wind now</h3>
+              <dl>
+                <div>
+                  <dt data-i18n="lsWindSpeed">Vento</dt>
+                  <dd class="placeholder" data-live-spot-dd="wind">-- kn</dd>
+                </div>
+                <div>
+                  <dt data-i18n="lsWindDirection">Direzione</dt>
+                  <dd class="placeholder" data-live-spot-dd="direction">---</dd>
+                </div>
+                <div>
+                  <dt data-i18n="lsWindNameLabel">Nome vento</dt>
+                  <dd class="placeholder" data-live-spot-dd="wind_name">---</dd>
+                </div>
+                <div>
+                  <dt data-i18n="lsWindGust">Raffiche</dt>
+                  <dd class="placeholder" data-live-spot-dd="gust">-- kn</dd>
+                </div>
+                <div>
+                  <dt data-i18n="lsAnemometer">Anemometro</dt>
+                  <dd class="placeholder" data-live-spot-dd="anemometer">--</dd>
+                </div>
+              </dl>
+            </article>
+
+            <article class="info-card status-search">
+              <h3 data-i18n="lsOverviewHeading">Spot overview</h3>
+              <dl>
+                <div>
+                  <dt data-i18n="lsOverviewSpotLabel">Spot</dt>
+                  <dd class="placeholder" data-live-spot-dd="overview_spot">—</dd>
+                </div>
+                <div>
+                  <dt data-i18n="lsOverviewConfidence">Affidabilità</dt>
+                  <dd class="placeholder" data-live-spot-dd="overview_confidence">—</dd>
+                </div>
+                <div>
+                  <dt data-i18n="lsOverviewUpdated">Ultimo aggiornamento</dt>
+                  <dd class="placeholder" data-live-spot-dd="overview_updated">--:--</dd>
+                </div>
+              </dl>
+            </article>
+
+            <article class="info-card">
+              <h3 data-i18n="lsForecastHeading">Next 3 hours</h3>
+              <div class="hours">
+                <div data-live-spot-fc="1">
+                  <span data-i18n="lsFc1">+1h</span>
+                  <strong>--</strong>
+                </div>
+                <div data-live-spot-fc="2">
+                  <span data-i18n="lsFc2">+2h</span>
+                  <strong>--</strong>
+                </div>
+                <div data-live-spot-fc="3">
+                  <span data-i18n="lsFc3">+3h</span>
+                  <strong>--</strong>
+                </div>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="instructions" aria-labelledby="instructions-title">
+          <div class="section-head">
+            <p class="eyebrow">GUIDA RAPIDA</p>
+            <h2 id="instructions-title">Come funziona</h2>
+          </div>
+          <ol>
+            <li>Scegli lo spot</li>
+            <li>Inserisci la tua sessione</li>
+            <li>Invia in 20 secondi</li>
+            <li>Aiuti il sistema a migliorare</li>
+          </ol>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="app-footer" aria-label="Contatti VENTO LIVE">
+      <p>
+        <span class="app-footer__label">Contatto:</span>
+        <a href="mailto:ventoliveapp@gmail.com">ventoliveapp@gmail.com</a>
+      </p>
+    </footer>
+
+    <script src="../../translations.js" defer></script>
+    <script src="../mock-engine/mock_engine.browser.js" defer></script>
+    <script src="static_data.js" defer></script>
+    <script src="mock_ui.js" defer></script>
+  </body>
+</html>
