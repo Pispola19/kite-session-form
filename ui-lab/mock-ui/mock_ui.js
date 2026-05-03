@@ -3,7 +3,7 @@
 const LIVE_SPOT_CONFIG = {
   ENABLE_REAL: true,
   BASE_URL: "https://spectrum-sudden-troops-reload.trycloudflare.com",
-  TIMEOUT_MS: 2500
+  TIMEOUT_MS: 5000
 };
 
 const SESSION_SUBMIT_CONFIG = {
@@ -1594,6 +1594,33 @@ form?.addEventListener("change", (event) => {
 
 showLiveSpot?.addEventListener("click", async () => {
   const lsUi = liveSpotUiStrings();
+  const setLiveSpotPanelFeedback = (text) => {
+    if (!liveSpotPanel) return;
+    const windDd = liveSpotPanel.querySelector('[data-live-spot-dd="wind"]');
+    const dirDd = liveSpotPanel.querySelector('[data-live-spot-dd="direction"]');
+    const windNameDd = liveSpotPanel.querySelector('[data-live-spot-dd="wind_name"]');
+    const gustDd = liveSpotPanel.querySelector('[data-live-spot-dd="gust"]');
+    const providerDd = liveSpotPanel.querySelector('[data-live-spot-dd="anemometer"]');
+    const spotDd = liveSpotPanel.querySelector('[data-live-spot-dd="overview_spot"]');
+    const confDd = liveSpotPanel.querySelector('[data-live-spot-dd="overview_confidence"]');
+    const updatedDd = liveSpotPanel.querySelector('[data-live-spot-dd="overview_updated"]');
+
+    if (windDd) windDd.textContent = text;
+    if (dirDd) dirDd.textContent = "---";
+    if (windNameDd) windNameDd.textContent = "---";
+    if (gustDd) gustDd.textContent = "-- kn";
+    if (providerDd) providerDd.textContent = text;
+    if (spotDd) spotDd.textContent = text;
+    if (confDd) confDd.textContent = "---";
+    if (updatedDd) updatedDd.textContent = "--:--";
+  };
+  const scrollLiveSpotPanel = () => {
+    if (window.matchMedia("(max-width: 760px)").matches) {
+      if (liveSpotPanel && typeof liveSpotPanel.scrollIntoView === "function") {
+        liveSpotPanel.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+  };
   showLiveSpot.disabled = true;
   showLiveSpot.classList.add("is-loading");
   showLiveSpot.textContent = lsUi.loading;
@@ -1608,7 +1635,22 @@ showLiveSpot?.addEventListener("click", async () => {
     let payload;
 
     if (LIVE_SPOT_CONFIG.ENABLE_REAL) {
+      if (!spot) {
+        setLiveSpotPanelFeedback("Inserisci prima lo spot per vedere il vento live");
+        scrollLiveSpotPanel();
+        return;
+      }
+      setLiveSpotPanelFeedback("Aggiornamento vento live...");
+      scrollLiveSpotPanel();
       const realData = await fetchLiveSpotReal(spot);
+      const hasLiveWindData =
+        realData &&
+        (typeof realData.wind_knots === "number" || typeof realData.wind_direction === "number");
+      if (!hasLiveWindData) {
+        setLiveSpotPanelFeedback("Vento live non disponibile, riprova");
+        scrollLiveSpotPanel();
+        return;
+      }
       payload = LiveSpotReadonlyConnector.normalizeLiveSpotPayload(realData);
     } else {
       payload = LiveSpotReadonlyConnector.normalizeLiveSpotPayload(
@@ -1630,11 +1672,7 @@ showLiveSpot?.addEventListener("click", async () => {
       });
     }
 
-    if (window.matchMedia("(max-width: 760px)").matches) {
-      if (liveSpotPanel && typeof liveSpotPanel.scrollIntoView === "function") {
-        liveSpotPanel.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }
+    scrollLiveSpotPanel();
   } finally {
     showLiveSpot.disabled = false;
     showLiveSpot.classList.remove("is-loading");
