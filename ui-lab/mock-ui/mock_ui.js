@@ -2,7 +2,7 @@
 
 const LIVE_SPOT_CONFIG = {
   ENABLE_REAL: true,
-  BASE_URL: "https://studying-encountered-bestsellers-mason.trycloudflare.com",
+  BASE_URL: "https://api.ventolive.com",
   TIMEOUT_MS: 5000
 };
 
