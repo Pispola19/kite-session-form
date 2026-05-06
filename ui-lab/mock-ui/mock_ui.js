@@ -674,14 +674,26 @@ const LiveSpotReadonlyConnector = (() => {
   };
 })();
 
-async function fetchLiveSpotReal(spot) {
+async function fetchLiveSpotReal(spot, candidate) {
   if (!LIVE_SPOT_CONFIG.ENABLE_REAL) return null;
   if (!spot) return null;
 
-  const url =
+  let url =
     LIVE_SPOT_CONFIG.BASE_URL +
     "/wind/latest?spot=" +
     encodeURIComponent(spot);
+
+  if (
+    candidate &&
+    typeof candidate.lat === "number" &&
+    typeof candidate.lon === "number"
+  ) {
+    url +=
+      "&lat=" +
+      encodeURIComponent(String(candidate.lat)) +
+      "&lon=" +
+      encodeURIComponent(String(candidate.lon));
+  }
 
   try {
     const controller = new AbortController();
@@ -1643,6 +1655,66 @@ showLiveSpot?.addEventListener("click", async () => {
       setLiveSpotPanelFeedback("Aggiornamento vento live...");
       scrollLiveSpotPanel();
       const realData = await fetchLiveSpotReal(spot);
+
+      if (
+        realData &&
+        realData.needs_disambiguation &&
+        Array.isArray(realData.candidates) &&
+        realData.candidates.length
+      ) {
+        if (liveSpotMessage) {
+          liveSpotMessage.textContent = "";
+          const intro = document.createElement("span");
+          intro.textContent = "Scegli la località corretta: ";
+          liveSpotMessage.appendChild(intro);
+
+          realData.candidates.slice(0, 5).forEach((candidate) => {
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.textContent = candidate.label || candidate.name || "Località";
+            btn.style.margin = "0.25rem";
+            btn.style.padding = "0.35rem 0.55rem";
+            btn.style.borderRadius = "999px";
+            btn.style.border = "1px solid currentColor";
+            btn.style.background = "transparent";
+            btn.style.color = "inherit";
+            btn.style.cursor = "pointer";
+            btn.addEventListener("click", async () => {
+              showLiveSpot.disabled = true;
+              showLiveSpot.classList.add("is-loading");
+              showLiveSpot.textContent = lsUi.loading;
+              setLiveSpotPanelFeedback("Aggiornamento vento live...");
+              const selectedData = await fetchLiveSpotReal(spot, candidate);
+              const selectedHasLiveWindData =
+                selectedData &&
+                (typeof selectedData.wind_knots === "number" || typeof selectedData.wind_direction === "number");
+              if (!selectedHasLiveWindData) {
+                setLiveSpotPanelFeedback("Vento live non disponibile, riprova");
+                showLiveSpot.disabled = false;
+                showLiveSpot.classList.remove("is-loading");
+                showLiveSpot.textContent = lsUi.idle;
+                return;
+              }
+              const selectedPayload = LiveSpotReadonlyConnector.normalizeLiveSpotPayload(selectedData);
+              renderLiveSpotReadonly(selectedPayload);
+              renderPayloadDebug();
+              if (liveSpotPanel) {
+                liveSpotPanel.classList.add("is-visible");
+              }
+              if (liveSpotMessage) {
+                liveSpotMessage.textContent = "Live Spot aggiornato: " + (candidate.label || spot);
+              }
+              showLiveSpot.disabled = false;
+              showLiveSpot.classList.remove("is-loading");
+              showLiveSpot.textContent = lsUi.idle;
+            });
+            liveSpotMessage.appendChild(btn);
+          });
+        }
+        scrollLiveSpotPanel();
+        return;
+      }
+
       const hasLiveWindData =
         realData &&
         (typeof realData.wind_knots === "number" || typeof realData.wind_direction === "number");
