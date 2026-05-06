@@ -1700,6 +1700,7 @@ showLiveSpot?.addEventListener("click", async () => {
               if (liveSpotPanel) {
                 liveSpotPanel.classList.add("is-visible");
               }
+              scrollLiveSpotPanel();
               if (liveSpotMessage) {
                 liveSpotMessage.textContent = lsUi.updatedPrefix + (candidate.label || spot);
               }
@@ -1710,7 +1711,6 @@ showLiveSpot?.addEventListener("click", async () => {
             list.appendChild(btn);
           });
         }
-        scrollLiveSpotPanel();
         return;
       }
 
