@@ -915,3 +915,69 @@ button {
     align-self: stretch;
   }
 }
+
+/* Live Spot disambiguation: compact clickable list, not oversized pills. */
+.live-spot-candidate-intro {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--sand);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.35;
+}
+
+.live-spot-candidate-list {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  max-width: 100%;
+}
+
+.live-spot-candidate-button {
+  display: block;
+  width: 100%;
+  min-height: 34px;
+  padding: 7px 9px;
+  border: 1px solid rgba(142, 219, 211, 0.28);
+  border-radius: 9px;
+  background: rgba(6, 23, 35, 0.32);
+  color: var(--paper);
+  font-size: 12.5px;
+  font-weight: 750;
+  line-height: 1.25;
+  text-align: left;
+  cursor: pointer;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  -webkit-tap-highlight-color: rgba(142, 219, 211, 0.18);
+}
+
+.live-spot-candidate-button:hover,
+.live-spot-candidate-button:focus-visible {
+  border-color: rgba(142, 219, 211, 0.62);
+  background: rgba(35, 184, 170, 0.12);
+  outline: none;
+}
+
+.live-spot-candidate-button:active {
+  transform: translateY(1px);
+}
+
+@media (max-width: 760px) {
+  .live-spot-candidate-intro {
+    margin-bottom: 6px;
+    font-size: 12.5px;
+  }
+
+  .live-spot-candidate-list {
+    gap: 5px;
+  }
+
+  .live-spot-candidate-button {
+    min-height: 32px;
+    padding: 6px 8px;
+    border-radius: 8px;
+    font-size: 11.8px;
+    line-height: 1.2;
+  }
+}

@@ -1664,21 +1664,20 @@ showLiveSpot?.addEventListener("click", async () => {
       ) {
         if (liveSpotMessage) {
           liveSpotMessage.textContent = "";
-          const intro = document.createElement("span");
+          const intro = document.createElement("div");
+          intro.className = "live-spot-candidate-intro";
           intro.textContent = lsUi.disambiguationPrompt;
           liveSpotMessage.appendChild(intro);
+
+          const list = document.createElement("div");
+          list.className = "live-spot-candidate-list";
+          liveSpotMessage.appendChild(list);
 
           realData.candidates.slice(0, 5).forEach((candidate) => {
             const btn = document.createElement("button");
             btn.type = "button";
+            btn.className = "live-spot-candidate-button";
             btn.textContent = candidate.label || candidate.name || lsUi.locationFallback;
-            btn.style.margin = "0.25rem";
-            btn.style.padding = "0.35rem 0.55rem";
-            btn.style.borderRadius = "999px";
-            btn.style.border = "1px solid currentColor";
-            btn.style.background = "transparent";
-            btn.style.color = "inherit";
-            btn.style.cursor = "pointer";
             btn.addEventListener("click", async () => {
               showLiveSpot.disabled = true;
               showLiveSpot.classList.add("is-loading");
@@ -1708,7 +1707,7 @@ showLiveSpot?.addEventListener("click", async () => {
               showLiveSpot.classList.remove("is-loading");
               showLiveSpot.textContent = lsUi.idle;
             });
-            liveSpotMessage.appendChild(btn);
+            list.appendChild(btn);
           });
         }
         scrollLiveSpotPanel();
