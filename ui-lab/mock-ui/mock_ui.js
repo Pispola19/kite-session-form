@@ -275,11 +275,11 @@ function liveSpotViewUiStrings() {
 }
 
 const LIVE_SPOT_BUTTON_UI = Object.freeze({
-  it: Object.freeze({ idle: "Vedi Live Spot", loading: "Cerco vento…", message: "Aggiornamento Live Spot…" }),
-  en: Object.freeze({ idle: "View Live Spot", loading: "Fetching wind…", message: "Updating Live Spot…" }),
-  de: Object.freeze({ idle: "Live Spot anzeigen", loading: "Wind wird geladen…", message: "Live Spot wird aktualisiert…" }),
-  es: Object.freeze({ idle: "Ver Live Spot", loading: "Buscando viento…", message: "Actualizando Live Spot…" }),
-  fr: Object.freeze({ idle: "Voir Live Spot", loading: "Recherche du vent…", message: "Mise à jour du Live Spot…" })
+  it: Object.freeze({ idle: "Vedi Live Spot", loading: "Cerco vento…", message: "Aggiornamento Live Spot…", disambiguationPrompt: "Scegli la località corretta: ", locationFallback: "Località", updatingWind: "Aggiornamento vento live...", unavailable: "Vento live non disponibile, riprova", updatedPrefix: "Live Spot aggiornato: " }),
+  en: Object.freeze({ idle: "View Live Spot", loading: "Fetching wind…", message: "Updating Live Spot…", disambiguationPrompt: "Choose the correct location: ", locationFallback: "Location", updatingWind: "Updating live wind...", unavailable: "Live wind unavailable, try again", updatedPrefix: "Live Spot updated: " }),
+  de: Object.freeze({ idle: "Live Spot anzeigen", loading: "Wind wird geladen…", message: "Live Spot wird aktualisiert…", disambiguationPrompt: "Wähle den richtigen Ort: ", locationFallback: "Ort", updatingWind: "Live-Wind wird aktualisiert...", unavailable: "Live-Wind nicht verfügbar, versuche es erneut", updatedPrefix: "Live Spot aktualisiert: " }),
+  es: Object.freeze({ idle: "Ver Live Spot", loading: "Buscando viento…", message: "Actualizando Live Spot…", disambiguationPrompt: "Elige la localidad correcta: ", locationFallback: "Localidad", updatingWind: "Actualizando viento live...", unavailable: "Viento live no disponible, vuelve a intentarlo", updatedPrefix: "Live Spot actualizado: " }),
+  fr: Object.freeze({ idle: "Voir Live Spot", loading: "Recherche du vent…", message: "Mise à jour du Live Spot…", disambiguationPrompt: "Choisis la bonne localité : ", locationFallback: "Localité", updatingWind: "Mise à jour du vent live...", unavailable: "Vent live indisponible, réessaie", updatedPrefix: "Live Spot mis à jour : " })
 });
 
 function liveSpotUiStrings() {
@@ -1665,13 +1665,13 @@ showLiveSpot?.addEventListener("click", async () => {
         if (liveSpotMessage) {
           liveSpotMessage.textContent = "";
           const intro = document.createElement("span");
-          intro.textContent = "Scegli la località corretta: ";
+          intro.textContent = lsUi.disambiguationPrompt;
           liveSpotMessage.appendChild(intro);
 
           realData.candidates.slice(0, 5).forEach((candidate) => {
             const btn = document.createElement("button");
             btn.type = "button";
-            btn.textContent = candidate.label || candidate.name || "Località";
+            btn.textContent = candidate.label || candidate.name || lsUi.locationFallback;
             btn.style.margin = "0.25rem";
             btn.style.padding = "0.35rem 0.55rem";
             btn.style.borderRadius = "999px";
@@ -1683,13 +1683,13 @@ showLiveSpot?.addEventListener("click", async () => {
               showLiveSpot.disabled = true;
               showLiveSpot.classList.add("is-loading");
               showLiveSpot.textContent = lsUi.loading;
-              setLiveSpotPanelFeedback("Aggiornamento vento live...");
+              setLiveSpotPanelFeedback(lsUi.updatingWind);
               const selectedData = await fetchLiveSpotReal(spot, candidate);
               const selectedHasLiveWindData =
                 selectedData &&
                 (typeof selectedData.wind_knots === "number" || typeof selectedData.wind_direction === "number");
               if (!selectedHasLiveWindData) {
-                setLiveSpotPanelFeedback("Vento live non disponibile, riprova");
+                setLiveSpotPanelFeedback(lsUi.unavailable);
                 showLiveSpot.disabled = false;
                 showLiveSpot.classList.remove("is-loading");
                 showLiveSpot.textContent = lsUi.idle;
@@ -1702,7 +1702,7 @@ showLiveSpot?.addEventListener("click", async () => {
                 liveSpotPanel.classList.add("is-visible");
               }
               if (liveSpotMessage) {
-                liveSpotMessage.textContent = "Live Spot aggiornato: " + (candidate.label || spot);
+                liveSpotMessage.textContent = lsUi.updatedPrefix + (candidate.label || spot);
               }
               showLiveSpot.disabled = false;
               showLiveSpot.classList.remove("is-loading");
