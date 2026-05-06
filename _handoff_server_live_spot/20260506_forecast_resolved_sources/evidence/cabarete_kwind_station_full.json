@@ -1,0 +1,239 @@
+{
+  "captured_at_utc": "2026-05-06T18:28:14.258780+00:00",
+  "provider": "kwind",
+  "transport": "websocket",
+  "station_id": "67ec301531560afd49bce4d6",
+  "websocket_url_redacted": "wss://api.kwind.app?deviceUUID=<uuid>&token=<redacted>",
+  "station_message": {
+    "data": {
+      "_id": "67ec301531560afd49bce4d6",
+      "name": "Cabarete  Kite Point Kite Beach",
+      "countryCode": "DO",
+      "timezone": "America/Santo_Domingo",
+      "stationInfo": {
+        "hints": [],
+        "address": {}
+      },
+      "emergencyData": [],
+      "ads": [
+        {
+          "id": "SailVideo",
+          "duration": "5"
+        }
+      ],
+      "settings": {
+        "hidden": false,
+        "showAds": true,
+        "stopped": true,
+        "adIds": [],
+        "windguruUpload": {
+          "key": "LAM32USIBXGS",
+          "stationId": "14945",
+          "password": "kwind123",
+          "interval": 1,
+          "active": true
+        },
+        "chatLink": "https://t.me/kitecabarete",
+        "telegramChatLink": "https://t.me/kitecabarete"
+      },
+      "lastWindData": {
+        "latitude": null,
+        "longitude": null,
+        "timestamp": "2026-05-06T18:28:11.000Z",
+        "windspeed": 0,
+        "windspeedHigh": null,
+        "windspeedLow": null,
+        "windspeedAdjusted": null,
+        "windspeedHighAdjusted": null,
+        "windspeedLowAdjusted": null,
+        "pressure": 1011.72,
+        "pressureRelative": 1011.72,
+        "temperature": 32.3,
+        "temperatureApp": null,
+        "temperatureFeelsLike": null,
+        "dewPoint": null,
+        "humidity": 65,
+        "formula": null,
+        "formulaMax": null,
+        "density": 1.1407487328376535
+      },
+      "spot": {
+        "_id": "6529ccea85790321c75c47aa",
+        "stations": [],
+        "location": "6529ccd885790321c75c4642",
+        "settings": {
+          "adIds": [],
+          "tidesEnabled": true,
+          "forecastEnabled": true
+        },
+        "info": {
+          "hints": []
+        },
+        "facilities": [
+          {
+            "discount": {
+              "code": "Kwind",
+              "percentage": "10"
+            },
+            "name": "Friend's Cabarete",
+            "types": [
+              "restaurant"
+            ],
+            "titleImageUrl": "Screenshot 2025-02-26 at 11.16.42.png",
+            "websiteUrl": "https://www.instagram.com/friendscabarete/",
+            "logo": "",
+            "latlong": "19.74979739094829, -70.40894779815194",
+            "latitude": "19.74979739094829",
+            "longitude": "-70.40894779815194"
+          },
+          {
+            "discount": {},
+            "name": "Sunset Grill at Velero",
+            "logo": "",
+            "types": [
+              "restaurant",
+              "other"
+            ],
+            "titleImageUrl": "Screenshot 2025-02-26 at 11.21.49.png",
+            "websiteUrl": "https://www.instagram.com/sunsetgrillatvelero/",
+            "latlong": ", ",
+            "latitude": "",
+            "longitude": ""
+          },
+          {
+            "discount": {},
+            "name": "Cabarete Velero Beach Hotel",
+            "types": [
+              "accomodation",
+              "other"
+            ],
+            "logo": "",
+            "titleImageUrl": "Screenshot 2025-02-26 at 11.24.17.png",
+            "websiteUrl": "https://www.instagram.com/velerobeachresort/",
+            "latlong": ", ",
+            "latitude": "",
+            "longitude": ""
+          },
+          {
+            "discount": {},
+            "name": "L' Agence Real Estate",
+            "types": [
+              "accomodation"
+            ],
+            "logo": "",
+            "titleImageUrl": "Screenshot 2025-02-26 at 11.37.33.png",
+            "websiteUrl": "https://www.instagram.com/agencecabarete/",
+            "latlong": ", ",
+            "latitude": "",
+            "longitude": ""
+          },
+          {
+            "discount": {},
+            "types": [
+              "other"
+            ],
+            "name": "Book Cabarete Photos",
+            "logo": "",
+            "titleImageUrl": "IMG_0997.jpg",
+            "latlong": ", ",
+            "latitude": "",
+            "longitude": "",
+            "websiteUrl": "https://www.instagram.com/cabaretephotos/"
+          },
+          {
+            "discount": {},
+            "titleImageUrl": "Screenshot 2025-02-27 at 13.40.33.png",
+            "types": [
+              "accomodation"
+            ],
+            "latlong": ", ",
+            "latitude": "",
+            "longitude": "",
+            "name": "Cabarete Watermark ",
+            "websiteUrl": "https://kristycollection.com/cabarete-dominican-republic/watermark-hotel/"
+          },
+          {
+            "discount": {},
+            "types": [],
+            "name": "Soundcloud",
+            "description": "Bad Mood Repair Sound , Mira & Chris😍 Fusion, LEN10.Valentin.R..etc",
+            "titleImageUrl": "Screenshot 2025-02-27 at 13.40.33.png",
+            "websiteUrl": "https://on.soundcloud.com/7PapDzoZ56ynLkJA8",
+            "latlong": ", ",
+            "latitude": "",
+            "longitude": ""
+          },
+          {
+            "discount": {},
+            "name": "Gadgets KWind",
+            "types": [
+              "other"
+            ],
+            "titleImageUrl": "Screenshot 2025-03-06 at 13.14.53.png",
+            "websiteUrl": "https://youtu.be/WLLoUiaGhtU?si=45COTHJ0pBYOSDGV&t=2",
+            "latlong": ", ",
+            "latitude": "",
+            "longitude": ""
+          }
+        ],
+        "emergencyData": [],
+        "__v": 0,
+        "address": {},
+        "name": "Cabarete",
+        "description": "Cabarete Beach, the main area located in the Cabarete city center, is ideal to practice kitesurf, wing foil, windsurf and also stand up paddle surf, thanks to its location and the many schools that you can find right on the beach.\nKite Beach is located 2 km away from Cabarete, and it is famous for its strong winds and big waves, which are perfect to practice kitesurfing and surfing.",
+        "importantInformation": "Economy Repair Shop😀",
+        "windguruSpotId": "1280486",
+        "timezone": "America/Santo_Domingo",
+        "spotguide": {
+          "summary": {
+            "water": {},
+            "wind": {},
+            "safety": {},
+            "travel": {}
+          },
+          "travel": {},
+          "seasons": [
+            {
+              "windsystems": []
+            }
+          ]
+        }
+      },
+      "latitude": 19.763342,
+      "longitude": -70.422421,
+      "custom": {
+        "flagImageFileName": "Screenshot 2025-04-01 at 14.46.10.png",
+        "flagImageFileNameDark": "Screenshot 2025-04-01 at 14.46.10.png"
+      },
+      "owner": {
+        "event": {
+          "text": "New‼️KWind - Stations💨💨 🌴🌴Cabarete Kite Point🌴🌴",
+          "link": "https://get.kwind.app/wind-stations"
+        },
+        "instagram": "https://www.instagram.com/cabaretekitepoint/",
+        "name": "Kite Point"
+      },
+      "stream": {
+        "url": "",
+        "duration": 32
+      },
+      "sunrise": "2026-05-06T10:11:21.086Z",
+      "sunset": "2026-05-06T23:07:48.895Z",
+      "sunriseString": "06:11",
+      "sunsetString": "19:07",
+      "currentTimeString": "14:28",
+      "offset": -240
+    },
+    "channel": {
+      "name": "station",
+      "params": {
+        "where": {
+          "_id": "67ec301531560afd49bce4d6"
+        },
+        "interval": 3600000
+      }
+    },
+    "timestamp": "2026-05-06T18:28:14.238Z"
+  },
+  "all_messages_count": 3
+}

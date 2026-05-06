@@ -1,0 +1,65 @@
+{
+  "captured_at_utc": "2026-05-06T18:54:04.623331+00:00",
+  "provider": "wind24",
+  "transport": "html_history",
+  "station_id": "capoterra_cala_dorri_wind24",
+  "station_name": "Capoterra Cala D'Orri Wind24",
+  "url": "https://www.wind24.it/capoterracaladorri/history",
+  "raw_html_length": 107638,
+  "parsed_counts": {
+    "dates": 101,
+    "times": 100,
+    "winds_nodi": 300,
+    "directions": 143
+  },
+  "first_values": {
+    "dates": [
+      "06/05/2026",
+      "06/05/2026",
+      "06/05/2026",
+      "06/05/2026",
+      "06/05/2026",
+      "06/05/2026",
+      "06/05/2026",
+      "06/05/2026",
+      "06/05/2026",
+      "06/05/2026"
+    ],
+    "times": [
+      "20:53",
+      "20:50",
+      "20:47",
+      "20:44",
+      "20:41",
+      "20:38",
+      "20:35",
+      "20:32",
+      "20:29",
+      "20:26"
+    ],
+    "winds_nodi": [
+      "3",
+      "4",
+      "6",
+      "4",
+      "5",
+      "7",
+      "4",
+      "5",
+      "7",
+      "4"
+    ],
+    "directions": [
+      "no",
+      "no",
+      "s",
+      "o",
+      "s",
+      "o",
+      "s",
+      "o",
+      "e",
+      "n"
+    ]
+  }
+}

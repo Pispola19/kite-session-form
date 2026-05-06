@@ -1,0 +1,46 @@
+{
+  "captured_at_utc": "2026-05-06T18:54:04.624559+00:00",
+  "spot_query": "Capoterra Cala D'Orri",
+  "canonical_spot_candidate": "Capoterra Cala D'Orri",
+  "country": "IT",
+  "region": "Sardegna",
+  "source": {
+    "provider": "wind24",
+    "transport": "html_history",
+    "station_id": "capoterra_cala_dorri_wind24",
+    "station_name": "Capoterra Cala D'Orri Wind24",
+    "source_kind": "live_station_history_html",
+    "source_health": "parseable_but_locally_biased",
+    "source_trust": "quarantine_user_known_bias",
+    "promote_to_primary": false,
+    "health_reasons": [
+      "Wind24 history HTML is reachable",
+      "HTML contains parseable date/time/wind/direction tokens",
+      "User direct local knowledge: station is behind reeds/canneto",
+      "User direct local knowledge: station is locally biased/starata",
+      "Not suitable as trusted primary runtime wind source"
+    ]
+  },
+  "external_links_or_refs": {
+    "wind24_history_url": "https://www.wind24.it/capoterracaladorri/history"
+  },
+  "last_observation_candidate": {
+    "date_local_raw": "06/05/2026",
+    "time_local_raw": "20:53",
+    "wind_knots_candidate": 3.0,
+    "direction_text_candidate": "NO",
+    "gust_knots_candidate": null,
+    "note": "Values are parsed only as candidate evidence from HTML history, not as trusted runtime truth."
+  },
+  "learning_decision": {
+    "learn_source_exists": true,
+    "learn_station_config": true,
+    "learn_as_primary_wind_source": false,
+    "requires_recheck": true,
+    "requires_crosscheck_with_model_or_other_station": true,
+    "quarantine": true,
+    "runtime_insert_allowed": false,
+    "note": "Station exists and Wind24 HTML is parseable, but user has direct local knowledge of local bias: behind reeds/canneto. Keep in Cervello/services as quarantine source only."
+  },
+  "raw_evidence_file": "/tmp/capoterra_wind24_raw_evidence.json"
+}

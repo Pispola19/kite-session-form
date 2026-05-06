@@ -1,0 +1,50 @@
+{
+  "captured_at_utc": "2026-05-06T18:29:23.117754+00:00",
+  "spot_query": "Cabarete",
+  "canonical_spot_candidate": "Cabarete Kite Beach",
+  "country": "DO",
+  "timezone": "America/Santo_Domingo",
+  "source": {
+    "provider": "kwind",
+    "transport": "websocket",
+    "station_id": "67ec301531560afd49bce4d6",
+    "station_name": "Cabarete  Kite Point Kite Beach",
+    "source_kind": "live_station",
+    "source_health": "partial",
+    "source_trust": "low_until_verified",
+    "promote_to_primary": false,
+    "health_reasons": [
+      "station settings.stopped=true",
+      "lastWindData.windspeed missing_or_zero",
+      "lastWindData.windspeedHigh missing",
+      "lastWindData.direction missing"
+    ]
+  },
+  "external_links_or_refs": {
+    "kwind_station_url": "https://kwind.app/station/67ec301531560afd49bce4d6",
+    "windguru_upload_station_id": "14945",
+    "windguru_upload_active": true,
+    "windguru_upload_interval": 1,
+    "chat_link": "https://t.me/kitecabarete",
+    "telegram_chat_link": "https://t.me/kitecabarete"
+  },
+  "last_observation": {
+    "timestamp_utc": "2026-05-06T18:28:11.000Z",
+    "wind_knots": 0,
+    "gust_knots": null,
+    "direction_degrees": null,
+    "temperature_c": 32.3,
+    "humidity_percent": 65,
+    "pressure_hpa": 1011.72,
+    "density": 1.1407487328376535
+  },
+  "learning_decision": {
+    "learn_source_exists": true,
+    "learn_station_config": true,
+    "learn_as_primary_wind_source": false,
+    "requires_recheck": true,
+    "requires_crosscheck_with_model_or_other_station": true,
+    "note": "Station exists and websocket works, but current wind payload is stopped/zero/no direction. Keep as candidate, not primary."
+  },
+  "raw_evidence_file": "/tmp/cabarete_kwind_station_full.json"
+}
