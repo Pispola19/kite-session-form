@@ -1653,7 +1653,6 @@ showLiveSpot?.addEventListener("click", async () => {
         return;
       }
       setLiveSpotPanelFeedback("Aggiornamento vento live...");
-      scrollLiveSpotPanel();
       const realData = await fetchLiveSpotReal(spot);
 
       if (
