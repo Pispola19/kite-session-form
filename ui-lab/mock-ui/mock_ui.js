@@ -1653,7 +1653,26 @@ showLiveSpot?.addEventListener("click", async () => {
         return;
       }
       setLiveSpotPanelFeedback("Aggiornamento vento live...");
-      const realData = await fetchLiveSpotReal(spot);
+      const hasUsableLiveSpotData = (data) =>
+        data &&
+        !data.needs_disambiguation &&
+        (
+          typeof data.wind_knots === "number" ||
+          typeof data.wind_direction === "number" ||
+          typeof data.gust_knots === "number" ||
+          data.forecast ||
+          data.forecasts ||
+          data.resolution ||
+          data.cache ||
+          data.source ||
+          data.source_type
+        );
+
+      let realData = await fetchLiveSpotReal(spot);
+
+      if (!hasUsableLiveSpotData(realData) && !(realData && realData.needs_disambiguation)) {
+        realData = await fetchLiveSpotReal(spot);
+      }
 
       if (
         realData &&
@@ -1682,11 +1701,11 @@ showLiveSpot?.addEventListener("click", async () => {
               showLiveSpot.classList.add("is-loading");
               showLiveSpot.textContent = lsUi.loading;
               setLiveSpotPanelFeedback(lsUi.updatingWind);
-              const selectedData = await fetchLiveSpotReal(spot, candidate);
-              const selectedHasLiveWindData =
-                selectedData &&
-                (typeof selectedData.wind_knots === "number" || typeof selectedData.wind_direction === "number");
-              if (!selectedHasLiveWindData) {
+              let selectedData = await fetchLiveSpotReal(spot, candidate);
+              if (!hasUsableLiveSpotData(selectedData)) {
+                selectedData = await fetchLiveSpotReal(spot, candidate);
+              }
+              if (!hasUsableLiveSpotData(selectedData)) {
                 setLiveSpotPanelFeedback(lsUi.unavailable);
                 showLiveSpot.disabled = false;
                 showLiveSpot.classList.remove("is-loading");
@@ -1713,10 +1732,7 @@ showLiveSpot?.addEventListener("click", async () => {
         return;
       }
 
-      const hasLiveWindData =
-        realData &&
-        (typeof realData.wind_knots === "number" || typeof realData.wind_direction === "number");
-      if (!hasLiveWindData) {
+      if (!hasUsableLiveSpotData(realData)) {
         setLiveSpotPanelFeedback("Vento live non disponibile, riprova");
         scrollLiveSpotPanel();
         return;
