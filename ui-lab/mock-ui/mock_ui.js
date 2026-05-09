@@ -1653,20 +1653,28 @@ showLiveSpot?.addEventListener("click", async () => {
         return;
       }
       setLiveSpotPanelFeedback("Aggiornamento vento live...");
-      const hasUsableLiveSpotData = (data) =>
-        data &&
-        !data.needs_disambiguation &&
-        (
+      const hasUsableLiveSpotData = (data) => {
+        if (!data || data.needs_disambiguation) return false;
+
+        const hasCurrentWind =
           typeof data.wind_knots === "number" ||
           typeof data.wind_direction === "number" ||
-          typeof data.gust_knots === "number" ||
-          data.forecast ||
-          data.forecasts ||
-          data.resolution ||
-          data.cache ||
-          data.source ||
-          data.source_type
-        );
+          typeof data.gust_knots === "number";
+
+        const hasForecastWind = (fc) =>
+          fc &&
+          typeof fc === "object" &&
+          (
+            typeof fc.wind_knots === "number" ||
+            typeof fc.wind_direction === "number" ||
+            typeof fc.gust_knots === "number"
+          );
+
+        const forecasts = Array.isArray(data.forecasts) ? data.forecasts : [];
+        const hasForecastsWind = forecasts.some(hasForecastWind);
+
+        return hasCurrentWind || hasForecastWind || hasForecastWind(data.forecast);
+      };
 
       let realData = await fetchLiveSpotReal(spot);
 
