@@ -1587,8 +1587,6 @@ cta?.addEventListener("click", async () => {
         googleResult &&
         (googleResult.ok === true || googleResult.probable === true || googleResult.skipped === true);
 
-      openWhatsAppSecondary(payloads.legacyPayload);
-
       if (googleOk) {
         message.textContent = "Dati inviati. WhatsApp si apre con il riepilogo.";
       } else {
@@ -1597,9 +1595,12 @@ cta?.addEventListener("click", async () => {
 
       cta.classList.remove("is-loading");
       cta.classList.add("is-success");
-      window.setTimeout(restoreCtaFeedback, 2500);
-      resetVisualFormAfterSuccess();
       renderThankYouBanner();
+      window.setTimeout(() => {
+        openWhatsAppSecondary(payloads.legacyPayload);
+        resetVisualFormAfterSuccess();
+        restoreCtaFeedback();
+      }, 1200);
     } else {
       message.textContent = "Invio dati non riuscito - riprova";
       restoreCtaFeedback();
