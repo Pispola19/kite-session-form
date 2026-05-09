@@ -748,6 +748,16 @@ button {
   cursor: pointer;
 }
 
+#visualCta.is-loading {
+  opacity: 0.78;
+  cursor: wait;
+}
+
+#visualCta.is-success {
+  background: rgba(57,255,20,0.88);
+  color: #06230b;
+}
+
 .cta-message {
   color: var(--sand);
   font-weight: 700;

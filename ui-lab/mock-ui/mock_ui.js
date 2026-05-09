@@ -1531,16 +1531,36 @@ function resetVisualFormAfterSuccess() {
 }
 
 cta?.addEventListener("click", async () => {
+  if (cta.dataset.isSubmitting === "true") return;
+
+  const restoreCtaFeedback = () => {
+    cta.dataset.isSubmitting = "false";
+    cta.disabled = false;
+    cta.classList.remove("is-loading", "is-success");
+  };
+
+  cta.dataset.isSubmitting = "true";
+  cta.disabled = true;
+  cta.classList.remove("is-success");
+  cta.classList.add("is-loading");
   hideThankYouBanner();
   message?.classList.remove("is-error");
+  if (message) {
+    message.textContent = "Invio in corso…";
+  }
+
   const validation = validateRequiredFields();
   const payloads = buildMockPayloads();
   renderPayloadDebug(payloads);
 
-  if (!message) return;
+  if (!message) {
+    restoreCtaFeedback();
+    return;
+  }
 
   if (payloads.error) {
     message.textContent = payloads.error;
+    restoreCtaFeedback();
     return;
   }
 
@@ -1549,34 +1569,44 @@ cta?.addEventListener("click", async () => {
     message.textContent = requiredFieldMessage(firstMissing);
     message.classList.add("is-error");
     focusRequiredField(firstMissing);
+    restoreCtaFeedback();
     return;
   }
 
-  const primaryResult = await submitSessionPrimary(payloads.legacyPayload);
-  if (primaryResult && primaryResult.ok === true) {
-    let googleResult = null;
-    try {
-      googleResult = await submitSessionToGoogleSecondary(payloads.legacyPayload);
-    } catch (err) {
-      googleResult = { ok: false, error: err && err.message ? err.message : "google_secondary_failed" };
-    }
+  try {
+    const primaryResult = await submitSessionPrimary(payloads.legacyPayload);
+    if (primaryResult && primaryResult.ok === true) {
+      let googleResult = null;
+      try {
+        googleResult = await submitSessionToGoogleSecondary(payloads.legacyPayload);
+      } catch (err) {
+        googleResult = { ok: false, error: err && err.message ? err.message : "google_secondary_failed" };
+      }
 
-    const googleOk =
-      googleResult &&
-      (googleResult.ok === true || googleResult.probable === true || googleResult.skipped === true);
+      const googleOk =
+        googleResult &&
+        (googleResult.ok === true || googleResult.probable === true || googleResult.skipped === true);
 
-    openWhatsAppSecondary(payloads.legacyPayload);
+      openWhatsAppSecondary(payloads.legacyPayload);
 
-    if (googleOk) {
-      message.textContent = "Dati ricevuti. WhatsApp si apre con il riepilogo.";
+      if (googleOk) {
+        message.textContent = "Dati inviati. WhatsApp si apre con il riepilogo.";
+      } else {
+        message.textContent = "Dati inviati. Google Sheet non aggiornato.";
+      }
+
+      cta.classList.remove("is-loading");
+      cta.classList.add("is-success");
+      window.setTimeout(restoreCtaFeedback, 2500);
+      resetVisualFormAfterSuccess();
+      renderThankYouBanner();
     } else {
-      message.textContent = "Dati ricevuti. Google Sheet non aggiornato.";
+      message.textContent = "Invio dati non riuscito - riprova";
+      restoreCtaFeedback();
     }
-
-    resetVisualFormAfterSuccess();
-    renderThankYouBanner();
-  } else {
+  } catch (_) {
     message.textContent = "Invio dati non riuscito - riprova";
+    restoreCtaFeedback();
   }
 });
 
