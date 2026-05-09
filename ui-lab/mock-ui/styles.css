@@ -654,6 +654,35 @@ textarea {
 }
 
 .thank-you-banner {
+  position: fixed;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  width: min(92vw, 420px);
+  z-index: 9999;
+  padding: 16px 18px;
+  border-radius: 18px;
+  border: 2px solid rgba(57,255,20,0.35);
+  background: rgba(10,18,12,0.96);
+  box-shadow:
+    0 0 0 1px rgba(57,255,20,0.12),
+    0 12px 40px rgba(0,0,0,0.45),
+    0 0 28px rgba(57,255,20,0.16);
+  backdrop-filter: blur(12px);
+  animation: thankYouSlideUp 220ms ease-out;
+}
+
+@keyframes thankYouSlideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
   width: min(100%, 620px);
   margin-top: 14px;
   margin-bottom: 6px;
