@@ -1330,6 +1330,10 @@ function buildPayloadContractFromSnapshot(uiState, runtimeMeta) {
   return window.MockEngine.buildPayloadContractV1(uiState, runtimeMeta);
 }
 
+function buildLegacyPayloadFromContract(payloadContract) {
+  return window.MockEngine.toLegacyPayload(payloadContract);
+}
+
 function buildMockPayloads() {
   if (!window.MockEngine) {
     return {
@@ -1344,7 +1348,7 @@ function buildMockPayloads() {
   const uiState = getFormStateSnapshot();
   const runtimeMeta = getRuntimeMeta();
   const payloadContract = buildPayloadContractFromSnapshot(uiState, runtimeMeta);
-  const legacyPayload = window.MockEngine.toLegacyPayload(payloadContract);
+  const legacyPayload = buildLegacyPayloadFromContract(payloadContract);
   const readonlyLeak = window.MockEngine.assertNoReadonlyLeak(legacyPayload);
 
   return {
