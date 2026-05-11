@@ -13,6 +13,14 @@
   --amber: #d8a547;
   --red: #d96969;
   --line: rgba(213, 198, 170, 0.18);
+  --theme-bg-page: var(--navy);
+  --theme-surface-panel: rgba(13, 37, 52, 0.84);
+  --theme-surface-card: rgba(6, 23, 35, 0.48);
+  --theme-accent-live: var(--teal);
+  --theme-accent-live-soft: var(--teal-soft);
+  --theme-border-subtle: var(--line);
+  --theme-state-error: var(--red);
+  --theme-state-success: rgba(57, 255, 20, 0.88);
 }
 
 * {
