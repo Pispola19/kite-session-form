@@ -834,7 +834,7 @@ button {
 
 .payload-debug summary {
   width: fit-content;
-  color: var(--teal-soft);
+  color: var(--theme-accent-live-soft);
   font-size: 13px;
   font-weight: 900;
   cursor: pointer;
