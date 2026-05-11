@@ -1666,7 +1666,7 @@ form?.addEventListener("change", (event) => {
   if (field && field.getAttribute("data-state-field") === "board.board") {
     populateBoardSizesForType(field.value);
   }
-  renderPayloadDebug();
+  refreshPayloadDebugPreview();
 });
 
 showLiveSpot?.addEventListener("click", async () => {
