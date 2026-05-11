@@ -1421,6 +1421,10 @@ function refreshPayloadDebugPreview() {
   renderPayloadDebug();
 }
 
+function renderPayloadDebugFromBundle(payloads) {
+  renderPayloadDebug(payloads);
+}
+
 function buildWhatsAppSummaryFromLegacyPayload(legacyPayload) {
   const lc = String(currentLang || "").toLowerCase();
   const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
@@ -1585,7 +1589,7 @@ cta?.addEventListener("click", async () => {
 
   const validation = validateRequiredFields();
   const payloads = buildMockPayloads();
-  renderPayloadDebug(payloads);
+  renderPayloadDebugFromBundle(payloads);
 
   if (!message) {
     restoreCtaFeedback();
