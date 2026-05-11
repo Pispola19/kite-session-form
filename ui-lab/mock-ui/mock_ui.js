@@ -1334,6 +1334,10 @@ function buildLegacyPayloadFromContract(payloadContract) {
   return window.MockEngine.toLegacyPayload(payloadContract);
 }
 
+function assertLegacyPayloadHasNoReadonlyLeak(legacyPayload) {
+  return window.MockEngine.assertNoReadonlyLeak(legacyPayload);
+}
+
 function buildMockPayloads() {
   if (!window.MockEngine) {
     return {
@@ -1349,7 +1353,7 @@ function buildMockPayloads() {
   const runtimeMeta = getRuntimeMeta();
   const payloadContract = buildPayloadContractFromSnapshot(uiState, runtimeMeta);
   const legacyPayload = buildLegacyPayloadFromContract(payloadContract);
-  const readonlyLeak = window.MockEngine.assertNoReadonlyLeak(legacyPayload);
+  const readonlyLeak = assertLegacyPayloadHasNoReadonlyLeak(legacyPayload);
 
   return {
     uiState,
