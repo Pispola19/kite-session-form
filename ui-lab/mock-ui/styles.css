@@ -733,7 +733,7 @@ textarea {
   padding: 12px 14px;
   border: 1px solid var(--theme-accent-live-panel-border);
   border-radius: 10px;
-  background: rgba(35, 184, 170, 0.12);
+  background: var(--theme-accent-live-panel-bg);
 }
 
 .thank-you-banner__title {
