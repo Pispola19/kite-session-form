@@ -1561,7 +1561,7 @@ function resetVisualFormAfterSuccess() {
     renderUI();
     validateRequiredFields();
   }
-  renderPayloadDebug();
+  refreshPayloadDebugPreview();
 }
 
 cta?.addEventListener("click", async () => {
