@@ -790,7 +790,7 @@ textarea {
 }
 
 .instructions li::marker {
-  color: var(--teal-soft);
+  color: var(--theme-accent-live-soft);
   font-weight: 800;
 }
 
