@@ -1338,6 +1338,15 @@ function assertLegacyPayloadHasNoReadonlyLeak(legacyPayload) {
   return window.MockEngine.assertNoReadonlyLeak(legacyPayload);
 }
 
+function buildPayloadBundle(uiState, runtimeMeta, payloadContract, legacyPayload, readonlyLeak) {
+  return {
+    uiState,
+    payloadContract,
+    legacyPayload,
+    readonlyLeak
+  };
+}
+
 function buildMockPayloads() {
   if (!window.MockEngine) {
     return {
@@ -1355,12 +1364,7 @@ function buildMockPayloads() {
   const legacyPayload = buildLegacyPayloadFromContract(payloadContract);
   const readonlyLeak = assertLegacyPayloadHasNoReadonlyLeak(legacyPayload);
 
-  return {
-    uiState,
-    payloadContract,
-    legacyPayload,
-    readonlyLeak
-  };
+  return buildPayloadBundle(uiState, runtimeMeta, payloadContract, legacyPayload, readonlyLeak);
 }
 
 function renderPayloadDebug(payloads = buildMockPayloads()) {
