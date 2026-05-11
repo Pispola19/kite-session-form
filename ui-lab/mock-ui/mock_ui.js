@@ -1274,6 +1274,10 @@ const FormStateLayer = Object.freeze({
   }
 });
 
+function getFormStateSnapshot() {
+  return FormStateLayer.read();
+}
+
 function setInvalid(field, invalid) {
   const wrapper = field?.closest("label");
   wrapper?.classList.toggle("is-invalid", Boolean(invalid));
@@ -1322,14 +1326,14 @@ function buildMockPayloads() {
   if (!window.MockEngine) {
     return {
       error: "MockEngine non disponibile",
-      uiState: FormStateLayer.read(),
+      uiState: getFormStateSnapshot(),
       payloadContract: null,
       legacyPayload: null,
       readonlyLeak: { ok: true, leaked_fields: [] }
     };
   }
 
-  const uiState = FormStateLayer.read();
+  const uiState = getFormStateSnapshot();
   const runtimeMeta = buildRuntimeMeta();
   const payloadContract = window.MockEngine.buildPayloadContractV1(uiState, runtimeMeta);
   const legacyPayload = window.MockEngine.toLegacyPayload(payloadContract);
