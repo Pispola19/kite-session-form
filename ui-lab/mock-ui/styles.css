@@ -373,7 +373,7 @@ dd {
 .hours div {
   min-height: 86px;
   padding: 9px 8px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--theme-border-subtle);
   border-radius: 8px;
   background: rgba(18, 54, 71, 0.72);
 }
