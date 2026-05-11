@@ -1218,6 +1218,10 @@ function buildRuntimeMeta() {
   };
 }
 
+function getRuntimeMeta() {
+  return buildRuntimeMeta();
+}
+
 function readField(path) {
   const field = form?.querySelector(`[data-state-field="${path}"]`);
   return String(field?.value ?? "").trim();
@@ -1334,7 +1338,7 @@ function buildMockPayloads() {
   }
 
   const uiState = getFormStateSnapshot();
-  const runtimeMeta = buildRuntimeMeta();
+  const runtimeMeta = getRuntimeMeta();
   const payloadContract = window.MockEngine.buildPayloadContractV1(uiState, runtimeMeta);
   const legacyPayload = window.MockEngine.toLegacyPayload(payloadContract);
   const readonlyLeak = window.MockEngine.assertNoReadonlyLeak(legacyPayload);
