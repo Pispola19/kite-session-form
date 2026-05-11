@@ -1819,7 +1819,7 @@ showLiveSpot?.addEventListener("click", async () => {
 
     renderLiveSpotReadonly(payload);
 
-    renderPayloadDebug();
+    refreshPayloadDebugPreview();
 
     if (liveSpotPanel) {
       liveSpotPanel.classList.remove("cockpit--live-updated");
