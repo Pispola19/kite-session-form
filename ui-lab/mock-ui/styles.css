@@ -432,7 +432,7 @@ dd {
   margin: 0;
   padding: 10px 0 18px;
   border: 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--theme-border-subtle);
   background: transparent;
 }
 
