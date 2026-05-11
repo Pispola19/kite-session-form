@@ -729,7 +729,7 @@ textarea {
 .thank-you-banner__title {
   display: block;
   margin-bottom: 8px;
-  color: var(--teal-soft);
+  color: var(--theme-accent-live-soft);
   font-size: 16px;
   font-weight: 900;
 }
