@@ -539,7 +539,7 @@ label {
   border: 1px solid rgba(142, 219, 211, 0.32);
   border-radius: 8px;
   background: rgba(35, 184, 170, 0.16);
-  color: var(--teal-soft);
+  color: var(--theme-accent-live-soft);
   font-size: 14px;
   font-weight: 900;
   touch-action: manipulation;
