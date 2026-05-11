@@ -1868,7 +1868,7 @@ languageButtons.forEach((button) => {
       currentLang = "it";
     }
     renderUI();
-    renderPayloadDebug();
+    refreshPayloadDebugPreview();
     syncCtaIdlePipelineMessage();
   });
 });
