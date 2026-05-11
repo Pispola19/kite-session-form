@@ -656,18 +656,18 @@ textarea {
 .thank-you-banner {
   position: fixed;
   left: 50%;
-  bottom: 24px;
+  bottom: calc(20px + env(safe-area-inset-bottom));
   transform: translateX(-50%);
   width: min(92vw, 420px);
   z-index: 9999;
   padding: 16px 18px;
   border-radius: 18px;
-  border: 2px solid rgba(57,255,20,0.35);
-  background: rgba(10,18,12,0.96);
+  border: 2px solid rgba(57,255,20,0.48);
+  background: rgba(6,14,10,0.98);
   box-shadow:
-    0 0 0 1px rgba(57,255,20,0.12),
-    0 12px 40px rgba(0,0,0,0.45),
-    0 0 28px rgba(57,255,20,0.16);
+    0 0 0 1px rgba(57,255,20,0.18),
+    0 16px 48px rgba(0,0,0,0.58),
+    0 0 34px rgba(57,255,20,0.24);
   backdrop-filter: blur(12px);
   animation: thankYouSlideUp 220ms ease-out;
 }
@@ -696,16 +696,39 @@ textarea {
   display: block;
   margin-bottom: 8px;
   color: var(--teal-soft);
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 900;
 }
 
 .thank-you-banner__text {
   margin: 0;
-  font-size: 13px;
+  font-size: 14px;
   line-height: 1.58;
-  color: rgba(240, 246, 243, 0.94);
+  color: rgba(248, 255, 252, 0.98);
   font-weight: 700;
+}
+
+@media (max-width: 760px) {
+  .thank-you-banner {
+    bottom: calc(34px + env(safe-area-inset-bottom));
+    width: calc(100vw - 28px);
+    max-width: 520px;
+    padding: 18px 18px;
+    border-color: rgba(57,255,20,0.62);
+    box-shadow:
+      0 0 0 1px rgba(57,255,20,0.24),
+      0 18px 54px rgba(0,0,0,0.68),
+      0 0 42px rgba(57,255,20,0.30);
+  }
+
+  .thank-you-banner__title {
+    font-size: 17px;
+  }
+
+  .thank-you-banner__text {
+    font-size: 15px;
+    line-height: 1.52;
+  }
 }
 
 .cta-row {
