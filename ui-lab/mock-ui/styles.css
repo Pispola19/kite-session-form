@@ -48,7 +48,7 @@ dd {
 }
 
 .hero {
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--theme-border-subtle);
   overflow: hidden;
 }
 
