@@ -1093,6 +1093,7 @@ const form = document.getElementById("mockSessionForm");
 const cta = document.getElementById("visualCta");
 const message = document.getElementById("visualCtaMessage");
 const showLiveSpot = document.getElementById("showLiveSpot");
+const refreshLiveSpotPanel = document.getElementById("refreshLiveSpotPanel");
 const liveSpotPanel = document.getElementById("liveSpotPanel");
 const liveSpotMessage = document.getElementById("liveSpotMessage");
 const languageButtons = Array.from(document.querySelectorAll(".language-button"));
@@ -1803,6 +1804,11 @@ showLiveSpot?.addEventListener("click", async () => {
     showLiveSpot.classList.remove("is-loading");
     showLiveSpot.textContent = liveSpotUiStrings().idle;
   }
+});
+
+refreshLiveSpotPanel?.addEventListener("click", () => {
+  if (!showLiveSpot || showLiveSpot.disabled) return;
+  showLiveSpot.click();
 });
 
 liveSpotViewButtons.forEach((button) => {

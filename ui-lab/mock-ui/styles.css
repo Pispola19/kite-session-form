@@ -556,6 +556,32 @@ label {
   font-weight: 700;
 }
 
+.live-spot-refresh-button {
+  width: 100%;
+  min-height: 46px;
+  padding: 0 16px;
+  border: 1px solid rgba(142, 219, 211, 0.42);
+  border-radius: 8px;
+  background: rgba(6, 23, 35, 0.56);
+  color: var(--teal-soft);
+  font-size: 14px;
+  font-weight: 900;
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(142, 219, 211, 0.28);
+}
+
+.live-spot-refresh-button:hover,
+.live-spot-refresh-button:focus-visible {
+  border-color: rgba(142, 219, 211, 0.68);
+  background: rgba(35, 184, 170, 0.14);
+  outline: none;
+}
+
+.live-spot-refresh-button:active {
+  transform: translateY(1px);
+}
+
 input,
 select,
 textarea {
