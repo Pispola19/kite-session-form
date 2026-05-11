@@ -1651,7 +1651,7 @@ form?.addEventListener("input", (event) => {
   if (field?.dataset.required === "true") {
     setInvalid(field, !String(field.value || "").trim());
   }
-  renderPayloadDebug();
+  refreshPayloadDebugPreview();
 });
 
 form?.addEventListener("change", (event) => {
