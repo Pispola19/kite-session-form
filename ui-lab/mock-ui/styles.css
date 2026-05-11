@@ -242,7 +242,7 @@ h1 {
 
 @keyframes cockpitLivePulse {
   0% {
-    border-color: rgba(35, 184, 170, 0.82);
+    border-color: var(--theme-accent-live-highlight-border);
     box-shadow:
       0 18px 44px rgba(0, 0, 0, 0.18),
       0 0 0 2px rgba(35, 184, 170, 0.42);
