@@ -21,6 +21,16 @@
   --theme-border-subtle: var(--line);
   --theme-state-error: var(--red);
   --theme-state-success: rgba(57, 255, 20, 0.88);
+  --theme-accent-live-page-glow: rgba(35, 184, 170, 0.13);
+  --theme-accent-live-active-border: rgba(35, 184, 170, 0.72);
+  --theme-accent-live-active-bg: rgba(35, 184, 170, 0.18);
+  --theme-accent-live-highlight-border: rgba(35, 184, 170, 0.82);
+  --theme-accent-live-highlight-ring: rgba(35, 184, 170, 0.24);
+  --theme-accent-live-pulse-ring: rgba(35, 184, 170, 0.42);
+  --theme-accent-live-button-bg: rgba(35, 184, 170, 0.16);
+  --theme-accent-live-hover-bg: rgba(35, 184, 170, 0.14);
+  --theme-accent-live-panel-border: rgba(35, 184, 170, 0.45);
+  --theme-accent-live-panel-bg: rgba(35, 184, 170, 0.12);
 }
 
 * {
