@@ -106,7 +106,7 @@ dd {
 
 .eyebrow {
   margin-bottom: 8px;
-  color: var(--teal-soft);
+  color: var(--theme-accent-live-soft);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0;
