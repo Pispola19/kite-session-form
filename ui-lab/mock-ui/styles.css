@@ -173,7 +173,7 @@ h1 {
   border-color: rgba(35, 184, 170, 0.72);
   background: rgba(35, 184, 170, 0.18);
   color: var(--theme-accent-live-soft);
-  box-shadow: inset 0 -2px 0 var(--teal);
+  box-shadow: inset 0 -2px 0 var(--theme-accent-live);
 }
 
 .hero__identity {
