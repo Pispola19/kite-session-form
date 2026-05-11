@@ -312,7 +312,7 @@ h1 {
 
 .live-spot-view-button.is-active {
   background: rgba(35, 184, 170, 0.18);
-  color: var(--teal-soft);
+  color: var(--theme-accent-live-soft);
 }
 
 .cockpit-grid {
