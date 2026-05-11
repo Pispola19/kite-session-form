@@ -84,7 +84,7 @@ dd {
 }
 
 .app-footer a {
-  color: var(--teal-soft);
+  color: var(--theme-accent-live-soft);
   font-weight: 700;
   text-decoration: none;
   word-break: break-all;
