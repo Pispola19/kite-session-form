@@ -1417,6 +1417,10 @@ function renderPayloadDebug(payloads = buildMockPayloads()) {
   }
 }
 
+function refreshPayloadDebugPreview() {
+  renderPayloadDebug();
+}
+
 function buildWhatsAppSummaryFromLegacyPayload(legacyPayload) {
   const lc = String(currentLang || "").toLowerCase();
   const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
@@ -1871,5 +1875,5 @@ languageButtons.forEach((button) => {
 
 renderUI();
 validateRequiredFields();
-renderPayloadDebug();
+refreshPayloadDebugPreview();
 syncCtaIdlePipelineMessage();
