@@ -1787,7 +1787,7 @@ showLiveSpot?.addEventListener("click", async () => {
               }
               const selectedPayload = LiveSpotReadonlyConnector.normalizeLiveSpotPayload(selectedData);
               renderLiveSpotReadonly(selectedPayload);
-              renderPayloadDebug();
+              refreshPayloadDebugPreview();
               if (liveSpotPanel) {
                 liveSpotPanel.classList.add("is-visible");
               }
