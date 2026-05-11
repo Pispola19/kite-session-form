@@ -648,7 +648,7 @@ textarea {
 .field-hint {
   flex: 0 0 100%;
   max-width: 360px;
-  color: var(--teal-soft);
+  color: var(--theme-accent-live-soft);
   font-size: 12px;
 }
 
