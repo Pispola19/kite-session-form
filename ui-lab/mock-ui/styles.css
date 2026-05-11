@@ -155,7 +155,7 @@ h1 {
   min-height: 32px;
   min-width: auto;
   padding: 0 9px;
-  border: 1px solid var(--line);
+  border: 1px solid var(--theme-border-subtle);
   border-radius: 999px;
   background: rgba(6, 23, 35, 0.46);
   color: var(--warm-gray);
