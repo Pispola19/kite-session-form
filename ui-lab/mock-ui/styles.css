@@ -798,7 +798,7 @@ button {
   min-height: 52px;
   border: 0;
   border-radius: 10px;
-  background: var(--teal);
+  background: var(--theme-accent-live);
   color: #042326;
   font-size: 15px;
   font-weight: 900;
