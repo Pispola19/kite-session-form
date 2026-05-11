@@ -571,7 +571,7 @@ label {
   border: 1px solid rgba(142, 219, 211, 0.42);
   border-radius: 8px;
   background: rgba(6, 23, 35, 0.56);
-  color: var(--teal-soft);
+  color: var(--theme-accent-live-soft);
   font-size: 14px;
   font-weight: 900;
   cursor: pointer;
