@@ -1326,6 +1326,10 @@ function validateRequiredFields() {
   };
 }
 
+function buildPayloadContractFromSnapshot(uiState, runtimeMeta) {
+  return window.MockEngine.buildPayloadContractV1(uiState, runtimeMeta);
+}
+
 function buildMockPayloads() {
   if (!window.MockEngine) {
     return {
@@ -1339,7 +1343,7 @@ function buildMockPayloads() {
 
   const uiState = getFormStateSnapshot();
   const runtimeMeta = getRuntimeMeta();
-  const payloadContract = window.MockEngine.buildPayloadContractV1(uiState, runtimeMeta);
+  const payloadContract = buildPayloadContractFromSnapshot(uiState, runtimeMeta);
   const legacyPayload = window.MockEngine.toLegacyPayload(payloadContract);
   const readonlyLeak = window.MockEngine.assertNoReadonlyLeak(legacyPayload);
 
