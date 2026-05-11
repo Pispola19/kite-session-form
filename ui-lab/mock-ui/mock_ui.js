@@ -1347,15 +1347,19 @@ function buildPayloadBundle(uiState, runtimeMeta, payloadContract, legacyPayload
   };
 }
 
+function buildPayloadErrorBundle(error) {
+  return {
+    error,
+    uiState: getFormStateSnapshot(),
+    payloadContract: null,
+    legacyPayload: null,
+    readonlyLeak: { ok: true, leaked_fields: [] }
+  };
+}
+
 function buildMockPayloads() {
   if (!window.MockEngine) {
-    return {
-      error: "MockEngine non disponibile",
-      uiState: getFormStateSnapshot(),
-      payloadContract: null,
-      legacyPayload: null,
-      readonlyLeak: { ok: true, leaked_fields: [] }
-    };
+    return buildPayloadErrorBundle("MockEngine non disponibile");
   }
 
   const uiState = getFormStateSnapshot();
