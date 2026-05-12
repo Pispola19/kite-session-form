@@ -719,7 +719,7 @@ textarea {
   border: 2px solid var(--theme-state-success-border);
   background: rgba(6,14,10,0.98);
   box-shadow:
-    0 0 0 1px rgba(57,255,20,0.18),
+    0 0 0 1px var(--theme-state-success-ring),
     0 16px 48px rgba(0,0,0,0.58),
     0 0 34px rgba(57,255,20,0.24);
   backdrop-filter: blur(12px);
