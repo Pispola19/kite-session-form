@@ -1077,7 +1077,7 @@ button {
   cursor: pointer;
   white-space: normal;
   overflow-wrap: anywhere;
-  -webkit-tap-highlight-color: rgba(142, 219, 211, 0.18);
+  -webkit-tap-highlight-color: var(--theme-pale-accent-candidate-tap);
 }
 
 .live-spot-candidate-button:hover,
