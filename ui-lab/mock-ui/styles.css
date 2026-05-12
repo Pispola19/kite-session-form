@@ -1062,7 +1062,7 @@ button {
 .live-spot-candidate-button:hover,
 .live-spot-candidate-button:focus-visible {
   border-color: rgba(142, 219, 211, 0.62);
-  background: rgba(35, 184, 170, 0.12);
+  background: var(--theme-accent-live-candidate-hover-bg);
   outline: none;
 }
 
