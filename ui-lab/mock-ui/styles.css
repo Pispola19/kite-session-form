@@ -613,7 +613,7 @@ label {
 
 .live-spot-refresh-button:hover,
 .live-spot-refresh-button:focus-visible {
-  border-color: rgba(142, 219, 211, 0.68);
+  border-color: var(--theme-pale-accent-refresh-hover-border);
   background: var(--theme-accent-live-hover-bg);
   outline: none;
 }
