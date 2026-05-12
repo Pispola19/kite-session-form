@@ -321,7 +321,7 @@ h1 {
 }
 
 .live-spot-view-button.is-active {
-  background: rgba(35, 184, 170, 0.18);
+  background: var(--theme-accent-live-active-bg);
   color: var(--theme-accent-live-soft);
 }
 
