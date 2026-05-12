@@ -339,7 +339,7 @@ h1 {
 }
 
 .live-spot-view-button + .live-spot-view-button {
-  border-left: 1px solid rgba(142, 219, 211, 0.2);
+  border-left: 1px solid var(--theme-pale-accent-switch-separator);
 }
 
 .live-spot-view-button.is-active {
