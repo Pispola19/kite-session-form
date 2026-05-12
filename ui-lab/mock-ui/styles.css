@@ -835,7 +835,7 @@ button {
 }
 
 .cta-message.is-error {
-  color: rgba(217, 105, 105, 0.95);
+  color: var(--theme-state-error-text);
 }
 
 .payload-debug {
