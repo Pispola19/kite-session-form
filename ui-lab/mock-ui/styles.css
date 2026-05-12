@@ -568,7 +568,7 @@ label {
   min-width: 132px;
   min-height: 44px;
   padding: 0 14px;
-  border: 1px solid rgba(142, 219, 211, 0.32);
+  border: 1px solid var(--theme-pale-accent-live-button-border);
   border-radius: 8px;
   background: var(--theme-accent-live-button-bg);
   color: var(--theme-accent-live-soft);
