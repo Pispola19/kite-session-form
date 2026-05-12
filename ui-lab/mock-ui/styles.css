@@ -30,6 +30,18 @@
   --theme-state-success-mobile-border: rgba(57, 255, 20, 0.62);
   --theme-state-success-mobile-ring: rgba(57, 255, 20, 0.24);
   --theme-state-success-mobile-glow: rgba(57, 255, 20, 0.30);
+  --theme-pale-accent-language-hover-border: rgba(142, 219, 211, 0.46);
+  --theme-pale-accent-switch-border: rgba(142, 219, 211, 0.32);
+  --theme-pale-accent-switch-separator: rgba(142, 219, 211, 0.2);
+  --theme-pale-accent-live-button-border: rgba(142, 219, 211, 0.32);
+  --theme-pale-accent-live-button-tap: rgba(142, 219, 211, 0.35);
+  --theme-pale-accent-refresh-border: rgba(142, 219, 211, 0.42);
+  --theme-pale-accent-refresh-tap: rgba(142, 219, 211, 0.28);
+  --theme-pale-accent-refresh-hover-border: rgba(142, 219, 211, 0.68);
+  --theme-pale-accent-field-border: rgba(142, 219, 211, 0.24);
+  --theme-pale-accent-candidate-border: rgba(142, 219, 211, 0.28);
+  --theme-pale-accent-candidate-tap: rgba(142, 219, 211, 0.18);
+  --theme-pale-accent-candidate-hover-border: rgba(142, 219, 211, 0.62);
   --theme-accent-live-page-glow: rgba(35, 184, 170, 0.13);
   --theme-accent-live-active-border: rgba(35, 184, 170, 0.72);
   --theme-accent-live-active-bg: rgba(35, 184, 170, 0.18);
