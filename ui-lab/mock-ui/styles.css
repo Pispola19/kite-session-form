@@ -831,7 +831,7 @@ button {
 }
 
 #visualCta.is-success {
-  background: rgba(57,255,20,0.88);
+  background: var(--theme-state-success);
   color: #06230b;
 }
 
