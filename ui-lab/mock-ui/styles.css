@@ -197,7 +197,7 @@ h1 {
 }
 
 .language-button:hover {
-  border-color: rgba(142, 219, 211, 0.46);
+  border-color: var(--theme-pale-accent-language-hover-border);
   color: var(--paper);
 }
 
