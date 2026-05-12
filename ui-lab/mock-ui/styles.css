@@ -31,6 +31,7 @@
   --theme-accent-live-hover-bg: rgba(35, 184, 170, 0.14);
   --theme-accent-live-panel-border: rgba(35, 184, 170, 0.45);
   --theme-accent-live-panel-bg: rgba(35, 184, 170, 0.12);
+  --theme-accent-live-candidate-hover-bg: rgba(35, 184, 170, 0.12);
 }
 
 * {
