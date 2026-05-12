@@ -20,6 +20,9 @@
   --theme-accent-live-soft: var(--teal-soft);
   --theme-border-subtle: var(--line);
   --theme-state-error: var(--red);
+  --theme-state-error-border: rgba(217, 105, 105, 0.62);
+  --theme-state-error-ring: rgba(217, 105, 105, 0.12);
+  --theme-state-error-text: rgba(217, 105, 105, 0.95);
   --theme-state-success: rgba(57, 255, 20, 0.88);
   --theme-accent-live-page-glow: rgba(35, 184, 170, 0.13);
   --theme-accent-live-active-border: rgba(35, 184, 170, 0.72);
