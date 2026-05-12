@@ -575,7 +575,7 @@ label {
   font-size: 14px;
   font-weight: 900;
   touch-action: manipulation;
-  -webkit-tap-highlight-color: rgba(142, 219, 211, 0.35);
+  -webkit-tap-highlight-color: var(--theme-pale-accent-live-button-tap);
 }
 
 .live-spot-button.is-loading {
