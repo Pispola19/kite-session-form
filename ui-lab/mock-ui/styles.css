@@ -608,7 +608,7 @@ label {
   font-weight: 900;
   cursor: pointer;
   touch-action: manipulation;
-  -webkit-tap-highlight-color: rgba(142, 219, 211, 0.28);
+  -webkit-tap-highlight-color: var(--theme-pale-accent-refresh-tap);
 }
 
 .live-spot-refresh-button:hover,
