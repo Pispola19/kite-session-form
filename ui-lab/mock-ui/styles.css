@@ -647,7 +647,7 @@ select {
 .is-invalid input,
 .is-invalid select {
   border-color: var(--theme-state-error-border);
-  box-shadow: 0 0 0 1px rgba(217, 105, 105, 0.12);
+  box-shadow: 0 0 0 1px var(--theme-state-error-ring);
 }
 
 textarea {
