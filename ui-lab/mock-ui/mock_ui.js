@@ -1594,6 +1594,10 @@ function resetVisualFormAfterSuccess() {
   refreshPayloadDebugPreview();
 }
 
+function resetUiAfterSuccess() {
+  resetVisualFormAfterSuccess();
+}
+
 if (
   typeof window !== "undefined" &&
   window.VENTO_LIVE_ENABLE_TEST_HOOKS === true
@@ -1664,7 +1668,7 @@ cta?.addEventListener("click", async () => {
       renderThankYouBanner();
       window.setTimeout(() => {
         openWhatsAppSecondary(payloads.legacyPayload);
-        resetVisualFormAfterSuccess();
+        resetUiAfterSuccess();
         restoreCtaFeedback();
       }, 1200);
     } else {
