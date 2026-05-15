@@ -950,7 +950,7 @@ const OPTION_VALUES = {
   result: Object.keys(MOCK_DATA.CANONICAL_VALUES.result),
   board:  Object.keys(MOCK_DATA.CANONICAL_VALUES.board),
   gender: Object.keys(MOCK_DATA.CANONICAL_VALUES.gender),
-  brand:  MOCK_DATA.BRAND_LIST,
+  brand:  [...MOCK_DATA.BRAND_LIST].sort((a, b) => a.localeCompare(b)),
   model:  []
 };
 
