@@ -30,3 +30,6 @@ ui_extras.safe.js
 *.jsonl
 *.BACKUP_*
 main
+
+# Node dependencies
+node_modules/
