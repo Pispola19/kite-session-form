@@ -82,6 +82,7 @@ function createHarness() {
   if (!window.HTMLElement.prototype.scrollIntoView) {
     window.HTMLElement.prototype.scrollIntoView = () => {};
   }
+  window.VENTO_LIVE_ENABLE_TEST_HOOKS = true;
 
   runScript(window, "translations.js");
   runScript(window, "ui-lab/mock-engine/mock_engine.browser.js");
@@ -134,15 +135,20 @@ function main() {
   assert(boardSelect.value === fromType, "Language change did not preserve board value");
   assert(boardSizeSelect.value === selectedSize, "Language change did not preserve compatible board size value");
 
-  if (typeof window.resetVisualFormAfterSuccess === "function") {
-    window.resetVisualFormAfterSuccess();
-    assert(brandSelect.value === "", "Reset did not clear brand");
-    assert(modelSelect.value === "", "Reset did not clear model");
-    assert(boardSelect.value === "", "Reset did not clear board");
-    assert(boardSizeSelect.value === "", "Reset did not clear board size");
-  } else {
-    console.warn("resetVisualFormAfterSuccess is not globally accessible; reset contract needs a future controlled test hook.");
-  }
+  const hooks = window.VENTO_LIVE_TEST_HOOKS || {};
+  assert(
+    typeof hooks.resetVisualFormAfterSuccess === "function",
+    "Missing resetVisualFormAfterSuccess test hook"
+  );
+  hooks.resetVisualFormAfterSuccess();
+  const brandAfterReset = field(document, "kite.brand");
+  const modelAfterReset = field(document, "kite.model");
+  const boardAfterReset = field(document, "board.board");
+  const boardSizeAfterReset = field(document, "board.boardSize");
+  assert(brandAfterReset.value === "" || brandAfterReset.value !== fromBrand, "Reset retained previous brand");
+  assert(modelAfterReset.value !== selectedModel, "Reset retained previous model");
+  assert(boardAfterReset.value === "" || boardAfterReset.value !== fromType, "Reset retained previous board");
+  assert(boardSizeAfterReset.value !== selectedSize, "Reset retained previous board size");
 
   console.log("REPORT_UI_SELECT_OPTIONS_RENDER_CONTRACT");
   console.log(JSON.stringify({
@@ -152,7 +158,7 @@ function main() {
       "brand_model_parent_child",
       "board_board_size_parent_child",
       "language_change_preserves_compatible_values",
-      typeof window.resetVisualFormAfterSuccess === "function" ? "reset_after_success" : "reset_after_success_pending_hook"
+      "reset_after_success_contract"
     ]
   }, null, 2));
 }

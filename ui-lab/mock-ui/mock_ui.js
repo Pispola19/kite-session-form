@@ -1594,6 +1594,15 @@ function resetVisualFormAfterSuccess() {
   refreshPayloadDebugPreview();
 }
 
+if (
+  typeof window !== "undefined" &&
+  window.VENTO_LIVE_ENABLE_TEST_HOOKS === true
+) {
+  window.VENTO_LIVE_TEST_HOOKS = Object.freeze({
+    resetVisualFormAfterSuccess
+  });
+}
+
 cta?.addEventListener("click", async () => {
   if (cta.dataset.isSubmitting === "true") return;
 
