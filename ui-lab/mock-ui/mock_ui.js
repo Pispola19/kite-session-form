@@ -1760,7 +1760,7 @@ showLiveSpot?.addEventListener("click", async () => {
   }
 
   try {
-    const uiState = FormStateLayer.read();
+    const uiState = getFormStateSnapshot();
     const spot = uiState?.spot?.location || "";
 
     let payload;
