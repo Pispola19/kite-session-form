@@ -866,6 +866,32 @@ async function submitSessionToGoogleSecondary(legacyPayload) {
   });
 }
 
+async function runPrimarySubmitWithLegacySecondaryReport(legacyPayload) {
+  const primaryResult = await submitSessionPrimary(legacyPayload);
+  const primaryOk = primaryResult && primaryResult.ok === true;
+  let googleResult = null;
+  let googleOk = false;
+
+  if (primaryOk) {
+    try {
+      googleResult = await submitSessionToGoogleSecondary(legacyPayload);
+    } catch (err) {
+      googleResult = { ok: false, error: err && err.message ? err.message : "google_secondary_failed" };
+    }
+
+    googleOk =
+      googleResult &&
+      (googleResult.ok === true || googleResult.probable === true || googleResult.skipped === true);
+  }
+
+  return {
+    primaryResult,
+    primaryOk,
+    googleResult,
+    googleOk
+  };
+}
+
 function renderLiveSpotReadonly(payload) {
   LiveSpotReadonlyConnector.renderLiveSpotReadonly(liveSpotPanel, payload);
 }
@@ -1612,19 +1638,12 @@ cta?.addEventListener("click", async () => {
   }
 
   try {
-    const primaryResult = await submitSessionPrimary(payloads.legacyPayload);
-    if (primaryResult && primaryResult.ok === true) {
-      let googleResult = null;
-      try {
-        googleResult = await submitSessionToGoogleSecondary(payloads.legacyPayload);
-      } catch (err) {
-        googleResult = { ok: false, error: err && err.message ? err.message : "google_secondary_failed" };
-      }
+    const submitReport = await runPrimarySubmitWithLegacySecondaryReport(payloads.legacyPayload);
+    const primary = submitReport.primaryResult;
+    const googleResult = submitReport.googleResult;
+    const googleOk = submitReport.googleOk;
 
-      const googleOk =
-        googleResult &&
-        (googleResult.ok === true || googleResult.probable === true || googleResult.skipped === true);
-
+    if (primary && primary.ok === true) {
       if (googleOk) {
         message.textContent = "Dati inviati. WhatsApp si apre con il riepilogo.";
       } else {
