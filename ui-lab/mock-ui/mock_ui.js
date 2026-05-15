@@ -1598,6 +1598,32 @@ function resetUiAfterSuccess() {
   resetVisualFormAfterSuccess();
 }
 
+function showSubmitLoadingUi() {
+  hideThankYouBanner();
+  message?.classList.remove("is-error");
+  if (message) {
+    message.textContent = "Invio in corso…";
+  }
+}
+
+function showSubmitSuccessUi(googleOk) {
+  if (message) {
+    message.textContent = googleOk
+      ? "Dati inviati. WhatsApp si apre con il riepilogo."
+      : "Dati inviati. Google Sheet non aggiornato.";
+  }
+  cta.classList.remove("is-loading");
+  cta.classList.add("is-success");
+  renderThankYouBanner();
+}
+
+function showSubmitErrorUi(text = "Invio dati non riuscito - riprova") {
+  if (message) {
+    message.textContent = text;
+    message.classList.add("is-error");
+  }
+}
+
 if (
   typeof window !== "undefined" &&
   window.VENTO_LIVE_ENABLE_TEST_HOOKS === true
@@ -1657,26 +1683,18 @@ cta?.addEventListener("click", async () => {
     const googleOk = submitReport.googleOk;
 
     if (primary && primary.ok === true) {
-      if (googleOk) {
-        message.textContent = "Dati inviati. WhatsApp si apre con il riepilogo.";
-      } else {
-        message.textContent = "Dati inviati. Google Sheet non aggiornato.";
-      }
-
-      cta.classList.remove("is-loading");
-      cta.classList.add("is-success");
-      renderThankYouBanner();
+      showSubmitSuccessUi(googleOk);
       window.setTimeout(() => {
         openWhatsAppSecondary(payloads.legacyPayload);
         resetUiAfterSuccess();
         restoreCtaFeedback();
       }, 1200);
     } else {
-      message.textContent = "Invio dati non riuscito - riprova";
+      showSubmitErrorUi();
       restoreCtaFeedback();
     }
   } catch (_) {
-    message.textContent = "Invio dati non riuscito - riprova";
+    showSubmitErrorUi();
     restoreCtaFeedback();
   }
 });
