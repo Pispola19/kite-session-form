@@ -1743,7 +1743,7 @@ showLiveSpot?.addEventListener("click", async () => {
         const forecasts = Array.isArray(data.forecasts) ? data.forecasts : [];
         const hasForecastsWind = forecasts.some(hasForecastWind);
 
-        return hasCurrentWind || hasForecastWind || hasForecastWind(data.forecast);
+        return hasCurrentWind || hasForecastsWind || hasForecastWind(data.forecast);
       };
 
       let realData = await fetchLiveSpotReal(spot);
