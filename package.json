@@ -1,0 +1,13 @@
+{
+  "name": "kite-session-form-ui-contract-tests",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "check:mock-ui": "node --check ui-lab/mock-ui/mock_ui.js",
+    "test:mock-engine": "node ui-lab/mock-engine/run_payload_diff.js && node ui-lab/mock-engine/run_legacy_hash_parity.js",
+    "test:ui-contract": "node ui-lab/mock-ui/select_options_render.contract.test.js"
+  },
+  "devDependencies": {
+    "jsdom": "^24.1.3"
+  }
+}
