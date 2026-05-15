@@ -1031,10 +1031,12 @@ function populateModelsForBrand(brandValue) {
   const modelField = document.querySelector('[data-state-field="kite.model"]');
   const brandKey = String(brandValue || "");
   const models = (MOCK_DATA.MODELS_BY_BRAND && MOCK_DATA.MODELS_BY_BRAND[brandKey]) || [];
+  const values = ["Other", ...models];
+  const labels = [tLegacy("opt_model_other") || "Other", ...models];
   populateSelect(
     modelField,
-    models,
-    models,
+    values,
+    labels,
     shortPromptForSelectPath("kite.model") || tPrompt("kite.model")
   );
 }
@@ -1043,10 +1045,13 @@ function populateBoardSizesForType(boardType) {
   const boardSizeField = document.querySelector('[data-state-field="board.boardSize"]');
   const typeKey = String(boardType || "");
   const sizes = (MOCK_DATA.BOARD_SIZE_BY_TYPE && MOCK_DATA.BOARD_SIZE_BY_TYPE[typeKey]) || [];
+  const usesOther = typeKey === "twintip" || typeKey === "surfboard" || typeKey === "foil";
+  const values = usesOther ? ["Other", ...sizes] : sizes;
+  const labels = usesOther ? [tLegacy("opt_board_size_other") || "Other", ...sizes] : sizes;
   populateSelect(
     boardSizeField,
-    sizes,
-    sizes,
+    values,
+    labels,
     shortPromptForSelectPath("board.boardSize") || tPrompt("board.boardSize")
   );
 }
