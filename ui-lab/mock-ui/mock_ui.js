@@ -997,6 +997,17 @@ function tPrompt(path) {
   return tLegacy(legacyKey) || "";
 }
 
+function buildSelectOptionsBundle(category, values, path, canonical) {
+  const labels = category
+    ? values.map((v) => tOption(category, v) || (canonical && canonical[v]) || v)
+    : values;
+  return {
+    values,
+    labels,
+    promptText: shortPromptForSelectPath(path) || tPrompt(path)
+  };
+}
+
 function populateSelect(field, values, labels, promptText) {
   if (!field) return;
   const previous = String(field.value || "");
@@ -1080,14 +1091,8 @@ function renderUI() {
   ];
   selectsSpec.forEach((spec) => {
     const field = formEl.querySelector(`[data-state-field="${spec.path}"]`);
-    let labels;
-    if (spec.category) {
-      labels = spec.values.map((v) => tOption(spec.category, v) || (spec.canonical && spec.canonical[v]) || v);
-    } else {
-      labels = spec.values;
-    }
-    const promptText = shortPromptForSelectPath(spec.path) || tPrompt(spec.path);
-    populateSelect(field, spec.values, labels, promptText);
+    const optionsBundle = buildSelectOptionsBundle(spec.category, spec.values, spec.path, spec.canonical);
+    populateSelect(field, optionsBundle.values, optionsBundle.labels, optionsBundle.promptText);
   });
 
   const boardTypeField = formEl.querySelector('[data-state-field="board.board"]');
