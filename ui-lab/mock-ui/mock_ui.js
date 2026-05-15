@@ -1124,6 +1124,8 @@ function renderUI() {
   if (lsPanel && LiveSpotReadonlyConnector && typeof LiveSpotReadonlyConnector.getLastNormalizedPayload === "function") {
     LiveSpotReadonlyConnector.renderLiveSpotReadonly(lsPanel, LiveSpotReadonlyConnector.getLastNormalizedPayload());
   }
+
+  renderOtherTextSlots();
 }
 
 const form = document.getElementById("mockSessionForm");
@@ -1142,6 +1144,55 @@ const userDataPreview = document.getElementById("userDataPreview");
 const readonlyLeakStatus = document.getElementById("readonlyLeakStatus");
 const endpointCallsStatus = document.getElementById("endpointCallsStatus");
 const thankYouBanner = document.getElementById("thankYouBanner");
+
+let modelOtherText = "";
+let boardSizeOtherText = "";
+
+function renderOtherTextInput(slot, value, placeholderKey, onInput) {
+  slot.innerHTML = "";
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = value;
+  input.setAttribute("placeholder", tLegacy(placeholderKey) || "");
+  input.setAttribute("aria-label", tLegacy(placeholderKey) || "");
+  input.addEventListener("input", () => {
+    onInput(input.value);
+  });
+  slot.appendChild(input);
+}
+
+function renderOtherTextSlots() {
+  const modelSlot = document.getElementById("modelOtherTextSlot");
+  const boardSizeSlot = document.getElementById("boardSizeOtherTextSlot");
+  const modelField = form?.querySelector?.('[data-state-field="kite.model"]');
+  const boardSizeField = form?.querySelector?.('[data-state-field="board.boardSize"]');
+
+  if (modelSlot) {
+    if (modelField?.value === "Other") {
+      modelSlot.hidden = false;
+      renderOtherTextInput(modelSlot, modelOtherText, "ph_model_custom", (value) => {
+        modelOtherText = value;
+      });
+    } else {
+      modelOtherText = "";
+      modelSlot.hidden = true;
+      modelSlot.innerHTML = "";
+    }
+  }
+
+  if (boardSizeSlot) {
+    if (boardSizeField?.value === "Other") {
+      boardSizeSlot.hidden = false;
+      renderOtherTextInput(boardSizeSlot, boardSizeOtherText, "ph_board_size_custom", (value) => {
+        boardSizeOtherText = value;
+      });
+    } else {
+      boardSizeOtherText = "";
+      boardSizeSlot.hidden = true;
+      boardSizeSlot.innerHTML = "";
+    }
+  }
+}
 
 function normalizeLiveSpotViewMode(mode) {
   return mode === LIVE_SPOT_VIEW_MODE.METEO ? LIVE_SPOT_VIEW_MODE.METEO : LIVE_SPOT_VIEW_MODE.KITE;
@@ -1591,6 +1642,8 @@ function resetVisualFormAfterSuccess() {
   try {
     form?.reset();
   } catch (_) {}
+  modelOtherText = "";
+  boardSizeOtherText = "";
   if (form) {
     Array.from(form.querySelectorAll("[data-state-field]")).forEach((el) => {
       try {
@@ -1725,11 +1778,14 @@ form?.addEventListener("change", (event) => {
     setInvalid(field, !String(field.value || "").trim());
   }
   if (field && field.getAttribute("data-state-field") === "kite.brand") {
+    modelOtherText = "";
     populateModelsForBrand(field.value);
   }
   if (field && field.getAttribute("data-state-field") === "board.board") {
+    boardSizeOtherText = "";
     populateBoardSizesForType(field.value);
   }
+  renderOtherTextSlots();
   refreshPayloadDebugPreview();
 });
 
