@@ -1785,6 +1785,7 @@ showLiveSpot?.addEventListener("click", async () => {
               }
               if (!hasUsableLiveSpotData(selectedData)) {
                 setLiveSpotPanelFeedback(lsUi.unavailable);
+                scrollLiveSpotPanel();
                 showLiveSpot.disabled = false;
                 showLiveSpot.classList.remove("is-loading");
                 showLiveSpot.textContent = lsUi.idle;
