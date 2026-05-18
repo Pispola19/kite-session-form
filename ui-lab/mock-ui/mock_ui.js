@@ -66,7 +66,13 @@ const LEGACY_KEY_MAP = Object.freeze({
   lsFc1:               "live_spot_mock_fc_1",
   lsFc2:               "live_spot_mock_fc_2",
   lsFc3:               "live_spot_mock_fc_3",
-  lsRefreshButton:     "live_spot_mock_refresh_button"
+  lsRefreshButton:     "live_spot_mock_refresh_button",
+  quickGuideEyebrow:   "quick_guide_eyebrow",
+  quickGuideTitle:     "quick_guide_title",
+  quickGuideStep1:     "quick_guide_step_1",
+  quickGuideStep2:     "quick_guide_step_2",
+  quickGuideStep3:     "quick_guide_step_3",
+  quickGuideStep4:     "quick_guide_step_4"
 });
 
 // Mappa value tecnico (legacy) -> chiave label legacy per ogni enum select.
