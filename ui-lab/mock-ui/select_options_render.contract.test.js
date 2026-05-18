@@ -194,9 +194,9 @@ function main() {
   setValue(window, boardSizeSelect, "Other");
   boardSizeOtherInput = assertOtherInputVisible(boardSizeOtherSlot, "boardSizeOtherTextSlot");
   typeText(window, boardSizeOtherInput, "Language board size text");
-  const languageButton = document.querySelector('[data-language="EN"]');
-  assert(languageButton, "Missing EN language button");
-  languageButton.click();
+  const languageSelect = document.getElementById("languageSelect");
+  assert(languageSelect, "Missing #languageSelect");
+  setValue(window, languageSelect, "en");
   assert(brandSelect.value === fromBrand, "Language change did not preserve brand value");
   assert(modelSelect.value === "Other", "Language change did not preserve Other model value");
   assert(assertOtherInputVisible(modelOtherSlot, "modelOtherTextSlot").value === "Language model text", "Language change did not preserve model Other text");
