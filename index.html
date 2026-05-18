@@ -15,15 +15,15 @@
           <p class="hero__subtitle">Live wind for kiters</p>
         </div>
         <nav class="language-switch" aria-label="Selettore lingua">
-          <span class="language-switch__badge">Lingua</span>
-          <div class="language-switch__buttons">
-            <button class="language-button is-active" type="button" data-language="IT" aria-pressed="true">IT 🇮🇹</button>
-            <button class="language-button" type="button" data-language="EN" aria-pressed="false">EN 🇬🇧</button>
-            <button class="language-button" type="button" data-language="DE" aria-pressed="false">DE 🇩🇪</button>
-            <button class="language-button" type="button" data-language="ES" aria-pressed="false">ES 🇪🇸</button>
-            <button class="language-button" type="button" data-language="FR" aria-pressed="false">FR 🇫🇷</button>
-            <button class="language-button" type="button" data-language="PL" aria-pressed="false">PL 🇵🇱</button>
-          </div>
+          <label class="language-switch__badge" for="languageSelect">Lingua</label>
+          <select id="languageSelect" class="language-select" name="language" aria-label="Lingua">
+            <option value="it" selected>IT 🇮🇹</option>
+            <option value="en">EN 🇬🇧</option>
+            <option value="de">DE 🇩🇪</option>
+            <option value="es">ES 🇪🇸</option>
+            <option value="fr">FR 🇫🇷</option>
+            <option value="pl">PL 🇵🇱</option>
+          </select>
         </nav>
         <div class="hero__identity" aria-hidden="true">
           <img src="ui-lab/mock-ui/assets/kiteboarder-tribal.png" alt="">

@@ -1155,7 +1155,7 @@ const showLiveSpot = document.getElementById("showLiveSpot");
 const refreshLiveSpotPanel = document.getElementById("refreshLiveSpotPanel");
 const liveSpotPanel = document.getElementById("liveSpotPanel");
 const liveSpotMessage = document.getElementById("liveSpotMessage");
-const languageButtons = Array.from(document.querySelectorAll(".language-button"));
+const languageSelect = document.getElementById("languageSelect");
 const liveSpotViewButtons = Array.from(document.querySelectorAll("[data-live-spot-view]"));
 const uiStatePreview = document.getElementById("uiStatePreview");
 const payloadContractPreview = document.getElementById("payloadContractPreview");
@@ -1996,14 +1996,10 @@ liveSpotViewButtons.forEach((button) => {
   });
 });
 
-languageButtons.forEach((button) => {
-  button.addEventListener("click", () => {
+if (languageSelect) {
+  languageSelect.addEventListener("change", () => {
     hideThankYouBanner();
-    languageButtons.forEach((item) => {
-      item.classList.toggle("is-active", item === button);
-      item.setAttribute("aria-pressed", item === button ? "true" : "false");
-    });
-    const langCode = String(button.getAttribute("data-language") || "IT").toLowerCase();
+    const langCode = String(languageSelect.value || "it").toLowerCase();
     const T = window.RDK_TRANSLATIONS;
     if (T && T[langCode]) {
       currentLang = langCode;
@@ -2012,11 +2008,12 @@ languageButtons.forEach((button) => {
     } else {
       currentLang = "it";
     }
+    languageSelect.value = currentLang;
     renderUI();
     refreshPayloadDebugPreview();
     syncCtaIdlePipelineMessage();
   });
-});
+}
 
 renderUI();
 validateRequiredFields();
