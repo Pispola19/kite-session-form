@@ -26,6 +26,11 @@ const WHATSAPP_SECONDARY_CONFIG = {
 
 const WHATSAPP_SUMMARY_LANGS = Object.freeze(["it", "en", "de", "es", "fr"]);
 
+function uiCopyLang(bucket) {
+  const lc = String(currentLang || "").toLowerCase();
+  return bucket && Object.prototype.hasOwnProperty.call(bucket, lc) ? lc : "it";
+}
+
 // Mappa chiavi UI locali (usate in data-i18n / data-i18n-placeholder) -> chiavi legacy
 // presenti in window.RDK_TRANSLATIONS (definito in translations.js).
 // REGOLA: NON contiene stringhe tradotte, solo nomi di chiavi.
@@ -173,12 +178,21 @@ const SHORT_SELECT_PROMPTS = Object.freeze({
     "result.result": "Résultat",
     "kite.brand": "Marque",
     "kite.model": "Modèle"
+  }),
+  pl: Object.freeze({
+    "rider.gender": "-",
+    "rider.level": "Poziom",
+    "board.board": "Deska",
+    "board.boardSize": "Rozmiar",
+    "water.water": "Woda",
+    "result.result": "Wynik",
+    "kite.brand": "Marka",
+    "kite.model": "Model"
   })
 });
 
 function shortPromptForSelectPath(path) {
-  const lc = String(currentLang || "").toLowerCase();
-  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
+  const lang = uiCopyLang(SHORT_SELECT_PROMPTS);
   const bucket = SHORT_SELECT_PROMPTS[lang] || SHORT_SELECT_PROMPTS.it;
   return bucket[path] || "";
 }
@@ -188,12 +202,12 @@ const SHORT_KITE_PLACEHOLDER = Object.freeze({
   en: "Kite",
   de: "Kite",
   es: "Kite",
-  fr: "Kite"
+  fr: "Kite",
+  pl: "Kite"
 });
 
 function shortKiteInputPlaceholder() {
-  const lc = String(currentLang || "").toLowerCase();
-  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
+  const lang = uiCopyLang(SHORT_KITE_PLACEHOLDER);
   return SHORT_KITE_PLACEHOLDER[lang] || SHORT_KITE_PLACEHOLDER.it;
 }
 
@@ -202,12 +216,12 @@ const SPOT_PLACEHOLDER_BY_LANG = Object.freeze({
   en: "e.g. Is Solinas",
   de: "z. B. Is Solinas",
   es: "ej. Is Solinas",
-  fr: "ex. Is Solinas"
+  fr: "ex. Is Solinas",
+  pl: "np. Is Solinas"
 });
 
 function spotInputPlaceholder() {
-  const lc = String(currentLang || "").toLowerCase();
-  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
+  const lang = uiCopyLang(SPOT_PLACEHOLDER_BY_LANG);
   return SPOT_PLACEHOLDER_BY_LANG[lang] || SPOT_PLACEHOLDER_BY_LANG.it;
 }
 
@@ -222,7 +236,8 @@ const WIND_DECLARED_HINT_BY_LANG = Object.freeze({
   en: "Separate from Live Spot: this is the wind you enter yourself.",
   de: "Getrennt vom Live Spot: das ist der Wind, den du selbst einträgst.",
   es: "Separado del Live Spot: este es el viento que declaras tú.",
-  fr: "Séparé du Live Spot : c’est le vent que tu saisis toi-même."
+  fr: "Séparé du Live Spot : c’est le vent que tu saisis toi-même.",
+  pl: "Oddzielnie od Live Spot: to jest wiatr wpisany przez Ciebie."
 });
 
 const REQUIRED_FIELD_LABEL_KEYS = Object.freeze({
@@ -243,8 +258,7 @@ const REQUIRED_FIELD_MESSAGE_BY_LANG = Object.freeze({
 });
 
 function declaredWindHint() {
-  const lc = String(currentLang || "").toLowerCase();
-  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
+  const lang = uiCopyLang(WIND_DECLARED_HINT_BY_LANG);
   return WIND_DECLARED_HINT_BY_LANG[lang] || WIND_DECLARED_HINT_BY_LANG.it;
 }
 
@@ -253,12 +267,12 @@ const FORECAST_MISSING_BY_LANG = Object.freeze({
   en: "N.A.",
   de: "k.A.",
   es: "N.D.",
-  fr: "N.D."
+  fr: "N.D.",
+  pl: "b.d."
 });
 
 function forecastMissingLabel() {
-  const lc = String(currentLang || "").toLowerCase();
-  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
+  const lang = uiCopyLang(FORECAST_MISSING_BY_LANG);
   return FORECAST_MISSING_BY_LANG[lang] || FORECAST_MISSING_BY_LANG.it;
 }
 
@@ -272,12 +286,12 @@ const LIVE_SPOT_VIEW_UI_BY_LANG = Object.freeze({
   en: Object.freeze({ group: "Live Spot view", kite: "KITER", meteo: "METEO" }),
   de: Object.freeze({ group: "Live-Spot-Ansicht", kite: "KITER", meteo: "METEO" }),
   es: Object.freeze({ group: "Vista Live Spot", kite: "KITER", meteo: "METEO" }),
-  fr: Object.freeze({ group: "Vue Live Spot", kite: "KITER", meteo: "METEO" })
+  fr: Object.freeze({ group: "Vue Live Spot", kite: "KITER", meteo: "METEO" }),
+  pl: Object.freeze({ group: "Widok Live Spot", kite: "KITER", meteo: "METEO" })
 });
 
 function liveSpotViewUiStrings() {
-  const lc = String(currentLang || "").toLowerCase();
-  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
+  const lang = uiCopyLang(LIVE_SPOT_VIEW_UI_BY_LANG);
   return LIVE_SPOT_VIEW_UI_BY_LANG[lang] || LIVE_SPOT_VIEW_UI_BY_LANG.it;
 }
 
@@ -286,12 +300,12 @@ const LIVE_SPOT_BUTTON_UI = Object.freeze({
   en: Object.freeze({ idle: "View Live Spot", loading: "Fetching wind…", message: "Updating Live Spot…", disambiguationPrompt: "Choose the correct location: ", locationFallback: "Location", updatingWind: "Updating live wind...", unavailable: "Live wind unavailable, try again", updatedPrefix: "Live Spot updated: " }),
   de: Object.freeze({ idle: "Live Spot anzeigen", loading: "Wind wird geladen…", message: "Live Spot wird aktualisiert…", disambiguationPrompt: "Wähle den richtigen Ort: ", locationFallback: "Ort", updatingWind: "Live-Wind wird aktualisiert...", unavailable: "Live-Wind nicht verfügbar, versuche es erneut", updatedPrefix: "Live Spot aktualisiert: " }),
   es: Object.freeze({ idle: "Ver Live Spot", loading: "Buscando viento…", message: "Actualizando Live Spot…", disambiguationPrompt: "Elige la localidad correcta: ", locationFallback: "Localidad", updatingWind: "Actualizando viento live...", unavailable: "Viento live no disponible, vuelve a intentarlo", updatedPrefix: "Live Spot actualizado: " }),
-  fr: Object.freeze({ idle: "Voir Live Spot", loading: "Recherche du vent…", message: "Mise à jour du Live Spot…", disambiguationPrompt: "Choisis la bonne localité : ", locationFallback: "Localité", updatingWind: "Mise à jour du vent live...", unavailable: "Vent live indisponible, réessaie", updatedPrefix: "Live Spot mis à jour : " })
+  fr: Object.freeze({ idle: "Voir Live Spot", loading: "Recherche du vent…", message: "Mise à jour du Live Spot…", disambiguationPrompt: "Choisis la bonne localité : ", locationFallback: "Localité", updatingWind: "Mise à jour du vent live...", unavailable: "Vent live indisponible, réessaie", updatedPrefix: "Live Spot mis à jour : " }),
+  pl: Object.freeze({ idle: "Pokaż Live Spot", loading: "Szukam wiatru…", message: "Aktualizacja Live Spot…", disambiguationPrompt: "Wybierz właściwą lokalizację: ", locationFallback: "Lokalizacja", updatingWind: "Aktualizacja wiatru live...", unavailable: "Wiatr live niedostępny, spróbuj ponownie", updatedPrefix: "Live Spot zaktualizowany: " })
 });
 
 function liveSpotUiStrings() {
-  const lc = String(currentLang || "").toLowerCase();
-  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
+  const lang = uiCopyLang(LIVE_SPOT_BUTTON_UI);
   return LIVE_SPOT_BUTTON_UI[lang] || LIVE_SPOT_BUTTON_UI.it;
 }
 
@@ -1250,13 +1264,17 @@ const THANK_YOU_BANNER_MESSAGES = Object.freeze({
     title: "Merci !",
     phrase:
       "Tes données ont bien été reçues. Chaque session aide VENTO LIVE à devenir plus utile pour tous les riders."
+  }),
+  pl: Object.freeze({
+    title: "Dziękujemy!",
+    phrase:
+      "Twoje dane zostały odebrane. Każda sesja pomaga VENTO LIVE być bardziej użytecznym dla wszystkich riderów."
   })
 });
 
 function renderThankYouBanner() {
   if (!thankYouBanner) return;
-  const lc = String(currentLang || "").toLowerCase();
-  const lang = WHATSAPP_SUMMARY_LANGS.includes(lc) ? lc : "it";
+  const lang = uiCopyLang(THANK_YOU_BANNER_MESSAGES);
   const copy = THANK_YOU_BANNER_MESSAGES[lang] || THANK_YOU_BANNER_MESSAGES.it;
   thankYouBanner.innerHTML =
     `<strong class="thank-you-banner__title">${copy.title}</strong>` +
