@@ -72,6 +72,7 @@ const LEGACY_KEY_MAP = Object.freeze({
   lsFc2:               "live_spot_mock_fc_2",
   lsFc3:               "live_spot_mock_fc_3",
   lsRefreshButton:     "live_spot_mock_refresh_button",
+  lsRecentLabel:       "live_spot_recent_label",
   quickGuideEyebrow:   "quick_guide_eyebrow",
   quickGuideTitle:     "quick_guide_title",
   quickGuideStep1:     "quick_guide_step_1",
@@ -1163,6 +1164,127 @@ const legacyPayloadPreview = document.getElementById("legacyPayloadPreview");
 const userDataPreview = document.getElementById("userDataPreview");
 const readonlyLeakStatus = document.getElementById("readonlyLeakStatus");
 const endpointCallsStatus = document.getElementById("endpointCallsStatus");
+const RECENT_SPOTS_STORAGE_KEY = "vento_live_recent_spots_v1";
+const RECENT_SPOTS_LIMIT = 5;
+let liveSpotRecentContainer = null;
+
+function recentSpotStorage() {
+  try {
+    return window.localStorage || null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function cleanRecentSpotName(value) {
+  return String(value || "").trim().replace(/\s+/g, " ");
+}
+
+function readRecentSpots() {
+  const storage = recentSpotStorage();
+  if (!storage) return [];
+
+  try {
+    const raw = JSON.parse(storage.getItem(RECENT_SPOTS_STORAGE_KEY) || "[]");
+    if (!Array.isArray(raw)) return [];
+
+    const recent = [];
+    raw.forEach((item) => {
+      const name = cleanRecentSpotName(item);
+      const dedupeKey = name.toLocaleLowerCase();
+      if (!name || recent.some((spot) => spot.toLocaleLowerCase() === dedupeKey)) return;
+      if (recent.length < RECENT_SPOTS_LIMIT) recent.push(name);
+    });
+    return recent;
+  } catch (_) {
+    return [];
+  }
+}
+
+function writeRecentSpots(spots) {
+  const storage = recentSpotStorage();
+  if (!storage) return false;
+
+  try {
+    storage.setItem(RECENT_SPOTS_STORAGE_KEY, JSON.stringify(spots.slice(0, RECENT_SPOTS_LIMIT)));
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function ensureRecentSpotsContainer() {
+  if (liveSpotRecentContainer && liveSpotRecentContainer.isConnected) {
+    return liveSpotRecentContainer;
+  }
+  if (!liveSpotMessage || !liveSpotMessage.parentElement) return null;
+
+  const container = document.createElement("div");
+  container.className = "live-spot-recent";
+  container.hidden = true;
+
+  const label = document.createElement("span");
+  label.className = "live-spot-recent__label";
+  container.appendChild(label);
+
+  const chips = document.createElement("div");
+  chips.className = "live-spot-recent__chips";
+  container.appendChild(chips);
+
+  liveSpotMessage.insertAdjacentElement("afterend", container);
+  liveSpotRecentContainer = container;
+  return container;
+}
+
+function runRecentLiveSpotSearch(spot) {
+  const spotInput = form?.querySelector?.('[data-state-field="spot.location"]');
+  if (!spotInput || !showLiveSpot || showLiveSpot.disabled) return;
+
+  spotInput.value = spot;
+  refreshPayloadDebugPreview();
+  showLiveSpot.click();
+}
+
+function renderRecentSpots() {
+  const recent = readRecentSpots();
+  const container = ensureRecentSpotsContainer();
+  if (!container) return;
+
+  const label = container.querySelector(".live-spot-recent__label");
+  const chips = container.querySelector(".live-spot-recent__chips");
+  if (!recent.length || !label || !chips) {
+    container.hidden = true;
+    if (chips) chips.textContent = "";
+    return;
+  }
+
+  label.textContent = t("lsRecentLabel");
+  chips.textContent = "";
+  recent.forEach((spot) => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "live-spot-recent__chip";
+    chip.textContent = spot;
+    chip.addEventListener("click", () => runRecentLiveSpotSearch(spot));
+    chips.appendChild(chip);
+  });
+  container.hidden = false;
+}
+
+function rememberRecentSpot(spot) {
+  const name = cleanRecentSpotName(spot);
+  if (!name) return;
+
+  const dedupeKey = name.toLocaleLowerCase();
+  const next = [
+    name,
+    ...readRecentSpots().filter((item) => item.toLocaleLowerCase() !== dedupeKey)
+  ].slice(0, RECENT_SPOTS_LIMIT);
+
+  if (writeRecentSpots(next)) {
+    renderRecentSpots();
+  }
+}
 const thankYouBanner = document.getElementById("thankYouBanner");
 
 let modelOtherText = "";
@@ -1932,6 +2054,7 @@ showLiveSpot?.addEventListener("click", async () => {
               }
               const selectedPayload = LiveSpotReadonlyConnector.normalizeLiveSpotPayload(selectedData);
               renderLiveSpotReadonly(selectedPayload);
+              rememberRecentSpot(spot);
               refreshPayloadDebugPreview();
               if (liveSpotPanel) {
                 liveSpotPanel.classList.add("is-visible");
@@ -1963,6 +2086,7 @@ showLiveSpot?.addEventListener("click", async () => {
     }
 
     renderLiveSpotReadonly(payload);
+    rememberRecentSpot(spot);
 
     refreshPayloadDebugPreview();
 
@@ -2010,12 +2134,14 @@ if (languageSelect) {
     }
     languageSelect.value = currentLang;
     renderUI();
+    renderRecentSpots();
     refreshPayloadDebugPreview();
     syncCtaIdlePipelineMessage();
   });
 }
 
 renderUI();
+renderRecentSpots();
 validateRequiredFields();
 refreshPayloadDebugPreview();
 syncCtaIdlePipelineMessage();

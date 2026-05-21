@@ -595,6 +595,53 @@ label {
   font-weight: 700;
 }
 
+.live-spot-recent {
+  display: flex;
+  flex: 0 0 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.live-spot-recent[hidden] {
+  display: none;
+}
+
+.live-spot-recent__label {
+  color: var(--warm-gray);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.3;
+}
+
+.live-spot-recent__chips {
+  display: flex;
+  flex: 1 1 180px;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.live-spot-recent__chip {
+  max-width: 100%;
+  min-height: 32px;
+  padding: 5px 10px;
+  border: 1px solid var(--theme-pale-accent-live-button-border);
+  border-radius: 8px;
+  background: rgba(6, 23, 35, 0.52);
+  color: var(--theme-accent-live-soft);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  text-align: left;
+  white-space: normal;
+}
+
 .live-spot-refresh-button {
   width: 100%;
   min-height: 46px;
