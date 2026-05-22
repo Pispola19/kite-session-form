@@ -1164,9 +1164,92 @@ const legacyPayloadPreview = document.getElementById("legacyPayloadPreview");
 const userDataPreview = document.getElementById("userDataPreview");
 const readonlyLeakStatus = document.getElementById("readonlyLeakStatus");
 const endpointCallsStatus = document.getElementById("endpointCallsStatus");
+const RIDER_WEIGHT_STORAGE_KEY = "vento_live_rider_weight_kg_v1";
+const RIDER_WEIGHT_MIN_KG = 20;
+const RIDER_WEIGHT_MAX_KG = 200;
 const RECENT_SPOTS_STORAGE_KEY = "vento_live_recent_spots_v1";
 const RECENT_SPOTS_LIMIT = 5;
 let liveSpotRecentContainer = null;
+
+function riderWeightStorage() {
+  try {
+    return window.localStorage || null;
+  } catch (_) {
+    return null;
+  }
+}
+
+function cleanRiderWeightKg(value) {
+  const raw = String(value ?? "").trim().replace(",", ".");
+  if (!/^\d+(?:\.\d+)?$/.test(raw)) return "";
+
+  const weight = Number(raw);
+  if (!Number.isFinite(weight) || weight < RIDER_WEIGHT_MIN_KG || weight > RIDER_WEIGHT_MAX_KG) {
+    return "";
+  }
+
+  return String(weight);
+}
+
+function readStoredRiderWeightKg() {
+  const storage = riderWeightStorage();
+  if (!storage) return "";
+
+  try {
+    return cleanRiderWeightKg(storage.getItem(RIDER_WEIGHT_STORAGE_KEY));
+  } catch (_) {
+    return "";
+  }
+}
+
+function writeStoredRiderWeightKg(value) {
+  const weight = cleanRiderWeightKg(value);
+  const storage = riderWeightStorage();
+  if (!weight || !storage) return false;
+
+  try {
+    storage.setItem(RIDER_WEIGHT_STORAGE_KEY, weight);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function clearStoredRiderWeightKg() {
+  const storage = riderWeightStorage();
+  if (!storage) return false;
+
+  try {
+    storage.removeItem(RIDER_WEIGHT_STORAGE_KEY);
+    return true;
+  } catch (_) {
+    return false;
+  }
+}
+
+function rememberRiderWeightKg(field) {
+  const currentValue = String(field?.value ?? "").trim();
+  if (!currentValue) {
+    clearStoredRiderWeightKg();
+    return;
+  }
+
+  writeStoredRiderWeightKg(currentValue);
+}
+
+function initRiderWeightMemory() {
+  const weightField = form?.querySelector('[data-state-field="rider.weight"]');
+  if (!weightField) return;
+
+  const storedWeight = readStoredRiderWeightKg();
+  if (!String(weightField.value || "").trim() && storedWeight) {
+    weightField.value = storedWeight;
+  }
+
+  const saveWeight = () => rememberRiderWeightKg(weightField);
+  weightField.addEventListener("blur", saveWeight);
+  weightField.addEventListener("change", saveWeight);
+}
 
 function recentSpotStorage() {
   try {
@@ -2141,6 +2224,7 @@ if (languageSelect) {
 }
 
 renderUI();
+initRiderWeightMemory();
 renderRecentSpots();
 validateRequiredFields();
 refreshPayloadDebugPreview();
