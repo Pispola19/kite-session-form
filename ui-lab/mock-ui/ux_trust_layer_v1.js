@@ -50,19 +50,6 @@
     return KITE_DECISION_UI[key] || String(code);
   }
 
-  function formatUpdatedAt(iso) {
-    if (!iso || !String(iso).trim()) return "";
-    const raw = String(iso).trim();
-    const d = new Date(raw);
-    if (!Number.isNaN(d.getTime())) {
-      const hh = String(d.getUTCHours()).padStart(2, "0");
-      const mm = String(d.getUTCMinutes()).padStart(2, "0");
-      return `aggiornato: ${hh}:${mm} UTC`;
-    }
-    const m = raw.match(/T(\d{2}:\d{2})/);
-    return m ? `aggiornato: ${m[1]} UTC` : "";
-  }
-
   function formatTrendSlot(fc, fallbackLabel) {
     if (!fc || !isNumber(fc.wind_knots) || fc.wind_knots < 0) {
       return { wind: "— kn", direction: "—", name: fallbackLabel || "—", stable: true };
@@ -112,7 +99,7 @@
       windNameDisplay: formatDirection(p.wind_direction, dirLabel),
       reliabilityDisplay: relUi,
       spotDisplay: (p.spot && String(p.spot).trim()) || "—",
-      updatedAtDisplay: formatUpdatedAt(p.updated_at),
+      updatedAtDisplay: "",
       trend1: formatTrendSlot(p.forecast_1h, dirLabel),
       trend2: formatTrendSlot(p.forecast_2h, dirLabel),
       trend3: formatTrendSlot(p.forecast_3h, dirLabel)

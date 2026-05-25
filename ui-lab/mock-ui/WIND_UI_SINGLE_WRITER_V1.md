@@ -14,9 +14,14 @@ fetch → LiveSpotWindAdapterV1 (parse V1)
 1. `ventolive_api_routing_v1.js`
 2. `live_spot_wind_adapter_v1.js`
 3. `kite_score_layer_v1.js`
-4. `ux_trust_layer_v1.js`
-5. `wind_ui_single_writer_v1.js`
-6. `mock_ui.js`
+4. `time_ui_v1.js`
+5. `ux_trust_layer_v1.js`
+6. `wind_ui_single_writer_v1.js`
+7. `mock_ui.js`
+
+## Ora UI (Europe/Rome)
+
+Solo `TimeUILayerV1.normalizeTimeToUI()` formatta `updated_at` / `generated_at` per **Ultimo aggiornamento** (es. `04:34`). Mai UTC in UI.
 
 ## Rimosso
 

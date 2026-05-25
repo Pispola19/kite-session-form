@@ -42,7 +42,7 @@
       gust: trust.gustDisplay,
       windName: trust.windNameDisplay,
       reliability: trust.reliabilityDisplay,
-      updatedAt: formatUpdatedClock(p.updated_at) || trust.updatedAtDisplay || "",
+      updatedAt: resolveUpdatedAtForUI(p),
       spot:
         trust.spotDisplay ||
         (p.spot && String(p.spot).trim()) ||
@@ -66,16 +66,19 @@
     };
   }
 
-  function formatUpdatedClock(iso) {
-    if (!iso || !String(iso).trim()) return "";
-    const d = new Date(String(iso).trim());
-    if (!Number.isNaN(d.getTime())) {
-      const hh = String(d.getUTCHours()).padStart(2, "0");
-      const mm = String(d.getUTCMinutes()).padStart(2, "0");
-      return `${hh}:${mm}`;
-    }
-    const m = String(iso).match(/T(\d{2}):(\d{2})/);
-    return m ? `${m[1]}:${m[2]}` : "";
+  function resolveUpdatedAtForUI(payload) {
+    const timeLayer = global.TimeUILayerV1;
+    const pick =
+      timeLayer && typeof timeLayer.pickApiTimestamp === "function"
+        ? timeLayer.pickApiTimestamp(payload)
+        : payload && typeof payload.updated_at === "string"
+          ? payload.updated_at
+          : "";
+    const normalize =
+      global.normalizeTimeToUI ||
+      (timeLayer && timeLayer.normalizeTimeToUI);
+    if (typeof normalize === "function") return normalize(pick) || "—";
+    return "—";
   }
 
   /**

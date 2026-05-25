@@ -129,6 +129,7 @@ function createHarness() {
   runScript(window, "ui-lab/mock-ui/ventolive_api_routing_v1.js");
   runScript(window, "ui-lab/mock-ui/live_spot_wind_adapter_v1.js");
   runScript(window, "ui-lab/mock-ui/kite_score_layer_v1.js");
+  runScript(window, "ui-lab/mock-ui/time_ui_v1.js");
   runScript(window, "ui-lab/mock-ui/ux_trust_layer_v1.js");
   runScript(window, "ui-lab/mock-ui/wind_ui_single_writer_v1.js");
   runScript(window, "ui-lab/mock-ui/mock_ui.js");
@@ -260,7 +261,8 @@ async function main() {
         },
         "WIND DIRECTION (kite-relevant)": "NE",
         "KITE DECISION": "GO",
-        "RELIABILITY": "HIGH"
+        "RELIABILITY": "HIGH",
+        updated_at: "2026-05-25T02:34:00.000Z"
       }
     })
   });
@@ -278,12 +280,15 @@ async function main() {
   const liveDirection = liveSpotPanel.querySelector('[data-live-spot-dd="direction"]');
   const liveWindName = liveSpotPanel.querySelector('[data-live-spot-dd="wind_name"]');
   const liveReliability = liveSpotPanel.querySelector('[data-live-spot-dd="overview_confidence"]');
+  const liveUpdated = liveSpotPanel.querySelector('[data-live-spot-dd="overview_updated"]');
   const liveDecision = liveSpotPanel.querySelector('[data-live-spot-dd="anemometer"]');
   const liveForecast3 = liveSpotPanel.querySelector('[data-live-spot-fc="3"] strong');
   assert(liveWind && liveWind.textContent.trim() === "12.5 kn", "V1 wind was not rendered");
   assert(liveDirection && liveDirection.textContent.trim() !== "---", "V1 direction arrow was not rendered");
   assert(liveWindName && liveWindName.textContent.trim() !== "---", "V1 wind name was not rendered");
   assert(liveReliability && liveReliability.textContent.trim() === "affidabile", "V1 reliability was not rendered");
+  assert(liveUpdated && liveUpdated.textContent.trim() === "04:34", "Europe/Rome time was not rendered");
+  assert(!liveUpdated || !liveUpdated.textContent.includes("UTC"), "UTC must not appear in updated time");
   assert(liveDecision && liveDecision.textContent.includes("KITE SCORE"), "Kite score was not rendered");
   assert(liveDecision && liveDecision.textContent.includes("/ 100"), "Kite score scale was not rendered");
   assert(liveDecision && liveDecision.textContent.includes("STATUS: GO"), "Kite score status was not rendered");
