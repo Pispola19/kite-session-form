@@ -1,7 +1,14 @@
 from __future__ import annotations
 
+import sys
 import time
+from pathlib import Path
 from typing import Any
+
+# tools/*.py use sibling imports (server_contract_schema_lock_v1, etc.)
+_TOOLS_DIR = Path(__file__).resolve().parent / "tools"
+if str(_TOOLS_DIR) not in sys.path:
+    sys.path.insert(0, str(_TOOLS_DIR))
 
 from dotenv import load_dotenv
 

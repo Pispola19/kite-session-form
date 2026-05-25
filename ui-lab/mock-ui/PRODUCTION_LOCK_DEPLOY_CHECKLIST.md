@@ -174,3 +174,19 @@ sudo systemctl restart live-spot-server.service
 | API `contract_version` | assente | `server_contract_schema_lock_v1` |
 | UI parse engine | possibile (vecchia chain) | bloccato |
 | ZERO DRIFT garantito | no | sì |
+
+---
+
+## Verifica deploy 2026-05-25 (eseguita)
+
+| Layer | Esito |
+|-------|--------|
+| Server tools + `app.py` SHA256 = repo | OK |
+| `live-spot-server` attivo, riavviato ~22:56 | OK |
+| `api.ventolive.com/health` kernel flags | OK |
+| `api.ventolive.com/wind/latest` lock, no root legacy | OK |
+| `ventolive.com` passive JS chain SHA256 | OK (tutti i `.js` lock) |
+| `index.html` SHA256 vs repo | DRIFT solo Cloudflare email-decode (chain lock OK) |
+| SIERRA in `index.html` produzione | assente |
+
+Script: `_handoff_server_live_spot/emergency/deploy_production_lock_server.sh`, `deploy_production_lock_frontend_verify.sh`
