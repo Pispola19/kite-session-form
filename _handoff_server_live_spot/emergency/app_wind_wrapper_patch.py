@@ -17,6 +17,7 @@ from tools.always_respond_wind_contract_v1 import (
     enforce_always_respond_wind_contract,
     http_status_for_contract,
 )
+from tools.trust_enrichment_layer_v1 import enrich_trust_response
 
 
 init_runtime_db()
@@ -35,7 +36,7 @@ resolver = LiveSpotResolver()
 
 async def _wind_decision_ui_output(payload: dict[str, Any]) -> dict[str, Any]:
     output = await enforce_always_respond_wind_contract(payload)
-    return output
+    return enrich_trust_response(output, source_payload=payload)
 
 
 @app.get("/health")
@@ -47,6 +48,7 @@ async def health() -> dict[str, Any]:
         "runtime_db": str(RUNTIME_DB),
         "updated_at": iso(utc_now()),
         "always_respond_wind_contract": "v1",
+        "trust_enrichment_layer": "v1",
     }
 
 

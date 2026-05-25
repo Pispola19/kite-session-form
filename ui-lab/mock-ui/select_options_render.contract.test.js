@@ -126,6 +126,11 @@ function createHarness() {
   runScript(window, "translations.js");
   runScript(window, "ui-lab/mock-engine/mock_engine.browser.js");
   runScript(window, "ui-lab/mock-ui/static_data.js");
+  runScript(window, "ui-lab/mock-ui/ventolive_api_routing_v1.js");
+  runScript(window, "ui-lab/mock-ui/live_spot_wind_adapter_v1.js");
+  runScript(window, "ui-lab/mock-ui/kite_score_layer_v1.js");
+  runScript(window, "ui-lab/mock-ui/ux_trust_layer_v1.js");
+  runScript(window, "ui-lab/mock-ui/wind_ui_single_writer_v1.js");
   runScript(window, "ui-lab/mock-ui/mock_ui.js");
 
   return dom;
@@ -278,8 +283,15 @@ async function main() {
   assert(liveWind && liveWind.textContent.trim() === "12.5 kn", "V1 wind was not rendered");
   assert(liveDirection && liveDirection.textContent.trim() !== "---", "V1 direction arrow was not rendered");
   assert(liveWindName && liveWindName.textContent.trim() !== "---", "V1 wind name was not rendered");
-  assert(liveReliability && liveReliability.textContent.trim() === "HIGH", "V1 reliability was not rendered");
-  assert(liveDecision && liveDecision.textContent.includes("GO"), "V1 kite decision was not rendered");
+  assert(liveReliability && liveReliability.textContent.trim() === "affidabile", "V1 reliability was not rendered");
+  assert(liveDecision && liveDecision.textContent.includes("KITE SCORE"), "Kite score was not rendered");
+  assert(liveDecision && liveDecision.textContent.includes("/ 100"), "Kite score scale was not rendered");
+  assert(liveDecision && liveDecision.textContent.includes("STATUS: GO"), "Kite score status was not rendered");
+  assert(
+    !liveDecision || !liveDecision.textContent.includes("Decisione NO GO"),
+    "Legacy decision text must not appear in anemometer row"
+  );
+  assert(!liveDecision || !liveDecision.textContent.includes("Rel HIGH"), "Legacy Rel HIGH must not appear");
   assert(liveForecast3 && liveForecast3.textContent.trim() === "15 kn", "V1 forecast 3h was not rendered");
 
   console.log("REPORT_UI_SELECT_OPTIONS_RENDER_CONTRACT");

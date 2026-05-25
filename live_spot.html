@@ -399,10 +399,13 @@ Dati reali - Nessuna registrazione - nessun log in</p>
       </div>
 
     </div>
+    <script src="ui-lab/mock-ui/ventolive_api_routing_v1.js"></script>
     <script src="ui-lab/mock-ui/live_spot_wind_adapter_v1.js"></script>
     <script>
       (function () {
-        var LIVE_WIND_ENDPOINT = "https://api.ventolive.com/wind/latest";
+        var routing = window.VENTOLIVE_ROUTING_V1;
+        var LIVE_WIND_ENDPOINT =
+          (routing && routing.WIND_LATEST_URL) || "https://api.ventolive.com/wind/latest";
         var adapter = window.LiveSpotWindAdapterV1;
 
         function readFirst(source, keys) {
@@ -523,15 +526,29 @@ Dati reali - Nessuna registrazione - nessun log in</p>
 
         function fetchLiveWind() {
           var spot = getCurrentSpotInput();
-          var url = LIVE_WIND_ENDPOINT + (spot ? "?spot=" + encodeURIComponent(spot) : "");
+          var url =
+            routing && typeof routing.canonicalWindLatestUrl === "function"
+              ? routing.canonicalWindLatestUrl(spot)
+              : LIVE_WIND_ENDPOINT + (spot ? "?spot=" + encodeURIComponent(spot) : "");
+          if (routing && typeof routing.coerceCanonicalUrl === "function") {
+            url = routing.coerceCanonicalUrl(url);
+          }
           return fetchJson(url, 2500).catch(function () {
+            if (routing && typeof routing.buildFetchFailSafeWindResponse === "function") {
+              return routing.buildFetchFailSafeWindResponse(spot);
+            }
             return {
-              spot: spot || "-",
-              wind_knots: null,
-              gust_knots: null,
-              wind_direction: null,
-              updated_at: null,
-              status: "unavailable"
+              ok: true,
+              spot: spot || "—",
+              cache: "ui_fetch_fail_safe",
+              "WIND DECISION OUTPUT V1": {
+                "SPOT RESOLVED": spot || "—",
+                "WIND NOW (knots)": null,
+                "WIND TREND (1h / 2h / 3h)": { "1h": null, "2h": null, "3h": null },
+                "WIND DIRECTION (kite-relevant)": null,
+                "KITE DECISION": "NO GO",
+                RELIABILITY: "LOW"
+              }
             };
           });
         }
@@ -545,6 +562,7 @@ Dati reali - Nessuna registrazione - nessun log in</p>
               }
 
               var liveWind = normalizeWindPayload(data);
+              var failSafe = data && data.cache === "ui_fetch_fail_safe";
 
               var spotValue = snapshot.querySelector(".rs-spot-value");
               var windDirection = snapshot.querySelector(".rs-wind-direction");
@@ -557,16 +575,21 @@ Dati reali - Nessuna registrazione - nessun log in</p>
                 spotValue.textContent = inputSpot || liveWind.spot || "-";
               }
               if (windDirection) {
-                windDirection.textContent =
-                  liveWind.windDirection != null
+                windDirection.textContent = failSafe
+                  ? "Direzione calcolando…"
+                  : liveWind.windDirection != null
                     ? "Direzione " + dirAbbrToDisplay(liveWind.windDirection)
                     : "Direzione N";
               }
               if (windSpeed) {
-                windSpeed.textContent = "Velocità " + formatValue(liveWind.windKnots) + " kn";
+                windSpeed.textContent = failSafe
+                  ? "Velocità – kn"
+                  : "Velocità " + formatValue(liveWind.windKnots) + " kn";
               }
               if (windGust) {
-                windGust.textContent = "Raffiche " + formatValue(liveWind.gustKnots) + " kn";
+                windGust.textContent = failSafe
+                  ? "Raffiche – kn"
+                  : "Raffiche " + formatValue(liveWind.gustKnots) + " kn";
               }
               if (updatedValue) {
                 var parts = [];
