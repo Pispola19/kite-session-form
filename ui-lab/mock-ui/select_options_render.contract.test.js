@@ -110,6 +110,14 @@ function createHarness() {
   };
   window.open = () => null;
   window.scrollTo = () => {};
+  window.matchMedia = () => ({
+    matches: false,
+    addEventListener: () => {},
+    removeEventListener: () => {},
+    addListener: () => {},
+    removeListener: () => {},
+    dispatchEvent: () => false
+  });
   if (!window.HTMLElement.prototype.scrollIntoView) {
     window.HTMLElement.prototype.scrollIntoView = () => {};
   }
@@ -123,7 +131,11 @@ function createHarness() {
   return dom;
 }
 
-function main() {
+function wait(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function main() {
   const dom = createHarness();
   const { window } = dom;
   const { document } = window;
@@ -230,6 +242,46 @@ function main() {
   assertSlotHiddenAndEmpty(modelOtherSlot, "modelOtherTextSlot");
   assertSlotHiddenAndEmpty(boardSizeOtherSlot, "boardSizeOtherTextSlot");
 
+  window.fetch = async () => ({
+    ok: true,
+    json: async () => ({
+      "WIND DECISION OUTPUT V1": {
+        "SPOT RESOLVED": "Punta Trettu",
+        "WIND NOW (knots)": 12.5,
+        "WIND TREND (1h / 2h / 3h)": {
+          "1h": 13,
+          "2h": 14,
+          "3h": 15
+        },
+        "WIND DIRECTION (kite-relevant)": "NE",
+        "KITE DECISION": "GO",
+        "RELIABILITY": "HIGH"
+      }
+    })
+  });
+
+  const liveSpotInput = field(document, "spot.location");
+  typeText(window, liveSpotInput, "Punta Trettu");
+  const showLiveSpot = document.getElementById("showLiveSpot");
+  assert(showLiveSpot, "Missing #showLiveSpot");
+  showLiveSpot.click();
+  await wait(25);
+
+  const liveSpotPanel = document.getElementById("liveSpotPanel");
+  assert(liveSpotPanel, "Missing #liveSpotPanel");
+  const liveWind = liveSpotPanel.querySelector('[data-live-spot-dd="wind"]');
+  const liveDirection = liveSpotPanel.querySelector('[data-live-spot-dd="direction"]');
+  const liveWindName = liveSpotPanel.querySelector('[data-live-spot-dd="wind_name"]');
+  const liveReliability = liveSpotPanel.querySelector('[data-live-spot-dd="overview_confidence"]');
+  const liveDecision = liveSpotPanel.querySelector('[data-live-spot-dd="anemometer"]');
+  const liveForecast3 = liveSpotPanel.querySelector('[data-live-spot-fc="3"] strong');
+  assert(liveWind && liveWind.textContent.trim() === "12.5 kn", "V1 wind was not rendered");
+  assert(liveDirection && liveDirection.textContent.trim() !== "---", "V1 direction arrow was not rendered");
+  assert(liveWindName && liveWindName.textContent.trim() !== "---", "V1 wind name was not rendered");
+  assert(liveReliability && liveReliability.textContent.trim() === "HIGH", "V1 reliability was not rendered");
+  assert(liveDecision && liveDecision.textContent.includes("GO"), "V1 kite decision was not rendered");
+  assert(liveForecast3 && liveForecast3.textContent.trim() === "15 kn", "V1 forecast 3h was not rendered");
+
   console.log("REPORT_UI_SELECT_OPTIONS_RENDER_CONTRACT");
   console.log(JSON.stringify({
     ok: true,
@@ -245,9 +297,13 @@ function main() {
       "other_text_language_preserves_values",
       "other_text_parent_change_clears_values",
       "other_text_reset_clears_values",
-      "other_text_legacy_value_remains_other"
+      "other_text_legacy_value_remains_other",
+      "wind_decision_output_v1_renders_legacy_ui_contract"
     ]
   }, null, 2));
 }
 
-main();
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});
