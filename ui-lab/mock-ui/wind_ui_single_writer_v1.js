@@ -6,9 +6,28 @@
   "use strict";
 
   const LOADING_FALLBACK = "Caricamento…";
+  const EMPTY_CONNECTION_LABEL = "Connessione vento…";
+  const MISSING_FIELD = "—";
+
+  function resolveContractPayload(payload) {
+    const resolver = global.WindContractV1 || global;
+    const fn = resolver.resolveWindContractV1 || global.resolveWindContractV1;
+    if (typeof fn !== "function") {
+      return {
+        valid: false,
+        state: "fetching",
+        model: payload && typeof payload === "object" ? payload : { loading: true, cache: "ui_loading" }
+      };
+    }
+    return fn(payload);
+  }
+
+  function resolveContractModel(payload) {
+    return resolveContractPayload(payload).model;
+  }
 
   function buildWindUIViewModel(payload) {
-    const p = payload && typeof payload === "object" ? payload : {};
+    const p = resolveContractModel(payload);
     const kiteLayer = global.KiteScoreLayerV1;
     const trustLayer = global.UxTrustLayerV1;
 
@@ -34,25 +53,28 @@
             trend3: { wind: LOADING_FALLBACK, direction: LOADING_FALLBACK, name: LOADING_FALLBACK }
           };
 
-    const loading = Boolean(trust.loading) || Boolean(p.loading) || p.cache === "ui_loading";
+    const uiRenderState =
+      p.uiRenderState || trust.uiRenderState || (trust.loading ? "fetching" : "empty");
+    const isFetching = uiRenderState === "fetching";
+    const isEmpty = uiRenderState === "empty";
 
     return {
-      loading,
+      uiRenderState,
+      loading: isFetching,
+      empty: isEmpty,
       wind: trust.windDisplay,
       gust: trust.gustDisplay,
       windName: trust.windNameDisplay,
       reliability: trust.reliabilityDisplay,
-      updatedAt: resolveUpdatedAtForUI(p),
-      spot:
-        trust.spotDisplay ||
-        (p.spot && String(p.spot).trim()) ||
-        (p.resolution && p.resolution.canonical_spot ? String(p.resolution.canonical_spot).trim() : "") ||
-        "—",
+      updatedAt: isEmpty ? EMPTY_CONNECTION_LABEL : resolveUpdatedAtForUI(p) || MISSING_FIELD,
+      spot: trust.spotDisplay,
       kiteScore: kite.kite_score,
       kiteStatus: kite.kite_status,
-      kiteScoreLine: loading
+      kiteScoreLine: isFetching
         ? LOADING_FALLBACK
-        : `KITE SCORE: ${kite.kite_score} / 100 · STATUS: ${kite.kite_status}`,
+        : isEmpty
+          ? EMPTY_CONNECTION_LABEL
+          : `KITE SCORE: ${kite.kite_score} / 100 · STATUS: ${kite.kite_status}`,
       trend1: trust.trend1,
       trend2: trust.trend2,
       trend3: trust.trend3,
@@ -93,6 +115,8 @@
     const ui = buildWindUIViewModel(payload);
     const opts = options && typeof options === "object" ? options : {};
     const loadingLabel = opts.loadingLabel || LOADING_FALLBACK;
+    const emptyLabel = opts.emptyLabel || EMPTY_CONNECTION_LABEL;
+    const fieldMissing = opts.missingField || MISSING_FIELD;
     const formatDir =
       typeof opts.formatDirectionForMode === "function"
         ? opts.formatDirectionForMode
@@ -113,25 +137,30 @@
       const gustDd = windNow.querySelector('[data-live-spot-dd="gust"]');
       const scoreDd = windNow.querySelector('[data-live-spot-dd="anemometer"]');
 
-      if (windDd) windDd.textContent = ui.loading ? loadingLabel : ui.wind;
-      if (gustDd) gustDd.textContent = ui.loading ? loadingLabel : ui.gust;
+      const panelLabel = ui.loading ? loadingLabel : ui.empty ? emptyLabel : null;
+
+      if (windDd) windDd.textContent = panelLabel || ui.wind;
+      if (gustDd) gustDd.textContent = panelLabel || ui.gust;
       if (dirDd) {
-        dirDd.textContent = ui.loading
-          ? loadingLabel
-          : formatDir(ui.raw.wind_direction, ui.raw.wind_direction_label);
+        dirDd.textContent = panelLabel
+          ? panelLabel
+          : ui.windName === fieldMissing && ui.raw.wind_direction == null
+            ? fieldMissing
+            : formatDir(ui.raw.wind_direction, ui.raw.wind_direction_label);
       }
-      if (windNameDd) windNameDd.textContent = ui.loading ? loadingLabel : ui.windName;
-      if (scoreDd) scoreDd.textContent = ui.loading ? loadingLabel : ui.kiteScoreLine;
+      if (windNameDd) windNameDd.textContent = panelLabel || ui.windName;
+      if (scoreDd) scoreDd.textContent = panelLabel || ui.kiteScoreLine;
     }
 
     if (spotOverview) {
       const spotDd = spotOverview.querySelector('[data-live-spot-dd="overview_spot"]');
       const confDd = spotOverview.querySelector('[data-live-spot-dd="overview_confidence"]');
       const updatedDd = spotOverview.querySelector('[data-live-spot-dd="overview_updated"]');
+      const panelLabel = ui.loading ? loadingLabel : ui.empty ? emptyLabel : null;
 
-      if (spotDd) spotDd.textContent = ui.loading ? loadingLabel : ui.spot;
-      if (confDd) confDd.textContent = ui.loading ? loadingLabel : ui.reliability;
-      if (updatedDd) updatedDd.textContent = ui.loading ? loadingLabel : ui.updatedAt || "—";
+      if (spotDd) spotDd.textContent = panelLabel || ui.spot;
+      if (confDd) confDd.textContent = panelLabel || ui.reliability;
+      if (updatedDd) updatedDd.textContent = panelLabel || ui.updatedAt || fieldMissing;
     }
 
     const hours = panelEl.querySelector(".hours");
@@ -151,11 +180,13 @@
       if (valueEl) {
         valueEl.textContent = ui.loading
           ? loadingLabel
-          : trendUi
-            ? trendUi.wind
-            : fcWind != null
-              ? `${roundKn(fcWind)} kn`
-              : "— kn";
+          : ui.empty
+            ? emptyLabel
+            : trendUi
+              ? trendUi.wind
+              : fcWind != null
+                ? `${roundKn(fcWind)} kn`
+                : "— kn";
       }
 
       let directionEl = box.querySelector(".forecast-direction");
@@ -171,11 +202,11 @@
         box.appendChild(windNameEl);
       }
 
-      if (ui.loading) {
+      if (ui.loading || ui.empty) {
         directionEl.hidden = false;
         windNameEl.hidden = false;
-        directionEl.textContent = loadingLabel;
-        windNameEl.textContent = loadingLabel;
+        directionEl.textContent = ui.loading ? loadingLabel : emptyLabel;
+        windNameEl.textContent = ui.loading ? loadingLabel : emptyLabel;
         return;
       }
 

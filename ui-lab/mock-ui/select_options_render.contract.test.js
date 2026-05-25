@@ -127,6 +127,7 @@ function createHarness() {
   runScript(window, "ui-lab/mock-engine/mock_engine.browser.js");
   runScript(window, "ui-lab/mock-ui/static_data.js");
   runScript(window, "ui-lab/mock-ui/ventolive_api_routing_v1.js");
+  runScript(window, "ui-lab/mock-ui/resolve_wind_contract_v1.js");
   runScript(window, "ui-lab/mock-ui/live_spot_wind_adapter_v1.js");
   runScript(window, "ui-lab/mock-ui/kite_score_layer_v1.js");
   runScript(window, "ui-lab/mock-ui/time_ui_v1.js");
@@ -299,6 +300,33 @@ async function main() {
   assert(!liveDecision || !liveDecision.textContent.includes("Rel HIGH"), "Legacy Rel HIGH must not appear");
   assert(liveForecast3 && liveForecast3.textContent.trim() === "15 kn", "V1 forecast 3h was not rendered");
 
+  window.fetch = async () => ({
+    ok: true,
+    json: async () => ({
+      "WIND DECISION OUTPUT V1": {
+        "SPOT RESOLVED": "Chia",
+        "WIND NOW (knots)": 2.9,
+        "WIND TREND (1h / 2h / 3h)": { "1h": null, "2h": null, "3h": null },
+        "WIND DIRECTION (kite-relevant)": null,
+        "KITE DECISION": "NO GO",
+        RELIABILITY: "HIGH"
+      }
+    })
+  });
+  typeText(window, liveSpotInput, "Chia");
+  showLiveSpot.click();
+  await wait(25);
+  const partialWind = liveSpotPanel.querySelector('[data-live-spot-dd="wind"]');
+  const partialSpot = liveSpotPanel.querySelector('[data-live-spot-dd="overview_spot"]');
+  const partialDir = liveSpotPanel.querySelector('[data-live-spot-dd="wind_name"]');
+  assert(partialWind && partialWind.textContent.trim() === "2.9 kn", "Partial state must render wind");
+  assert(partialSpot && partialSpot.textContent.trim() === "Chia", "Partial state must render spot");
+  assert(partialDir && partialDir.textContent.trim() === "—", "Partial state must use em dash for missing direction");
+  assert(
+    !partialWind.textContent.includes("Caricamento"),
+    "Partial state must not show loading when wind data exists"
+  );
+
   console.log("REPORT_UI_SELECT_OPTIONS_RENDER_CONTRACT");
   console.log(JSON.stringify({
     ok: true,
@@ -315,7 +343,8 @@ async function main() {
       "other_text_parent_change_clears_values",
       "other_text_reset_clears_values",
       "other_text_legacy_value_remains_other",
-      "wind_decision_output_v1_renders_legacy_ui_contract"
+      "wind_decision_output_v1_renders_legacy_ui_contract",
+      "ux_safe_render_partial_state_v1"
     ]
   }, null, 2));
 }

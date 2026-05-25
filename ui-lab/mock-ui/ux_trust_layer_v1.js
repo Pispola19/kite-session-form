@@ -6,6 +6,8 @@
   "use strict";
 
   const LOADING_STATUS = "aggiornamento in corso";
+  const EMPTY_CONNECTION_STATUS = "Connessione vento…";
+  const MISSING_FIELD = "—";
 
   const RELIABILITY_UI = Object.freeze({
     HIGH: "affidabile",
@@ -28,7 +30,7 @@
   }
 
   function formatWindKn(value) {
-    if (!isNumber(value) || value <= 0) return "— kn";
+    if (!isNumber(value)) return "— kn";
     return `${roundKn(value)} kn`;
   }
 
@@ -68,11 +70,14 @@
    */
   function normalizeTrustUI(payload) {
     const p = payload && typeof payload === "object" ? payload : {};
-    const loading = Boolean(p.loading) || p.cache === "ui_loading";
+    const uiState =
+      p.uiRenderState ||
+      (Boolean(p.loading) || p.cache === "ui_loading" ? "fetching" : "empty");
 
-    if (loading) {
+    if (uiState === "fetching") {
       return {
         loading: true,
+        uiRenderState: "fetching",
         statusLine: LOADING_STATUS,
         windDisplay: LOADING_STATUS,
         gustDisplay: LOADING_STATUS,
@@ -87,18 +92,41 @@
       };
     }
 
+    if (uiState === "empty") {
+      return {
+        loading: false,
+        uiRenderState: "empty",
+        statusLine: EMPTY_CONNECTION_STATUS,
+        windDisplay: EMPTY_CONNECTION_STATUS,
+        gustDisplay: EMPTY_CONNECTION_STATUS,
+        directionDisplay: EMPTY_CONNECTION_STATUS,
+        windNameDisplay: EMPTY_CONNECTION_STATUS,
+        reliabilityDisplay: EMPTY_CONNECTION_STATUS,
+        spotDisplay: EMPTY_CONNECTION_STATUS,
+        updatedAtDisplay: EMPTY_CONNECTION_STATUS,
+        trend1: { wind: EMPTY_CONNECTION_STATUS, direction: EMPTY_CONNECTION_STATUS, name: EMPTY_CONNECTION_STATUS },
+        trend2: { wind: EMPTY_CONNECTION_STATUS, direction: EMPTY_CONNECTION_STATUS, name: EMPTY_CONNECTION_STATUS },
+        trend3: { wind: EMPTY_CONNECTION_STATUS, direction: EMPTY_CONNECTION_STATUS, name: EMPTY_CONNECTION_STATUS }
+      };
+    }
+
     const dirLabel = p.wind_direction_label || null;
     const relUi = formatReliability(p.reliability);
+    const hasWind = isNumber(p.wind_knots);
+    const hasDir =
+      (typeof dirLabel === "string" && dirLabel.trim()) || p.wind_direction != null;
+    const hasSpot = typeof p.spot === "string" && p.spot.trim();
 
     return {
       loading: false,
+      uiRenderState: uiState,
       statusLine: "",
-      windDisplay: formatWindKn(p.wind_knots),
-      gustDisplay: formatWindKn(p.gust_knots),
-      directionDisplay: formatDirection(p.wind_direction, dirLabel),
-      windNameDisplay: formatDirection(p.wind_direction, dirLabel),
-      reliabilityDisplay: relUi,
-      spotDisplay: (p.spot && String(p.spot).trim()) || "—",
+      windDisplay: hasWind ? formatWindKn(p.wind_knots) : "— kn",
+      gustDisplay: isNumber(p.gust_knots) ? formatWindKn(p.gust_knots) : "— kn",
+      directionDisplay: hasDir ? formatDirection(p.wind_direction, dirLabel) : MISSING_FIELD,
+      windNameDisplay: hasDir ? formatDirection(p.wind_direction, dirLabel) : MISSING_FIELD,
+      reliabilityDisplay: p.reliability ? relUi : MISSING_FIELD,
+      spotDisplay: hasSpot ? String(p.spot).trim() : MISSING_FIELD,
       updatedAtDisplay: "",
       trend1: formatTrendSlot(p.forecast_1h, dirLabel),
       trend2: formatTrendSlot(p.forecast_2h, dirLabel),
@@ -109,6 +137,8 @@
   global.UxTrustLayerV1 = Object.freeze({
     normalizeTrustUI,
     LOADING_STATUS,
+    EMPTY_CONNECTION_STATUS,
+    MISSING_FIELD,
     RELIABILITY_UI,
     KITE_DECISION_UI
   });

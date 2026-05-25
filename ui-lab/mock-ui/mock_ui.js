@@ -442,38 +442,6 @@ const LiveSpotReadonlyConnector = (() => {
     return { wind_knots, gust_knots, wind_direction, forecast_at };
   }
 
-  function normalizeWindDecisionOutput(data) {
-    const adapter = globalThis.LiveSpotWindAdapterV1;
-    if (adapter && typeof adapter.normalizeWindDecisionOutput === "function") {
-      return adapter.normalizeWindDecisionOutput(data);
-    }
-    const decision = data && typeof data === "object" ? data["WIND DECISION OUTPUT V1"] : null;
-    if (!decision || typeof decision !== "object") return null;
-    const trend = decision["WIND TREND (1h / 2h / 3h)"];
-    const direction = normalizeWindDirection(decision["WIND DIRECTION (kite-relevant)"]);
-    const forecastSlice = (hour) =>
-      trend && typeof trend[hour] === "number"
-        ? { wind_knots: trend[hour], gust_knots: null, wind_direction: direction, forecast_at: null }
-        : null;
-    return {
-      ok: true,
-      spot: typeof decision["SPOT RESOLVED"] === "string" ? decision["SPOT RESOLVED"] : "",
-      wind_knots: typeof decision["WIND NOW (knots)"] === "number" ? decision["WIND NOW (knots)"] : null,
-      gust_knots: null,
-      wind_direction: direction,
-      source: "wind_decision_output_v1",
-      source_type: "decision_output",
-      confidence: null,
-      reliability: typeof decision.RELIABILITY === "string" ? decision.RELIABILITY : null,
-      kite_decision: typeof decision["KITE DECISION"] === "string" ? decision["KITE DECISION"] : null,
-      updated_at: "",
-      cache: "api_live",
-      forecast_1h: forecastSlice("1h"),
-      forecast_2h: forecastSlice("2h"),
-      forecast_3h: forecastSlice("3h")
-    };
-  }
-
   function forecastWindKnShort(fc) {
     if (!fc || typeof fc !== "object" || fc.wind_knots == null) return "--";
     return `${fc.wind_knots} kn`;
@@ -560,31 +528,14 @@ const LiveSpotReadonlyConnector = (() => {
   let lastNormalized = READONLY_DEFAULT;
 
   function normalizeLiveSpotPayload(data) {
-    const adapter = globalThis.LiveSpotWindAdapterV1;
-    if (!adapter || typeof adapter.normalizeLiveSpotPayload !== "function") {
-      lastNormalized = Object.freeze({ loading: true, cache: "ui_loading" });
+    const resolve =
+      globalThis.resolveWindContractV1 ||
+      (globalThis.WindContractV1 && globalThis.WindContractV1.resolveWindContractV1);
+    if (typeof resolve !== "function") {
+      lastNormalized = Object.freeze({ contract: "wind_decision_output_v1", loading: true, cache: "ui_loading" });
       return lastNormalized;
     }
-    const normalized = adapter.normalizeLiveSpotPayload(data);
-    lastNormalized = Object.freeze({
-      contract: normalized.contract || "wind_decision_output_v1",
-      loading: Boolean(normalized.loading),
-      ok: Boolean(normalized.ok),
-      spot: typeof normalized.spot === "string" ? normalized.spot : "",
-      wind_knots: typeof normalized.wind_knots === "number" ? normalized.wind_knots : null,
-      gust_knots: typeof normalized.gust_knots === "number" ? normalized.gust_knots : null,
-      wind_direction:
-        typeof normalized.wind_direction === "number" ? normalized.wind_direction : null,
-      wind_direction_label:
-        typeof normalized.wind_direction_label === "string" ? normalized.wind_direction_label : null,
-      kite_decision: typeof normalized.kite_decision === "string" ? normalized.kite_decision : null,
-      reliability: typeof normalized.reliability === "string" ? normalized.reliability : null,
-      updated_at: typeof normalized.updated_at === "string" ? normalized.updated_at : "",
-      cache: typeof normalized.cache === "string" ? normalized.cache : "ui_loading",
-      forecast_1h: normalized.forecast_1h || null,
-      forecast_2h: normalized.forecast_2h || null,
-      forecast_3h: normalized.forecast_3h || null
-    });
+    lastNormalized = Object.freeze(resolve(data).model);
     return lastNormalized;
   }
 
@@ -1964,13 +1915,14 @@ form?.addEventListener("change", (event) => {
 
 showLiveSpot?.addEventListener("click", async () => {
   const lsUi = liveSpotUiStrings();
-  const setLiveSpotPanelFeedback = (message) => {
+  const setLiveSpotPanelFeedback = (_message) => {
     if (!liveSpotPanel) return;
-    renderLiveSpotReadonly({
-      loading: true,
-      cache: "ui_loading",
-      spot: typeof message === "string" ? message : ""
-    });
+    const contract = globalThis.WindContractV1;
+    renderLiveSpotReadonly(
+      contract && typeof contract.loadingModel === "function"
+        ? contract.loadingModel()
+        : { contract: "wind_decision_output_v1", loading: true, uiRenderState: "fetching", cache: "ui_loading" }
+    );
   };
   const scrollLiveSpotPanel = () => {
     if (window.matchMedia("(max-width: 760px)").matches) {
@@ -2000,15 +1952,13 @@ showLiveSpot?.addEventListener("click", async () => {
       }
       setLiveSpotPanelFeedback("Aggiornamento vento live...");
       const hasUsableLiveSpotData = (data) => {
+        if (data && data.needs_disambiguation) return true;
         const adapter = globalThis.LiveSpotWindAdapterV1;
         if (adapter && typeof adapter.hasUsableLiveSpotData === "function") {
           return adapter.hasUsableLiveSpotData(data);
         }
-        if (!data || data.needs_disambiguation) return false;
-        if (data["WIND DECISION OUTPUT V1"] && typeof data["WIND DECISION OUTPUT V1"] === "object") {
-          return true;
-        }
-        return typeof data.wind_knots === "number";
+        const resolve = globalThis.resolveWindContractV1;
+        return typeof resolve === "function" && resolve(data).valid;
       };
 
       let realData = await fetchLiveSpotReal(spot);
@@ -2049,11 +1999,12 @@ showLiveSpot?.addEventListener("click", async () => {
                 selectedData = await fetchLiveSpotReal(spot, candidate);
               }
               const adapterSel = globalThis.LiveSpotWindAdapterV1;
+              const contractSel = globalThis.WindContractV1;
               const selectedPayload = hasUsableLiveSpotData(selectedData)
                 ? LiveSpotReadonlyConnector.normalizeLiveSpotPayload(selectedData)
-                : adapterSel && typeof adapterSel.loadingPlaceholder === "function"
-                  ? adapterSel.loadingPlaceholder()
-                  : { loading: true, cache: "ui_loading" };
+                : contractSel && typeof contractSel.emptyModel === "function"
+                  ? contractSel.emptyModel()
+                  : { contract: "wind_decision_output_v1", uiRenderState: "empty", cache: "ui_empty" };
               renderLiveSpotReadonly(selectedPayload);
               rememberRecentSpot(spot);
               refreshPayloadDebugPreview();
@@ -2075,18 +2026,20 @@ showLiveSpot?.addEventListener("click", async () => {
       }
 
       if (!hasUsableLiveSpotData(realData)) {
-        const adapter = globalThis.LiveSpotWindAdapterV1;
-        payload = adapter && typeof adapter.loadingPlaceholder === "function"
-          ? adapter.loadingPlaceholder()
-          : { loading: true, cache: "ui_loading" };
-        setLiveSpotPanelFeedback(LOADING_UI);
+        const contract = globalThis.WindContractV1;
+        payload =
+          contract && typeof contract.emptyModel === "function"
+            ? contract.emptyModel()
+            : { contract: "wind_decision_output_v1", uiRenderState: "empty", cache: "ui_empty" };
       } else {
         payload = LiveSpotReadonlyConnector.normalizeLiveSpotPayload(realData);
       }
     } else {
-      payload = LiveSpotReadonlyConnector.normalizeLiveSpotPayload(
-        LiveSpotReadonlyConnector.getSample()
-      );
+      const contract = globalThis.WindContractV1;
+      payload =
+        contract && typeof contract.emptyModel === "function"
+          ? contract.emptyModel()
+          : { contract: "wind_decision_output_v1", uiRenderState: "empty", cache: "ui_empty" };
     }
 
     renderLiveSpotReadonly(payload);
