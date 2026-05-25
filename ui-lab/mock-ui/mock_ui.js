@@ -1,6 +1,6 @@
 "use strict";
 
-const LOADING_UI = "Caricamento…";
+let windFetchActivated = false;
 
 const LIVE_SPOT_CONFIG = {
   ENABLE_REAL: true,
@@ -303,18 +303,64 @@ function liveSpotViewUiStrings() {
   return LIVE_SPOT_VIEW_UI_BY_LANG[lang] || LIVE_SPOT_VIEW_UI_BY_LANG.it;
 }
 
-const LIVE_SPOT_BUTTON_UI = Object.freeze({
-  it: Object.freeze({ idle: "Vedi Live Spot", loading: "Cerco vento…", message: "Aggiornamento Live Spot…", disambiguationPrompt: "Scegli la località corretta: ", locationFallback: "Località", updatingWind: "Aggiornamento vento live...", unavailable: "Vento live non disponibile, riprova", updatedPrefix: "Live Spot aggiornato: " }),
-  en: Object.freeze({ idle: "View Live Spot", loading: "Fetching wind…", message: "Updating Live Spot…", disambiguationPrompt: "Choose the correct location: ", locationFallback: "Location", updatingWind: "Updating live wind...", unavailable: "Live wind unavailable, try again", updatedPrefix: "Live Spot updated: " }),
-  de: Object.freeze({ idle: "Live Spot anzeigen", loading: "Wind wird geladen…", message: "Live Spot wird aktualisiert…", disambiguationPrompt: "Wähle den richtigen Ort: ", locationFallback: "Ort", updatingWind: "Live-Wind wird aktualisiert...", unavailable: "Live-Wind nicht verfügbar, versuche es erneut", updatedPrefix: "Live Spot aktualisiert: " }),
-  es: Object.freeze({ idle: "Ver Live Spot", loading: "Buscando viento…", message: "Actualizando Live Spot…", disambiguationPrompt: "Elige la localidad correcta: ", locationFallback: "Localidad", updatingWind: "Actualizando viento live...", unavailable: "Viento live no disponible, vuelve a intentarlo", updatedPrefix: "Live Spot actualizado: " }),
-  fr: Object.freeze({ idle: "Voir Live Spot", loading: "Recherche du vent…", message: "Mise à jour du Live Spot…", disambiguationPrompt: "Choisis la bonne localité : ", locationFallback: "Localité", updatingWind: "Mise à jour du vent live...", unavailable: "Vent live indisponible, réessaie", updatedPrefix: "Live Spot mis à jour : " }),
-  pl: Object.freeze({ idle: "Pokaż Live Spot", loading: "Szukam wiatru…", message: "Aktualizacja Live Spot…", disambiguationPrompt: "Wybierz właściwą lokalizację: ", locationFallback: "Lokalizacja", updatingWind: "Aktualizacja wiatru live...", unavailable: "Wiatr live niedostępny, spróbuj ponownie", updatedPrefix: "Live Spot zaktualizowany: " })
-});
+function windT(key) {
+  const i18n = globalThis.VentoLiveI18nV1;
+  if (i18n && typeof i18n.t === "function") {
+    return i18n.t(key, currentLang);
+  }
+  return key;
+}
 
 function liveSpotUiStrings() {
-  const lang = uiCopyLang(LIVE_SPOT_BUTTON_UI);
-  return LIVE_SPOT_BUTTON_UI[lang] || LIVE_SPOT_BUTTON_UI.it;
+  return {
+    idle: windT("wind_ui_button_idle"),
+    loading: windT("wind_ui_button_loading"),
+    message: windT("wind_ui_updating"),
+    disambiguationPrompt: windT("wind_ui_disambiguation_prompt"),
+    locationFallback: windT("wind_ui_location_fallback"),
+    updatingWind: windT("wind_ui_updating"),
+    unavailable: windT("wind_ui_state_empty"),
+    updatedPrefix: windT("wind_ui_updated_prefix"),
+    enterSpot: windT("wind_ui_enter_spot")
+  };
+}
+
+function getWindSpotFromForm() {
+  const snap = getFormStateSnapshot();
+  return snap?.spot?.location != null ? String(snap.spot.location).trim() : "";
+}
+
+function hasWindUserIntent() {
+  const gate = globalThis.UserIntentGateV1;
+  const spot = getWindSpotFromForm();
+  if (gate && typeof gate.hasUserIntent === "function") {
+    return gate.hasUserIntent({ spot, intentActive: true });
+  }
+  return spot.length > 0;
+}
+
+function renderIdleWindPanel() {
+  const idleFn =
+    globalThis.renderIdleUI ||
+    (globalThis.WindUISingleWriterV1 && globalThis.WindUISingleWriterV1.renderIdleUI);
+  if (!liveSpotPanel || typeof idleFn !== "function") return;
+  globalThis.__ventoLiveUiLang = currentLang;
+  idleFn(liveSpotPanel, currentLang);
+}
+
+function renderLiveSpotPanel() {
+  if (!liveSpotPanel) return;
+  globalThis.__ventoLiveUiLang = currentLang;
+  if (!windFetchActivated || !hasWindUserIntent()) {
+    renderIdleWindPanel();
+    return;
+  }
+  const last =
+    LiveSpotReadonlyConnector &&
+    typeof LiveSpotReadonlyConnector.getLastNormalizedPayload === "function"
+      ? LiveSpotReadonlyConnector.getLastNormalizedPayload()
+      : null;
+  renderLiveSpotReadonly(last);
 }
 
 function syncCtaIdlePipelineMessage() {
@@ -564,8 +610,8 @@ const LiveSpotReadonlyConnector = (() => {
     const writer = globalThis.WindUISingleWriterV1 || globalThis;
     const renderFn = writer.renderWindUI || globalThis.renderWindUI;
     if (!panelEl || typeof renderFn !== "function") return;
-    renderFn(panelEl, normalizedPayload || { loading: true, cache: "ui_loading" }, {
-      loadingLabel: LOADING_UI,
+    renderFn(panelEl, normalizedPayload || { loading: true, cache: "ui_loading", uiRenderState: "fetching" }, {
+      lang: currentLang,
       formatDirectionForMode: (deg) => formatWindDirectionForMode(deg, liveSpotViewMode),
       formatWindName: (deg, label) => formatWindDirectionNameI18n(deg, label)
     });
@@ -809,6 +855,10 @@ async function runPrimarySubmitWithLegacySecondaryReport(legacyPayload) {
 }
 
 function renderLiveSpotReadonly(payload) {
+  if (!windFetchActivated || !hasWindUserIntent()) {
+    renderIdleWindPanel();
+    return;
+  }
   LiveSpotReadonlyConnector.renderLiveSpotReadonly(liveSpotPanel, payload);
 }
 
@@ -1036,10 +1086,8 @@ function renderUI() {
     if (labNote) noteTa.setAttribute("aria-label", labNote);
   }
 
-  const lsPanel = document.getElementById("liveSpotPanel");
-  if (lsPanel && LiveSpotReadonlyConnector && typeof LiveSpotReadonlyConnector.getLastNormalizedPayload === "function") {
-    LiveSpotReadonlyConnector.renderLiveSpotReadonly(lsPanel, LiveSpotReadonlyConnector.getLastNormalizedPayload());
-  }
+  globalThis.__ventoLiveUiLang = currentLang;
+  renderLiveSpotPanel();
 
   renderOtherTextSlots();
 }
@@ -1217,6 +1265,7 @@ function ensureRecentSpotsContainer() {
 function runRecentLiveSpotSearch(spot) {
   const spotInput = form?.querySelector?.('[data-state-field="spot.location"]');
   if (!spotInput || !showLiveSpot || showLiveSpot.disabled) return;
+  windFetchActivated = true;
 
   spotInput.value = spot;
   refreshPayloadDebugPreview();
@@ -1334,9 +1383,7 @@ function syncLiveSpotViewControls() {
     button.setAttribute("aria-pressed", isActive ? "true" : "false");
   });
 
-  if (liveSpotPanel && LiveSpotReadonlyConnector && typeof LiveSpotReadonlyConnector.getLastNormalizedPayload === "function") {
-    LiveSpotReadonlyConnector.renderLiveSpotReadonly(liveSpotPanel, LiveSpotReadonlyConnector.getLastNormalizedPayload());
-  }
+  renderLiveSpotPanel();
 }
 
 const THANK_YOU_BANNER_MESSAGES = Object.freeze({
@@ -1913,10 +1960,25 @@ form?.addEventListener("change", (event) => {
   refreshPayloadDebugPreview();
 });
 
+const spotLocationField = document.querySelector('[data-state-field="spot.location"]');
+spotLocationField?.addEventListener("input", () => {
+  const spot = getWindSpotFromForm();
+  if (!spot) {
+    windFetchActivated = false;
+    if (liveSpotMessage) liveSpotMessage.textContent = "";
+    renderIdleWindPanel();
+  }
+});
+
 showLiveSpot?.addEventListener("click", async () => {
   const lsUi = liveSpotUiStrings();
-  const setLiveSpotPanelFeedback = (_message) => {
-    if (!liveSpotPanel) return;
+  const setLiveSpotPanelFeedback = () => {
+    if (!hasWindUserIntent()) {
+      if (liveSpotMessage) liveSpotMessage.textContent = lsUi.enterSpot;
+      renderIdleWindPanel();
+      return;
+    }
+    windFetchActivated = true;
     const contract = globalThis.WindContractV1;
     renderLiveSpotReadonly(
       contract && typeof contract.loadingModel === "function"
@@ -1946,11 +2008,14 @@ showLiveSpot?.addEventListener("click", async () => {
 
     if (LIVE_SPOT_CONFIG.ENABLE_REAL) {
       if (!spot) {
-        setLiveSpotPanelFeedback("Inserisci prima lo spot per vedere il vento live");
+        windFetchActivated = false;
+        if (liveSpotMessage) liveSpotMessage.textContent = lsUi.enterSpot;
+        renderIdleWindPanel();
         scrollLiveSpotPanel();
         return;
       }
-      setLiveSpotPanelFeedback("Aggiornamento vento live...");
+      windFetchActivated = true;
+      setLiveSpotPanelFeedback();
       const hasUsableLiveSpotData = (data) => {
         if (data && data.needs_disambiguation) return true;
         const adapter = globalThis.LiveSpotWindAdapterV1;
@@ -1993,7 +2058,8 @@ showLiveSpot?.addEventListener("click", async () => {
               showLiveSpot.disabled = true;
               showLiveSpot.classList.add("is-loading");
               showLiveSpot.textContent = lsUi.loading;
-              setLiveSpotPanelFeedback(lsUi.updatingWind);
+              windFetchActivated = true;
+              setLiveSpotPanelFeedback();
               let selectedData = await fetchLiveSpotReal(spot, candidate);
               if (!hasUsableLiveSpotData(selectedData)) {
                 selectedData = await fetchLiveSpotReal(spot, candidate);

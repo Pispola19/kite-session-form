@@ -1,22 +1,30 @@
 /**
- * UI SINGLE WRITER MODE V1 — un solo punto scrive il DOM vento Live Spot.
- * Pipeline: payload V1 → kite_score (dati) → ux_trust (dati) → renderWindUI (DOM).
+ * UI SINGLE WRITER MODE V1 — unico DOM writer vento Live Spot.
+ * Richiede USER INTENT GATE + I18N per testi.
  */
 (function initWindUISingleWriter(global) {
   "use strict";
 
-  const LOADING_FALLBACK = "Caricamento…";
-  const EMPTY_CONNECTION_LABEL = "Connessione vento…";
-  const MISSING_FIELD = "—";
+  function labels(lang) {
+    const i18n = global.VentoLiveI18nV1;
+    const tt = i18n && typeof i18n.t === "function" ? (k) => i18n.t(k, lang) : (k) => k;
+    return {
+      loading: tt("wind_ui_state_fetching"),
+      empty: tt("wind_ui_state_empty"),
+      idle: tt("wind_ui_state_idle"),
+      missing: tt("wind_ui_field_missing"),
+      forecastMissing: tt("wind_ui_forecast_missing")
+    };
+  }
 
   function resolveContractPayload(payload) {
-    const resolver = global.WindContractV1 || global;
-    const fn = resolver.resolveWindContractV1 || global.resolveWindContractV1;
+    const fn = global.resolveWindContractV1 ||
+      (global.WindContractV1 && global.WindContractV1.resolveWindContractV1);
     if (typeof fn !== "function") {
       return {
         valid: false,
         state: "fetching",
-        model: payload && typeof payload === "object" ? payload : { loading: true, cache: "ui_loading" }
+        model: { loading: true, cache: "ui_loading", uiRenderState: "fetching" }
       };
     }
     return fn(payload);
@@ -26,10 +34,12 @@
     return resolveContractPayload(payload).model;
   }
 
-  function buildWindUIViewModel(payload) {
+  function buildWindUIViewModel(payload, lang) {
     const p = resolveContractModel(payload);
+    const L = labels(lang);
     const kiteLayer = global.KiteScoreLayerV1;
     const trustLayer = global.UxTrustLayerV1;
+    const i18n = global.VentoLiveI18nV1;
 
     const kite =
       kiteLayer && typeof kiteLayer.computeKiteScore === "function"
@@ -38,43 +48,48 @@
 
     const trust =
       trustLayer && typeof trustLayer.normalizeTrustUI === "function"
-        ? trustLayer.normalizeTrustUI(p)
+        ? trustLayer.normalizeTrustUI(p, lang)
         : {
             loading: true,
-            windDisplay: LOADING_FALLBACK,
-            gustDisplay: LOADING_FALLBACK,
-            directionDisplay: LOADING_FALLBACK,
-            windNameDisplay: LOADING_FALLBACK,
-            reliabilityDisplay: LOADING_FALLBACK,
-            spotDisplay: LOADING_FALLBACK,
-            updatedAtDisplay: "",
-            trend1: { wind: LOADING_FALLBACK, direction: LOADING_FALLBACK, name: LOADING_FALLBACK },
-            trend2: { wind: LOADING_FALLBACK, direction: LOADING_FALLBACK, name: LOADING_FALLBACK },
-            trend3: { wind: LOADING_FALLBACK, direction: LOADING_FALLBACK, name: LOADING_FALLBACK }
+            uiRenderState: "fetching",
+            windDisplay: L.loading,
+            gustDisplay: L.loading,
+            windNameDisplay: L.loading,
+            reliabilityDisplay: L.loading,
+            spotDisplay: L.loading,
+            trend1: { wind: L.loading, name: L.loading },
+            trend2: { wind: L.loading, name: L.loading },
+            trend3: { wind: L.loading, name: L.loading }
           };
 
     const uiRenderState =
       p.uiRenderState || trust.uiRenderState || (trust.loading ? "fetching" : "empty");
     const isFetching = uiRenderState === "fetching";
     const isEmpty = uiRenderState === "empty";
+    const isIdle = uiRenderState === "idle";
+
+    const kiteScoreLine =
+      i18n && typeof i18n.kiteScoreLine === "function"
+        ? i18n.kiteScoreLine(kite.kite_score, kite.kite_status, lang)
+        : `KITE SCORE: ${kite.kite_score} / 100 · STATUS: ${kite.kite_status}`;
 
     return {
       uiRenderState,
       loading: isFetching,
       empty: isEmpty,
+      idle: isIdle,
+      labels: L,
       wind: trust.windDisplay,
       gust: trust.gustDisplay,
       windName: trust.windNameDisplay,
       reliability: trust.reliabilityDisplay,
-      updatedAt: isEmpty ? EMPTY_CONNECTION_LABEL : resolveUpdatedAtForUI(p) || MISSING_FIELD,
+      updatedAt: isEmpty
+        ? L.empty
+        : isIdle
+          ? L.idle
+          : resolveUpdatedAtForUI(p, lang) || L.missing,
       spot: trust.spotDisplay,
-      kiteScore: kite.kite_score,
-      kiteStatus: kite.kite_status,
-      kiteScoreLine: isFetching
-        ? LOADING_FALLBACK
-        : isEmpty
-          ? EMPTY_CONNECTION_LABEL
-          : `KITE SCORE: ${kite.kite_score} / 100 · STATUS: ${kite.kite_status}`,
+      kiteScoreLine: isFetching ? L.loading : isEmpty ? L.empty : isIdle ? L.idle : kiteScoreLine,
       trend1: trust.trend1,
       trend2: trust.trend2,
       trend3: trust.trend3,
@@ -88,7 +103,8 @@
     };
   }
 
-  function resolveUpdatedAtForUI(payload) {
+  function resolveUpdatedAtForUI(payload, lang) {
+    const L = labels(lang);
     const timeLayer = global.TimeUILayerV1;
     const pick =
       timeLayer && typeof timeLayer.pickApiTimestamp === "function"
@@ -96,27 +112,19 @@
         : payload && typeof payload.updated_at === "string"
           ? payload.updated_at
           : "";
-    const normalize =
-      global.normalizeTimeToUI ||
-      (timeLayer && timeLayer.normalizeTimeToUI);
-    if (typeof normalize === "function") return normalize(pick) || "—";
-    return "—";
+    const normalize = global.normalizeTimeToUI || (timeLayer && timeLayer.normalizeTimeToUI);
+    if (typeof normalize === "function") return normalize(pick) || L.missing;
+    return L.missing;
   }
 
-  /**
-   * Unico writer DOM per vento Live Spot.
-   * @param {HTMLElement} panelEl
-   * @param {object} payload — view model post-adapter V1
-   * @param {object} [options]
-   */
-  function renderWindUI(panelEl, payload, options) {
-    if (!panelEl) return;
-
-    const ui = buildWindUIViewModel(payload);
+  function paintWindPanel(panelEl, ui, options) {
     const opts = options && typeof options === "object" ? options : {};
-    const loadingLabel = opts.loadingLabel || LOADING_FALLBACK;
-    const emptyLabel = opts.emptyLabel || EMPTY_CONNECTION_LABEL;
-    const fieldMissing = opts.missingField || MISSING_FIELD;
+    const L = ui.labels;
+    const loadingLabel = opts.loadingLabel || L.loading;
+    const emptyLabel = opts.emptyLabel || L.empty;
+    const idleLabel = opts.idleLabel || L.idle;
+    const fieldMissing = opts.missingField || L.missing;
+    const forecastMissing = opts.forecastMissing || L.forecastMissing;
     const formatDir =
       typeof opts.formatDirectionForMode === "function"
         ? opts.formatDirectionForMode
@@ -125,6 +133,8 @@
       typeof opts.formatWindName === "function"
         ? opts.formatWindName
         : () => ui.windName;
+
+    const globalLabel = ui.loading ? loadingLabel : ui.empty ? emptyLabel : ui.idle ? idleLabel : null;
 
     const cards = Array.from(panelEl.querySelectorAll(".info-card"));
     const windNow = cards.find((card) => String(card.className || "").includes("status-ok")) || null;
@@ -137,30 +147,27 @@
       const gustDd = windNow.querySelector('[data-live-spot-dd="gust"]');
       const scoreDd = windNow.querySelector('[data-live-spot-dd="anemometer"]');
 
-      const panelLabel = ui.loading ? loadingLabel : ui.empty ? emptyLabel : null;
-
-      if (windDd) windDd.textContent = panelLabel || ui.wind;
-      if (gustDd) gustDd.textContent = panelLabel || ui.gust;
+      if (windDd) windDd.textContent = globalLabel || ui.wind;
+      if (gustDd) gustDd.textContent = globalLabel || ui.gust;
       if (dirDd) {
-        dirDd.textContent = panelLabel
-          ? panelLabel
+        dirDd.textContent = globalLabel
+          ? globalLabel
           : ui.windName === fieldMissing && ui.raw.wind_direction == null
             ? fieldMissing
             : formatDir(ui.raw.wind_direction, ui.raw.wind_direction_label);
       }
-      if (windNameDd) windNameDd.textContent = panelLabel || ui.windName;
-      if (scoreDd) scoreDd.textContent = panelLabel || ui.kiteScoreLine;
+      if (windNameDd) windNameDd.textContent = globalLabel || ui.windName;
+      if (scoreDd) scoreDd.textContent = globalLabel || ui.kiteScoreLine;
     }
 
     if (spotOverview) {
       const spotDd = spotOverview.querySelector('[data-live-spot-dd="overview_spot"]');
       const confDd = spotOverview.querySelector('[data-live-spot-dd="overview_confidence"]');
       const updatedDd = spotOverview.querySelector('[data-live-spot-dd="overview_updated"]');
-      const panelLabel = ui.loading ? loadingLabel : ui.empty ? emptyLabel : null;
 
-      if (spotDd) spotDd.textContent = panelLabel || ui.spot;
-      if (confDd) confDd.textContent = panelLabel || ui.reliability;
-      if (updatedDd) updatedDd.textContent = panelLabel || ui.updatedAt || fieldMissing;
+      if (spotDd) spotDd.textContent = globalLabel || ui.spot;
+      if (confDd) confDd.textContent = globalLabel || ui.reliability;
+      if (updatedDd) updatedDd.textContent = globalLabel || ui.updatedAt || fieldMissing;
     }
 
     const hours = panelEl.querySelector(".hours");
@@ -178,15 +185,13 @@
 
       const valueEl = box.querySelector("strong");
       if (valueEl) {
-        valueEl.textContent = ui.loading
-          ? loadingLabel
-          : ui.empty
-            ? emptyLabel
-            : trendUi
-              ? trendUi.wind
-              : fcWind != null
-                ? `${roundKn(fcWind)} kn`
-                : "— kn";
+        valueEl.textContent = globalLabel
+          ? globalLabel
+          : trendUi
+            ? trendUi.wind
+            : fcWind != null
+              ? `${roundKn(fcWind)} kn`
+              : forecastMissing;
       }
 
       let directionEl = box.querySelector(".forecast-direction");
@@ -202,11 +207,11 @@
         box.appendChild(windNameEl);
       }
 
-      if (ui.loading || ui.empty) {
+      if (globalLabel) {
         directionEl.hidden = false;
         windNameEl.hidden = false;
-        directionEl.textContent = ui.loading ? loadingLabel : emptyLabel;
-        windNameEl.textContent = ui.loading ? loadingLabel : emptyLabel;
+        directionEl.textContent = globalLabel;
+        windNameEl.textContent = globalLabel;
         return;
       }
 
@@ -226,10 +231,10 @@
       } else {
         directionEl.textContent = hasDirection
           ? formatDir(fcDir, ui.raw.wind_direction_label)
-          : "—";
+          : fieldMissing;
         windNameEl.textContent = hasDirection
           ? formatName(fcDir, ui.raw.wind_direction_label)
-          : "—";
+          : fieldMissing;
       }
     };
 
@@ -238,11 +243,31 @@
     setFc("3", ui.raw.forecast_3h, ui.trend3);
   }
 
+  function renderIdleUI(panelEl, lang, options) {
+    if (!panelEl) return;
+    const gate = global.UserIntentGateV1;
+    const idleModel =
+      gate && typeof gate.idleViewModel === "function"
+        ? gate.idleViewModel(lang)
+        : { uiRenderState: "idle", cache: "ui_idle" };
+    const ui = buildWindUIViewModel(idleModel, lang);
+    paintWindPanel(panelEl, ui, options);
+  }
+
+  function renderWindUI(panelEl, payload, options) {
+    if (!panelEl) return;
+    const lang = (options && options.lang) || global.__ventoLiveUiLang || "en";
+    const ui = buildWindUIViewModel(payload, lang);
+    paintWindPanel(panelEl, ui, options);
+  }
+
   global.WindUISingleWriterV1 = Object.freeze({
     buildWindUIViewModel,
-    renderWindUI
+    renderWindUI,
+    renderIdleUI
   });
 
   global.renderWindUI = renderWindUI;
+  global.renderIdleUI = renderIdleUI;
   global.buildWindUIViewModel = buildWindUIViewModel;
 })(typeof window !== "undefined" ? window : globalThis);

@@ -126,6 +126,8 @@ function createHarness() {
   runScript(window, "translations.js");
   runScript(window, "ui-lab/mock-engine/mock_engine.browser.js");
   runScript(window, "ui-lab/mock-ui/static_data.js");
+  runScript(window, "ui-lab/mock-ui/ventolive_i18n_v1.js");
+  runScript(window, "ui-lab/mock-ui/user_intent_gate_v1.js");
   runScript(window, "ui-lab/mock-ui/ventolive_api_routing_v1.js");
   runScript(window, "ui-lab/mock-ui/resolve_wind_contract_v1.js");
   runScript(window, "ui-lab/mock-ui/live_spot_wind_adapter_v1.js");
@@ -249,6 +251,12 @@ async function main() {
   assertSlotHiddenAndEmpty(modelOtherSlot, "modelOtherTextSlot");
   assertSlotHiddenAndEmpty(boardSizeOtherSlot, "boardSizeOtherTextSlot");
 
+  const idleWindOnLoad = document.querySelector('[data-live-spot-dd="wind"]');
+  assert(idleWindOnLoad, "Missing wind dd on load");
+  assert(idleWindOnLoad.textContent.trim() === "—", "Idle UI must show neutral dash before user intent");
+  assert(!idleWindOnLoad.textContent.includes("Caricamento"), "No loading before user fetch");
+  assert(!idleWindOnLoad.textContent.includes("Connessione vento"), "No connection message before user fetch");
+
   window.fetch = async () => ({
     ok: true,
     json: async () => ({
@@ -270,10 +278,16 @@ async function main() {
 
   const liveSpotInput = field(document, "spot.location");
   typeText(window, liveSpotInput, "Punta Trettu");
+  const langSelectEl = document.getElementById("languageSelect");
+  if (langSelectEl) {
+    langSelectEl.value = "it";
+    langSelectEl.dispatchEvent(new window.Event("change"));
+  }
+  await wait(50);
   const showLiveSpot = document.getElementById("showLiveSpot");
   assert(showLiveSpot, "Missing #showLiveSpot");
   showLiveSpot.click();
-  await wait(25);
+  await wait(800);
 
   const liveSpotPanel = document.getElementById("liveSpotPanel");
   assert(liveSpotPanel, "Missing #liveSpotPanel");
@@ -287,7 +301,11 @@ async function main() {
   assert(liveWind && liveWind.textContent.trim() === "12.5 kn", "V1 wind was not rendered");
   assert(liveDirection && liveDirection.textContent.trim() !== "---", "V1 direction arrow was not rendered");
   assert(liveWindName && liveWindName.textContent.trim() !== "---", "V1 wind name was not rendered");
-  assert(liveReliability && liveReliability.textContent.trim() === "affidabile", "V1 reliability was not rendered");
+  const expectedRel = window.RDK_TRANSLATIONS.it.wind_ui_reliability_high;
+  assert(
+    liveReliability && liveReliability.textContent.trim() === expectedRel,
+    `V1 reliability expected ${expectedRel} got ${liveReliability && liveReliability.textContent.trim()}`
+  );
   assert(liveUpdated && liveUpdated.textContent.trim() === "04:34", "Europe/Rome time was not rendered");
   assert(!liveUpdated || !liveUpdated.textContent.includes("UTC"), "UTC must not appear in updated time");
   assert(liveDecision && liveDecision.textContent.includes("KITE SCORE"), "Kite score was not rendered");
@@ -315,7 +333,7 @@ async function main() {
   });
   typeText(window, liveSpotInput, "Chia");
   showLiveSpot.click();
-  await wait(25);
+  await wait(150);
   const partialWind = liveSpotPanel.querySelector('[data-live-spot-dd="wind"]');
   const partialSpot = liveSpotPanel.querySelector('[data-live-spot-dd="overview_spot"]');
   const partialDir = liveSpotPanel.querySelector('[data-live-spot-dd="wind_name"]');
@@ -344,7 +362,8 @@ async function main() {
       "other_text_reset_clears_values",
       "other_text_legacy_value_remains_other",
       "wind_decision_output_v1_renders_legacy_ui_contract",
-      "ux_safe_render_partial_state_v1"
+      "ux_safe_render_partial_state_v1",
+      "user_intent_gate_idle_v1"
     ]
   }, null, 2));
 }
