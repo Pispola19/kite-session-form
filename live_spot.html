@@ -415,14 +415,46 @@ Dati reali - Nessuna registrazione - nessun log in</p>
           return null;
         }
 
+        function normalizeWindDecisionOutput(data) {
+          var decision = data && data["WIND DECISION OUTPUT V1"];
+          if (!decision || typeof decision !== "object") {
+            return null;
+          }
+
+          var trend = decision["WIND TREND (1h / 2h / 3h)"];
+          var forecast3h = trend && trend["3h"] != null ? {
+            wind_knots: trend["3h"],
+            wind_direction: decision["WIND DIRECTION (kite-relevant)"] || null
+          } : null;
+
+          return {
+            spot: decision["SPOT RESOLVED"] || "",
+            windKnots: decision["WIND NOW (knots)"],
+            gustKnots: null,
+            windDirection: decision["WIND DIRECTION (kite-relevant)"] || null,
+            updatedAt: null,
+            forecast3h: forecast3h,
+            kiteDecision: decision["KITE DECISION"] || null,
+            reliability: decision["RELIABILITY"] || null
+          };
+        }
+
         function normalizeWindPayload(data) {
+          var decisionOutput = normalizeWindDecisionOutput(data);
+          if (decisionOutput) {
+            return decisionOutput;
+          }
+
           var source = data && (data.latest || data.data || data.wind || data);
           return {
             spot: readFirst(source, ["spot", "station", "station_name", "anemometer", "anemometro", "nearest_spot", "location"]),
             windKnots: readFirst(source, ["wind_knots", "wind_kt", "wind_kts", "wind", "speed_knots", "speed_kt", "avg_knots"]),
             gustKnots: readFirst(source, ["gust_knots", "gust_kt", "gust_kts", "gust", "raffiche", "raffica_knots", "max_gust_knots"]),
             windDirection: readFirst(source, ["wind_direction", "direction", "direction_deg", "wind_dir", "wind_dir_deg", "direzione"]),
-            updatedAt: readFirst(source, ["updated_at", "timestamp", "time", "datetime", "observed_at", "ts"])
+            updatedAt: readFirst(source, ["updated_at", "timestamp", "time", "datetime", "observed_at", "ts"]),
+            forecast3h: data && data.forecast_3h ? data.forecast_3h : null,
+            kiteDecision: null,
+            reliability: null
           };
         }
 
@@ -511,7 +543,8 @@ Dati reali - Nessuna registrazione - nessun log in</p>
                 spotValue.textContent = inputSpot || liveWind.spot || "-";
               }
               if (windDirection) {
-                windDirection.textContent = liveWind.windDirection != null ? "Direzione " + liveWind.windDirection + "°" : "Direzione -";
+                var directionSuffix = typeof liveWind.windDirection === "number" ? "°" : "";
+                windDirection.textContent = liveWind.windDirection != null ? "Direzione " + liveWind.windDirection + directionSuffix : "Direzione -";
               }
               if (windSpeed) {
                 windSpeed.textContent = "Velocità " + formatValue(liveWind.windKnots) + " kn";
@@ -520,11 +553,15 @@ Dati reali - Nessuna registrazione - nessun log in</p>
                 windGust.textContent = "Raffiche " + formatValue(liveWind.gustKnots) + " kn";
               }
               if (updatedValue) {
-                var f = data && data.forecast_3h;
+                var f = liveWind.forecast3h;
                 if (f && f.wind_knots != null) {
-                  updatedValue.textContent = "Previsione: " + f.wind_knots + " kn";
+                  var forecastText = "Previsione: " + f.wind_knots + " kn";
+                  if (liveWind.kiteDecision) {
+                    forecastText += " · " + liveWind.kiteDecision;
+                  }
+                  updatedValue.textContent = forecastText;
                 } else {
-                  updatedValue.textContent = "-";
+                  updatedValue.textContent = liveWind.kiteDecision || liveWind.reliability || "-";
                 }
               }
             })

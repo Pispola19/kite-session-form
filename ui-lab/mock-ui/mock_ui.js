@@ -360,6 +360,7 @@ const LiveSpotReadonlyConnector = (() => {
   }
 
   function formatWindDirectionDegreesAbbr(deg) {
+    if (typeof deg === "string") return deg.trim() || "---";
     const fromDeg = windDirectionDisplayDeg(deg, LIVE_SPOT_VIEW_MODE.METEO);
     const pres = windDirectionPresentationDeg(fromDeg);
     if (fromDeg == null || !pres) return "---";
@@ -368,6 +369,7 @@ const LiveSpotReadonlyConnector = (() => {
   }
 
   function formatWindDirectionForMode(deg, mode) {
+    if (typeof deg === "string") return deg.trim() || "---";
     if (mode === LIVE_SPOT_VIEW_MODE.KITE) {
       return formatWindDirectionArrow(deg, LIVE_SPOT_VIEW_MODE.KITE);
     }
@@ -375,6 +377,7 @@ const LiveSpotReadonlyConnector = (() => {
   }
 
   function formatWindDirectionNameI18n(deg) {
+    if (typeof deg === "string") return deg.trim() || "---";
     const pres = windDirectionPresentationDeg(deg);
     if (!pres) return "---";
     const text = translateLiveSpotLegacy(`live_spot_mock_wind_name_${pres.idx}`);
@@ -385,7 +388,10 @@ const LiveSpotReadonlyConnector = (() => {
     if (!raw || typeof raw !== "object") return null;
     const wind_knots = typeof raw.wind_knots === "number" ? raw.wind_knots : null;
     const gust_knots = typeof raw.gust_knots === "number" ? raw.gust_knots : null;
-    const wind_direction = typeof raw.wind_direction === "number" ? raw.wind_direction : null;
+    const wind_direction =
+      typeof raw.wind_direction === "number" || typeof raw.wind_direction === "string"
+        ? raw.wind_direction
+        : null;
     const forecast_at = typeof raw.forecast_at === "string" ? raw.forecast_at : null;
     if (
       wind_knots == null &&
@@ -484,7 +490,34 @@ const LiveSpotReadonlyConnector = (() => {
   let lastNormalized = READONLY_DEFAULT;
 
   function normalizeLiveSpotPayload(data) {
-    const raw = (data && typeof data === "object") ? data : {};
+    let raw = (data && typeof data === "object") ? data : {};
+    const decision = raw["WIND DECISION OUTPUT V1"];
+    if (decision && typeof decision === "object") {
+      const trend = decision["WIND TREND (1h / 2h / 3h)"];
+      const direction = typeof decision["WIND DIRECTION (kite-relevant)"] === "string"
+        ? decision["WIND DIRECTION (kite-relevant)"]
+        : null;
+      const forecastSlice = (hour) => trend && typeof trend[hour] === "number"
+        ? { wind_knots: trend[hour], gust_knots: null, wind_direction: direction, forecast_at: null }
+        : null;
+      raw = {
+        ok: true,
+        spot: typeof decision["SPOT RESOLVED"] === "string" ? decision["SPOT RESOLVED"] : "",
+        wind_knots: typeof decision["WIND NOW (knots)"] === "number" ? decision["WIND NOW (knots)"] : null,
+        gust_knots: null,
+        wind_direction: direction,
+        source: "wind_decision_output_v1",
+        source_type: "decision_output",
+        confidence: null,
+        reliability: typeof decision.RELIABILITY === "string" ? decision.RELIABILITY : null,
+        kite_decision: typeof decision["KITE DECISION"] === "string" ? decision["KITE DECISION"] : null,
+        updated_at: "",
+        cache: "api_live",
+        forecast_1h: forecastSlice("1h"),
+        forecast_2h: forecastSlice("2h"),
+        forecast_3h: forecastSlice("3h")
+      };
+    }
     const forecastRaw = raw.forecast_3h && typeof raw.forecast_3h === "object" ? raw.forecast_3h : null;
     const forecast1Raw = raw.forecast_1h && typeof raw.forecast_1h === "object" ? raw.forecast_1h : null;
     const forecast2Raw = raw.forecast_2h && typeof raw.forecast_2h === "object" ? raw.forecast_2h : null;
@@ -496,13 +529,18 @@ const LiveSpotReadonlyConnector = (() => {
       spot: typeof raw.spot === "string" ? raw.spot : "",
       wind_knots: typeof raw.wind_knots === "number" ? raw.wind_knots : null,
       gust_knots: typeof raw.gust_knots === "number" ? raw.gust_knots : null,
-      wind_direction: typeof raw.wind_direction === "number" ? raw.wind_direction : null,
+      wind_direction:
+        typeof raw.wind_direction === "number" || typeof raw.wind_direction === "string"
+          ? raw.wind_direction
+          : null,
       source: typeof raw.source === "string" ? raw.source : null,
       sources_used: sourcesUsedRaw
         ? sourcesUsedRaw.map((v) => String(v || "").trim()).filter(Boolean)
         : null,
       source_type: typeof raw.source_type === "string" ? raw.source_type : null,
       confidence: typeof raw.confidence === "number" ? raw.confidence : null,
+      reliability: typeof raw.reliability === "string" ? raw.reliability : null,
+      kite_decision: typeof raw.kite_decision === "string" ? raw.kite_decision : null,
       observed_at: typeof raw.observed_at === "string" ? raw.observed_at : null,
       updated_at: typeof raw.updated_at === "string" ? raw.updated_at : "",
       cache: typeof raw.cache === "string" ? raw.cache : "mock_no_data",
@@ -535,6 +573,8 @@ const LiveSpotReadonlyConnector = (() => {
       meta: {
         cache: p.cache || "mock_no_data",
         confidence: p.confidence,
+        reliability: p.reliability,
+        kite_decision: p.kite_decision,
         source_type: p.source_type,
         observed_at: p.observed_at,
         error: p.error,
@@ -572,12 +612,18 @@ const LiveSpotReadonlyConnector = (() => {
     }
     if (providerDd) {
       const missing = forecastMissingLabel();
-      const dir = p.wind_direction == null
-        ? missing
-        : formatWindDirectionDegreesAbbr(p.wind_direction);
-      const wind = p.wind_knots == null ? missing : `${p.wind_knots} kn`;
-      const gust = p.gust_knots == null ? missing : `${p.gust_knots} kn`;
-      providerDd.textContent = `Dir ${dir} · Vel ${wind} · Raff ${gust}`;
+      if (p.kite_decision || p.reliability) {
+        const decision = p.kite_decision || missing;
+        const reliability = p.reliability || missing;
+        providerDd.textContent = `Decisione ${decision} · Rel ${reliability}`;
+      } else {
+        const dir = p.wind_direction == null
+          ? missing
+          : formatWindDirectionDegreesAbbr(p.wind_direction);
+        const wind = p.wind_knots == null ? missing : `${p.wind_knots} kn`;
+        const gust = p.gust_knots == null ? missing : `${p.gust_knots} kn`;
+        providerDd.textContent = `Dir ${dir} · Vel ${wind} · Raff ${gust}`;
+      }
     }
 
     if (spotOverview) {
@@ -597,7 +643,9 @@ const LiveSpotReadonlyConnector = (() => {
       }
 
       if (confDd) {
-        if (typeof p.confidence === "number" && p.confidence >= 0 && p.confidence <= 1) {
+        if (p.reliability) {
+          confDd.textContent = p.reliability;
+        } else if (typeof p.confidence === "number" && p.confidence >= 0 && p.confidence <= 1) {
           confDd.textContent = `${Math.round(p.confidence * 100)}%`;
         } else {
           confDd.textContent = translateLiveSpotLegacy("live_spot_mock_confidence_pending") || "---";
@@ -2070,9 +2118,19 @@ showLiveSpot?.addEventListener("click", async () => {
       const hasUsableLiveSpotData = (data) => {
         if (!data || data.needs_disambiguation) return false;
 
+        const decision = data["WIND DECISION OUTPUT V1"];
+        if (decision && typeof decision === "object") {
+          return (
+            typeof decision["WIND NOW (knots)"] === "number" ||
+            typeof decision["WIND DIRECTION (kite-relevant)"] === "string" ||
+            typeof decision["KITE DECISION"] === "string"
+          );
+        }
+
         const hasCurrentWind =
           typeof data.wind_knots === "number" ||
           typeof data.wind_direction === "number" ||
+          typeof data.wind_direction === "string" ||
           typeof data.gust_knots === "number";
 
         const hasForecastWind = (fc) =>
