@@ -621,7 +621,10 @@ const LiveSpotReadonlyConnector = (() => {
       (adapter && typeof adapter.loadingPlaceholder === "function"
         ? adapter.loadingPlaceholder()
         : { contract_version: "server_contract_schema_lock_v1", data_state: "fetching", display: null });
-    renderFn(panelEl, payload, { lang: currentLang });
+    renderFn(panelEl, payload, {
+      lang: currentLang,
+      viewMode: typeof liveSpotViewMode !== "undefined" ? liveSpotViewMode : "kite"
+    });
   }
 
   function getReadonlyState() {

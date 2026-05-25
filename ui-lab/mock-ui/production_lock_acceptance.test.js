@@ -45,6 +45,7 @@ function loadProductionChain(window) {
   window.RDK_TRANSLATIONS = { en: {}, it: {}, de: {}, es: {}, fr: {}, pl: {} };
   runScript(window, "ui-lab/mock-ui/ventolive_i18n_v1.js");
   runScript(window, "ui-lab/mock-ui/server_contract_passive_v1.js");
+  runScript(window, "ui-lab/mock-ui/wind_ui_visual_presentation_v1.js");
   runScript(window, "ui-lab/mock-ui/wind_ui_single_writer_v1.js");
 }
 
@@ -54,6 +55,7 @@ function main() {
   assert(!indexHtml.includes("single_truth_display_v1.js"), "single_truth must not be in production index");
   assert(!indexHtml.includes("time_ui_v1.js"), "time_ui wind must not be in production index");
   assert(indexHtml.includes("server_contract_passive_v1.js"), "passive gate required in index");
+  assert(indexHtml.includes("wind_ui_visual_presentation_v1.js"), "visual presentation required in index");
   assert(indexHtml.includes("wind_ui_single_writer_v1.js"), "single writer required in index");
 
   const dom = new JSDOM("<!DOCTYPE html><html><body></body></html>", { url: "https://ventolive.com/" });
@@ -90,19 +92,31 @@ function main() {
   assert(gateOk.allowed === true && gateOk.blocked === false, "lock contract must pass hard gate");
 
   const panel = window.document.createElement("section");
+  panel.className = "cockpit-grid";
   panel.innerHTML = `
-    <div class="info-card status-ok">
+    <article class="info-card status-ok">
       <dd data-live-spot-dd="wind"></dd>
+      <dd data-live-spot-dd="direction"></dd>
       <dd data-live-spot-dd="anemometer"></dd>
-    </div>
-    <div class="info-card status-search">
+    </article>
+    <article class="info-card status-search">
       <dd data-live-spot-dd="overview_confidence"></dd>
+    </article>
+    <div class="hours">
+      <div data-live-spot-fc="1"><strong></strong></div>
     </div>
   `;
-  window.renderWindUI(panel, lockPayload, { lang: "en" });
+  window.renderWindUI(panel, lockPayload, { lang: "en", viewMode: "kite" });
   const windDd = panel.querySelector('[data-live-spot-dd="wind"]');
+  const dirDd = panel.querySelector('[data-live-spot-dd="direction"]');
+  const anemDd = panel.querySelector('[data-live-spot-dd="anemometer"]');
   assert(windDd.textContent === "9.4 kn", "UI must render display.wind only");
   assert(windDd.textContent.indexOf("42") === -1, "UI must not parse engine wind");
+  assert(dirDd.classList.contains("wind-dir-arrow"), "kite view must render direction arrow");
+  assert(dirDd.textContent === "→", "W downwind arrow for kite view");
+  assert(anemDd.textContent.includes("Dir"), "anemometer line must use display fields");
+  assert(anemDd.textContent.includes("9.4 kn"), "anemometer must include display wind");
+  assert(anemDd.textContent.indexOf("NO GO") === -1, "kite_decision must not replace anemometer line");
 
   for (let i = 0; i < ENGINE_LEAK.length; i += 1) {
     assert(!Object.prototype.hasOwnProperty.call(lockPayload, ENGINE_LEAK[i]), "lock payload must not leak engine keys");

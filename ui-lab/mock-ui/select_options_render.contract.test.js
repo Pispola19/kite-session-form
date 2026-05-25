@@ -130,6 +130,7 @@ function createHarness() {
   runScript(window, "ui-lab/mock-ui/user_intent_gate_v1.js");
   runScript(window, "ui-lab/mock-ui/ventolive_api_routing_v1.js");
   runScript(window, "ui-lab/mock-ui/server_contract_passive_v1.js");
+  runScript(window, "ui-lab/mock-ui/wind_ui_visual_presentation_v1.js");
   runScript(window, "ui-lab/mock-ui/live_spot_wind_adapter_v1.js");
   runScript(window, "ui-lab/mock-ui/wind_ui_single_writer_v1.js");
   runScript(window, "ui-lab/mock-ui/mock_ui.js");
@@ -341,15 +342,18 @@ async function main() {
   const liveDecision = liveSpotPanel.querySelector('[data-live-spot-dd="anemometer"]');
   const liveForecast3 = liveSpotPanel.querySelector('[data-live-spot-fc="3"] strong');
   assert(liveWind && liveWind.textContent.trim() === "12.5 kn", "V1 wind was not rendered");
-  assert(liveDirection && liveDirection.textContent.trim() === "NE", "V1 direction must be contract value");
-  assert(liveWindName && liveWindName.textContent.trim() === "NE", "V1 wind name must be contract label");
+  assert(liveDirection && liveDirection.classList.contains("wind-dir-arrow"), "Kite view must show direction arrow");
+  assert(liveDirection && liveDirection.textContent.trim() === "↙", "NE downwind arrow in kite view");
+  assert(liveWindName && liveWindName.textContent.trim() === "Grecale", "Wind name from display + i18n presentation");
   assert(liveReliability && liveReliability.textContent.trim() === "HIGH", "V1 reliability must be raw contract");
   assert(liveUpdated && liveUpdated.textContent.trim() === "04:34", "Europe/Rome time was not rendered");
   assert(!liveUpdated || !liveUpdated.textContent.includes("UTC"), "UTC must not appear in updated time");
-  assert(liveDecision && liveDecision.textContent.trim() === "GO", "KITE DECISION must be contract value only");
+  assert(liveDecision && liveDecision.textContent.includes("Dir"), "Anemometer line from display wind/gust/direction");
+  assert(liveDecision && liveDecision.textContent.includes("12.5 kn"), "Anemometer includes display wind");
   assert(!liveDecision || !liveDecision.textContent.includes("KITE SCORE"), "UI must not compute kite score");
   assert(!liveDecision || !liveDecision.textContent.includes("Decisione"), "Legacy decision text forbidden");
   assert(!liveDecision || !liveDecision.textContent.includes("Rel HIGH"), "Legacy Rel HIGH forbidden");
+  assert(!liveDecision || liveDecision.textContent.trim() !== "GO", "kite_decision must not replace anemometer slot");
   assert(liveForecast3 && liveForecast3.textContent.trim() === "15 kn", "V1 forecast 3h was not rendered");
 
   window.fetch = async () => ({

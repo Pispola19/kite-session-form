@@ -390,6 +390,40 @@ dd {
   font-weight: 800;
 }
 
+dd[data-live-spot-dd="wind"],
+dd[data-live-spot-dd="gust"] {
+  font-size: 20px;
+  line-height: 1.2;
+  color: var(--paper);
+}
+
+dd[data-live-spot-dd="direction"].wind-dir-arrow {
+  font-size: 32px;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--paper);
+}
+
+dd[data-live-spot-dd="direction"].wind-dir-meteo {
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+dd[data-live-spot-dd="wind_name"] {
+  font-size: 15px;
+  line-height: 1.25;
+  text-transform: capitalize;
+}
+
+dd[data-live-spot-dd="anemometer"] {
+  font-size: 13px;
+  line-height: 1.35;
+  font-weight: 700;
+  color: var(--warm-gray);
+  text-align: right;
+  max-width: 62%;
+}
+
 .placeholder {
   color: var(--paper);
 }
@@ -429,6 +463,15 @@ dd {
   font-weight: 800;
   line-height: 1.15;
   white-space: nowrap;
+}
+
+.hours .forecast-direction.wind-dir-arrow {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.hours .forecast-direction.wind-dir-meteo {
+  font-size: 12px;
 }
 
 .hours .forecast-name {

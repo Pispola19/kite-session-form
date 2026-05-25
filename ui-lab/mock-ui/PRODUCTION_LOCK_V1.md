@@ -18,9 +18,10 @@ WIND ENGINE (server internal)
 2. `ventolive_i18n_v1.js` (panel labels only)
 3. `user_intent_gate_v1.js`
 4. `server_contract_passive_v1.js`
-5. `live_spot_wind_adapter_v1.js`
-6. `wind_ui_single_writer_v1.js`
-7. `mock_ui.js` (fetch + intent only)
+5. `wind_ui_visual_presentation_v1.js` (arrows, anemometer line — display.* only)
+6. `live_spot_wind_adapter_v1.js`
+7. `wind_ui_single_writer_v1.js`
+8. `mock_ui.js` (fetch + intent only)
 
 ## SIERRA (must NOT be loaded in production)
 
