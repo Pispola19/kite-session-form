@@ -399,59 +399,70 @@ Dati reali - Nessuna registrazione - nessun log in</p>
       </div>
 
     </div>
+    <script src="ui-lab/mock-ui/live_spot_wind_adapter_v1.js"></script>
     <script>
       (function () {
         var LIVE_WIND_ENDPOINT = "https://api.ventolive.com/wind/latest";
+        var adapter = window.LiveSpotWindAdapterV1;
 
         function readFirst(source, keys) {
-          if (!source) {
-            return null;
-          }
+          if (!source) return null;
           for (var i = 0; i < keys.length; i += 1) {
-            if (source[keys[i]] != null) {
-              return source[keys[i]];
-            }
+            if (source[keys[i]] != null) return source[keys[i]];
           }
           return null;
         }
 
-        function normalizeWindDecisionOutput(data) {
-          var decision = data && data["WIND DECISION OUTPUT V1"];
-          if (!decision || typeof decision !== "object") {
-            return null;
+        function dirAbbrToDisplay(value) {
+          if (adapter && typeof adapter.normalizeWindDirection === "function") {
+            var deg = adapter.normalizeWindDirection(value);
+            if (deg != null) return deg + "°";
           }
-
-          var trend = decision["WIND TREND (1h / 2h / 3h)"];
-          var forecast3h = trend && trend["3h"] != null ? {
-            wind_knots: trend["3h"],
-            wind_direction: decision["WIND DIRECTION (kite-relevant)"] || null
-          } : null;
-
-          return {
-            spot: decision["SPOT RESOLVED"] || "",
-            windKnots: decision["WIND NOW (knots)"],
-            gustKnots: null,
-            windDirection: decision["WIND DIRECTION (kite-relevant)"] || null,
-            updatedAt: null,
-            forecast3h: forecast3h,
-            kiteDecision: decision["KITE DECISION"] || null,
-            reliability: decision["RELIABILITY"] || null
-          };
+          if (typeof value === "number") return value + "°";
+          return value != null ? String(value) : "-";
         }
 
         function normalizeWindPayload(data) {
-          var decisionOutput = normalizeWindDecisionOutput(data);
-          if (decisionOutput) {
-            return decisionOutput;
+          if (adapter && typeof adapter.normalizeLiveSpotPayload === "function") {
+            var p = adapter.normalizeLiveSpotPayload(data);
+            return {
+              spot: p.spot || "",
+              windKnots: p.wind_knots,
+              gustKnots: p.gust_knots,
+              windDirection: p.wind_direction,
+              updatedAt: p.updated_at || null,
+              forecast1h: p.forecast_1h,
+              forecast2h: p.forecast_2h,
+              forecast3h: p.forecast_3h,
+              kiteDecision: p.kite_decision,
+              reliability: p.reliability
+            };
+          }
+
+          var decision = data && data["WIND DECISION OUTPUT V1"];
+          if (decision && typeof decision === "object") {
+            var trend = decision["WIND TREND (1h / 2h / 3h)"] || {};
+            return {
+              spot: decision["SPOT RESOLVED"] || "",
+              windKnots: decision["WIND NOW (knots)"],
+              gustKnots: null,
+              windDirection: decision["WIND DIRECTION (kite-relevant)"],
+              updatedAt: null,
+              forecast1h: trend["1h"] != null ? { wind_knots: trend["1h"] } : null,
+              forecast2h: trend["2h"] != null ? { wind_knots: trend["2h"] } : null,
+              forecast3h: trend["3h"] != null ? { wind_knots: trend["3h"] } : null,
+              kiteDecision: decision["KITE DECISION"] || null,
+              reliability: decision["RELIABILITY"] || "LOW"
+            };
           }
 
           var source = data && (data.latest || data.data || data.wind || data);
           return {
-            spot: readFirst(source, ["spot", "station", "station_name", "anemometer", "anemometro", "nearest_spot", "location"]),
-            windKnots: readFirst(source, ["wind_knots", "wind_kt", "wind_kts", "wind", "speed_knots", "speed_kt", "avg_knots"]),
-            gustKnots: readFirst(source, ["gust_knots", "gust_kt", "gust_kts", "gust", "raffiche", "raffica_knots", "max_gust_knots"]),
-            windDirection: readFirst(source, ["wind_direction", "direction", "direction_deg", "wind_dir", "wind_dir_deg", "direzione"]),
-            updatedAt: readFirst(source, ["updated_at", "timestamp", "time", "datetime", "observed_at", "ts"]),
+            spot: readFirst(source, ["spot", "station", "station_name", "location"]),
+            windKnots: readFirst(source, ["wind_knots", "wind_kt", "wind_kts", "wind"]),
+            gustKnots: readFirst(source, ["gust_knots", "gust_kt", "gust_kts", "gust"]),
+            windDirection: readFirst(source, ["wind_direction", "direction", "direction_deg", "wind_dir"]),
+            updatedAt: readFirst(source, ["updated_at", "timestamp", "observed_at"]),
             forecast3h: data && data.forecast_3h ? data.forecast_3h : null,
             kiteDecision: null,
             reliability: null
@@ -491,6 +502,9 @@ Dati reali - Nessuna registrazione - nessun log in</p>
             cache: "no-store",
             signal: controller ? controller.signal : undefined
           }).then(function (response) {
+            if (adapter && typeof adapter.parseWindLatestResponse === "function") {
+              return adapter.parseWindLatestResponse(response);
+            }
             if (!response.ok) {
               throw new Error("live spot wind unavailable");
             }
@@ -543,8 +557,10 @@ Dati reali - Nessuna registrazione - nessun log in</p>
                 spotValue.textContent = inputSpot || liveWind.spot || "-";
               }
               if (windDirection) {
-                var directionSuffix = typeof liveWind.windDirection === "number" ? "°" : "";
-                windDirection.textContent = liveWind.windDirection != null ? "Direzione " + liveWind.windDirection + directionSuffix : "Direzione -";
+                windDirection.textContent =
+                  liveWind.windDirection != null
+                    ? "Direzione " + dirAbbrToDisplay(liveWind.windDirection)
+                    : "Direzione N";
               }
               if (windSpeed) {
                 windSpeed.textContent = "Velocità " + formatValue(liveWind.windKnots) + " kn";
@@ -553,16 +569,19 @@ Dati reali - Nessuna registrazione - nessun log in</p>
                 windGust.textContent = "Raffiche " + formatValue(liveWind.gustKnots) + " kn";
               }
               if (updatedValue) {
-                var f = liveWind.forecast3h;
-                if (f && f.wind_knots != null) {
-                  var forecastText = "Previsione: " + f.wind_knots + " kn";
-                  if (liveWind.kiteDecision) {
-                    forecastText += " · " + liveWind.kiteDecision;
+                var parts = [];
+                ["forecast1h", "forecast2h", "forecast3h"].forEach(function (key, idx) {
+                  var f = liveWind[key];
+                  if (f && f.wind_knots != null) {
+                    parts.push((idx + 1) + "h " + f.wind_knots + " kn");
                   }
-                  updatedValue.textContent = forecastText;
-                } else {
-                  updatedValue.textContent = liveWind.kiteDecision || liveWind.reliability || "-";
+                });
+                if (!parts.length && liveWind.forecast3h && liveWind.forecast3h.wind_knots != null) {
+                  parts.push("3h " + liveWind.forecast3h.wind_knots + " kn");
                 }
+                if (liveWind.kiteDecision) parts.push(liveWind.kiteDecision);
+                if (liveWind.reliability) parts.push(liveWind.reliability);
+                updatedValue.textContent = parts.length ? parts.join(" · ") : "LOW · stimato";
               }
             })
             .catch(function () {});
