@@ -1,140 +1,85 @@
 /**
- * UI SINGLE WRITER MODE V1 — unico DOM writer vento Live Spot.
- * Richiede USER INTENT GATE + I18N per testi.
+ * PRODUCTION LOCK V1 — UI SINGLE WRITER (passive only).
+ * Reads only display.* via ServerContractPassiveV1 hardGate; no wind logic.
  */
 (function initWindUISingleWriter(global) {
   "use strict";
 
-  function labels(lang) {
+  const LOCK_VERSION = "server_contract_schema_lock_v1";
+
+  function panelLabels(lang) {
     const i18n = global.VentoLiveI18nV1;
     const tt = i18n && typeof i18n.t === "function" ? (k) => i18n.t(k, lang) : (k) => k;
     return {
-      loading: tt("wind_ui_state_fetching"),
-      empty: tt("wind_ui_state_empty"),
-      idle: tt("wind_ui_state_idle"),
-      missing: tt("wind_ui_field_missing"),
-      forecastMissing: tt("wind_ui_forecast_missing")
+      fetching: tt("wind_ui_state_fetching"),
+      error: tt("wind_ui_state_empty"),
+      idle: tt("wind_ui_state_idle")
     };
   }
 
-  function resolveContractPayload(payload) {
-    const fn = global.resolveWindContractV1 ||
-      (global.WindContractV1 && global.WindContractV1.resolveWindContractV1);
-    if (typeof fn !== "function") {
+  function normalizeView(payload) {
+    const passive = global.ServerContractPassiveV1;
+    if (!passive || typeof passive.hardGate !== "function") {
       return {
-        valid: false,
-        state: "fetching",
-        model: { loading: true, cache: "ui_loading", uiRenderState: "fetching" }
+        contract_version: LOCK_VERSION,
+        data_state: "error",
+        display: null,
+        hard_blocked: true
       };
     }
-    return fn(payload);
+    return passive.hardGate(payload).view;
   }
 
-  function resolveContractModel(payload) {
-    return resolveContractPayload(payload).model;
+  function isHardBlocked(view) {
+    return Boolean(view && view.hard_blocked);
   }
 
-  function buildWindUIViewModel(payload, lang) {
-    const p = resolveContractModel(payload);
-    const L = labels(lang);
-    const kiteLayer = global.KiteScoreLayerV1;
-    const trustLayer = global.UxTrustLayerV1;
-    const i18n = global.VentoLiveI18nV1;
+  function fieldText(field, panelMessage) {
+    if (panelMessage) return panelMessage;
+    if (field == null) return "";
+    if (typeof field === "string") return field;
+    if (typeof field !== "object") return "";
+    return field.text == null ? "" : String(field.text);
+  }
 
-    const kite =
-      kiteLayer && typeof kiteLayer.computeKiteScore === "function"
-        ? kiteLayer.computeKiteScore(p)
-        : { kite_score: 0, kite_status: "NO GO" };
+  function paintWindPanel(panelEl, view, lang) {
+    if (!panelEl || !view) return;
 
-    const trust =
-      trustLayer && typeof trustLayer.normalizeTrustUI === "function"
-        ? trustLayer.normalizeTrustUI(p, lang)
-        : {
-            loading: true,
-            uiRenderState: "fetching",
-            windDisplay: L.loading,
-            gustDisplay: L.loading,
-            windNameDisplay: L.loading,
-            reliabilityDisplay: L.loading,
-            spotDisplay: L.loading,
-            trend1: { wind: L.loading, name: L.loading },
-            trend2: { wind: L.loading, name: L.loading },
-            trend3: { wind: L.loading, name: L.loading }
-          };
+    const L = panelLabels(lang);
 
-    const uiRenderState =
-      p.uiRenderState || trust.uiRenderState || (trust.loading ? "fetching" : "empty");
-    const isFetching = uiRenderState === "fetching";
-    const isEmpty = uiRenderState === "empty";
-    const isIdle = uiRenderState === "idle";
-
-    const kiteScoreLine =
-      i18n && typeof i18n.kiteScoreLine === "function"
-        ? i18n.kiteScoreLine(kite.kite_score, kite.kite_status, lang)
-        : `KITE SCORE: ${kite.kite_score} / 100 · STATUS: ${kite.kite_status}`;
-
-    return {
-      uiRenderState,
-      loading: isFetching,
-      empty: isEmpty,
-      idle: isIdle,
-      labels: L,
-      wind: trust.windDisplay,
-      gust: trust.gustDisplay,
-      windName: trust.windNameDisplay,
-      reliability: trust.reliabilityDisplay,
-      updatedAt: isEmpty
-        ? L.empty
-        : isIdle
-          ? L.idle
-          : resolveUpdatedAtForUI(p, lang) || L.missing,
-      spot: trust.spotDisplay,
-      kiteScoreLine: isFetching ? L.loading : isEmpty ? L.empty : isIdle ? L.idle : kiteScoreLine,
-      trend1: trust.trend1,
-      trend2: trust.trend2,
-      trend3: trust.trend3,
-      raw: {
-        wind_direction: p.wind_direction,
-        wind_direction_label: p.wind_direction_label,
-        forecast_1h: p.forecast_1h,
-        forecast_2h: p.forecast_2h,
-        forecast_3h: p.forecast_3h || (p.meta && p.meta.forecast_3h) || null
+    if (isHardBlocked(view)) {
+      const cards = Array.from(panelEl.querySelectorAll(".info-card"));
+      const windNow = cards.find((card) => String(card.className || "").includes("status-ok")) || null;
+      if (windNow) {
+        const windDd = windNow.querySelector('[data-live-spot-dd="wind"]');
+        if (windDd) windDd.textContent = L.error;
+        ["gust", "direction", "wind_name", "anemometer"].forEach((slot) => {
+          const el = windNow.querySelector(`[data-live-spot-dd="${slot}"]`);
+          if (el) el.textContent = "";
+        });
       }
-    };
-  }
+      const spotOverview = cards.find((card) => String(card.className || "").includes("status-search")) || null;
+      if (spotOverview) {
+        ["overview_spot", "overview_confidence", "overview_updated"].forEach((slot) => {
+          const el = spotOverview.querySelector(`[data-live-spot-dd="${slot}"]`);
+          if (el) el.textContent = "";
+        });
+      }
+      const hours = panelEl.querySelector(".hours");
+      if (hours) {
+        ["1", "2", "3"].forEach((slot) => {
+          const box = hours.querySelector(`[data-live-spot-fc="${slot}"]`);
+          const valueEl = box && box.querySelector("strong");
+          if (valueEl) valueEl.textContent = L.error;
+        });
+      }
+      return;
+    }
 
-  function resolveUpdatedAtForUI(payload, lang) {
-    const L = labels(lang);
-    const timeLayer = global.TimeUILayerV1;
-    const pick =
-      timeLayer && typeof timeLayer.pickApiTimestamp === "function"
-        ? timeLayer.pickApiTimestamp(payload)
-        : payload && typeof payload.updated_at === "string"
-          ? payload.updated_at
-          : "";
-    const normalize = global.normalizeTimeToUI || (timeLayer && timeLayer.normalizeTimeToUI);
-    if (typeof normalize === "function") return normalize(pick) || L.missing;
-    return L.missing;
-  }
-
-  function paintWindPanel(panelEl, ui, options) {
-    const opts = options && typeof options === "object" ? options : {};
-    const L = ui.labels;
-    const loadingLabel = opts.loadingLabel || L.loading;
-    const emptyLabel = opts.emptyLabel || L.empty;
-    const idleLabel = opts.idleLabel || L.idle;
-    const fieldMissing = opts.missingField || L.missing;
-    const forecastMissing = opts.forecastMissing || L.forecastMissing;
-    const formatDir =
-      typeof opts.formatDirectionForMode === "function"
-        ? opts.formatDirectionForMode
-        : () => ui.windName;
-    const formatName =
-      typeof opts.formatWindName === "function"
-        ? opts.formatWindName
-        : () => ui.windName;
-
-    const globalLabel = ui.loading ? loadingLabel : ui.empty ? emptyLabel : ui.idle ? idleLabel : null;
+    const display = view.display;
+    const dataState = view.data_state || "error";
+    const panelMessage =
+      dataState === "fetching" ? L.fetching : dataState === "error" ? L.error : null;
 
     const cards = Array.from(panelEl.querySelectorAll(".info-card"));
     const windNow = cards.find((card) => String(card.className || "").includes("status-ok")) || null;
@@ -145,55 +90,59 @@
       const dirDd = windNow.querySelector('[data-live-spot-dd="direction"]');
       const windNameDd = windNow.querySelector('[data-live-spot-dd="wind_name"]');
       const gustDd = windNow.querySelector('[data-live-spot-dd="gust"]');
-      const scoreDd = windNow.querySelector('[data-live-spot-dd="anemometer"]');
+      const kiteDd = windNow.querySelector('[data-live-spot-dd="anemometer"]');
 
-      if (windDd) windDd.textContent = globalLabel || ui.wind;
-      if (gustDd) gustDd.textContent = globalLabel || ui.gust;
-      if (dirDd) {
-        dirDd.textContent = globalLabel
-          ? globalLabel
-          : ui.windName === fieldMissing && ui.raw.wind_direction == null
-            ? fieldMissing
-            : formatDir(ui.raw.wind_direction, ui.raw.wind_direction_label);
+      if (!display) {
+        if (windDd) windDd.textContent = "";
+        if (gustDd) gustDd.textContent = "";
+        if (dirDd) dirDd.textContent = "";
+        if (windNameDd) windNameDd.textContent = "";
+        if (kiteDd) kiteDd.textContent = "";
+      } else {
+        if (windDd) windDd.textContent = fieldText(display.wind, panelMessage);
+        if (gustDd) gustDd.textContent = fieldText(display.gust, panelMessage);
+        if (dirDd) dirDd.textContent = fieldText(display.direction, panelMessage);
+        if (windNameDd) windNameDd.textContent = fieldText(display.wind_name, panelMessage);
+        if (kiteDd) kiteDd.textContent = fieldText(display.kite_decision, panelMessage);
       }
-      if (windNameDd) windNameDd.textContent = globalLabel || ui.windName;
-      if (scoreDd) scoreDd.textContent = globalLabel || ui.kiteScoreLine;
     }
 
     if (spotOverview) {
+      if (!display) {
+        const spotDd0 = spotOverview.querySelector('[data-live-spot-dd="overview_spot"]');
+        const confDd0 = spotOverview.querySelector('[data-live-spot-dd="overview_confidence"]');
+        const updatedDd0 = spotOverview.querySelector('[data-live-spot-dd="overview_updated"]');
+        if (spotDd0) spotDd0.textContent = "";
+        if (confDd0) confDd0.textContent = "";
+        if (updatedDd0) updatedDd0.textContent = "";
+      } else {
       const spotDd = spotOverview.querySelector('[data-live-spot-dd="overview_spot"]');
       const confDd = spotOverview.querySelector('[data-live-spot-dd="overview_confidence"]');
       const updatedDd = spotOverview.querySelector('[data-live-spot-dd="overview_updated"]');
 
-      if (spotDd) spotDd.textContent = globalLabel || ui.spot;
-      if (confDd) confDd.textContent = globalLabel || ui.reliability;
-      if (updatedDd) updatedDd.textContent = globalLabel || ui.updatedAt || fieldMissing;
+        if (spotDd) spotDd.textContent = fieldText(display.spot, panelMessage);
+        if (confDd) confDd.textContent = fieldText(display.reliability, panelMessage);
+        if (updatedDd) updatedDd.textContent = fieldText(display.updated_at, panelMessage);
+      }
     }
 
     const hours = panelEl.querySelector(".hours");
     if (!hours) return;
+    if (!display) {
+      ["1", "2", "3"].forEach((slot) => {
+        const box = hours.querySelector(`[data-live-spot-fc="${slot}"]`);
+        if (!box) return;
+        const valueEl = box.querySelector("strong");
+        if (valueEl) valueEl.textContent = "";
+      });
+      return;
+    }
 
-    const roundKn = (v) => Math.round(Number(v) * 10) / 10;
-    const setFc = (slot, fc, trendUi) => {
+    const setFc = (slot, fcField) => {
       const box = hours.querySelector(`[data-live-spot-fc="${slot}"]`);
       if (!box) return;
 
-      const fcWind = fc && typeof fc.wind_knots === "number" && fc.wind_knots >= 0 ? fc.wind_knots : null;
-      const fcDir = fc && fc.wind_direction != null ? fc.wind_direction : ui.raw.wind_direction;
-      const hasDirection =
-        fcDir != null || (ui.raw.wind_direction_label && String(ui.raw.wind_direction_label).trim());
-
       const valueEl = box.querySelector("strong");
-      if (valueEl) {
-        valueEl.textContent = globalLabel
-          ? globalLabel
-          : trendUi
-            ? trendUi.wind
-            : fcWind != null
-              ? `${roundKn(fcWind)} kn`
-              : forecastMissing;
-      }
-
       let directionEl = box.querySelector(".forecast-direction");
       let windNameEl = box.querySelector(".forecast-name");
       if (!directionEl) {
@@ -207,15 +156,25 @@
         box.appendChild(windNameEl);
       }
 
-      if (globalLabel) {
+      if (panelMessage) {
+        if (valueEl) valueEl.textContent = panelMessage;
         directionEl.hidden = false;
         windNameEl.hidden = false;
-        directionEl.textContent = globalLabel;
-        windNameEl.textContent = globalLabel;
+        directionEl.textContent = panelMessage;
+        windNameEl.textContent = panelMessage;
         return;
       }
 
-      if (fcWind == null && !hasDirection) {
+      const noForecast = fcField && fcField.state === "no_forecast";
+      const hasWind =
+        (typeof fcField === "string" && fcField.trim()) ||
+        (fcField && fcField.state === "present" && fcField.text);
+
+      if (valueEl) {
+        valueEl.textContent = hasWind ? fieldText(fcField, null) : "";
+      }
+
+      if (noForecast || !hasWind) {
         directionEl.hidden = true;
         windNameEl.hidden = true;
         directionEl.textContent = "";
@@ -223,51 +182,37 @@
         return;
       }
 
-      directionEl.hidden = false;
-      windNameEl.hidden = false;
-      if (trendUi) {
-        directionEl.textContent = formatDir(fcDir, ui.raw.wind_direction_label);
-        windNameEl.textContent = trendUi.name;
-      } else {
-        directionEl.textContent = hasDirection
-          ? formatDir(fcDir, ui.raw.wind_direction_label)
-          : fieldMissing;
-        windNameEl.textContent = hasDirection
-          ? formatName(fcDir, ui.raw.wind_direction_label)
-          : fieldMissing;
-      }
+      directionEl.hidden = true;
+      windNameEl.hidden = true;
     };
 
-    setFc("1", ui.raw.forecast_1h, ui.trend1);
-    setFc("2", ui.raw.forecast_2h, ui.trend2);
-    setFc("3", ui.raw.forecast_3h, ui.trend3);
+    setFc("1", display.forecast_1h);
+    setFc("2", display.forecast_2h);
+    setFc("3", display.forecast_3h);
   }
 
-  function renderIdleUI(panelEl, lang, options) {
-    if (!panelEl) return;
-    const gate = global.UserIntentGateV1;
-    const idleModel =
-      gate && typeof gate.idleViewModel === "function"
-        ? gate.idleViewModel(lang)
-        : { uiRenderState: "idle", cache: "ui_idle" };
-    const ui = buildWindUIViewModel(idleModel, lang);
-    paintWindPanel(panelEl, ui, options);
+  function renderIdleUI(panelEl, lang) {
+    const passive = global.ServerContractPassiveV1;
+    const view =
+      passive && typeof passive.idlePayload === "function"
+        ? passive.idlePayload()
+        : { contract_version: LOCK_VERSION, data_state: "idle", display: null };
+    paintWindPanel(panelEl, view, lang);
   }
 
   function renderWindUI(panelEl, payload, options) {
     if (!panelEl) return;
     const lang = (options && options.lang) || global.__ventoLiveUiLang || "en";
-    const ui = buildWindUIViewModel(payload, lang);
-    paintWindPanel(panelEl, ui, options);
+    const view = normalizeView(payload);
+    paintWindPanel(panelEl, view, lang);
   }
 
   global.WindUISingleWriterV1 = Object.freeze({
-    buildWindUIViewModel,
     renderWindUI,
-    renderIdleUI
+    renderIdleUI,
+    paintWindPanel
   });
 
   global.renderWindUI = renderWindUI;
   global.renderIdleUI = renderIdleUI;
-  global.buildWindUIViewModel = buildWindUIViewModel;
 })(typeof window !== "undefined" ? window : globalThis);

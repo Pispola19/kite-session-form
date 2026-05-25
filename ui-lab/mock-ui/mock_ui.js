@@ -574,47 +574,54 @@ const LiveSpotReadonlyConnector = (() => {
   let lastNormalized = READONLY_DEFAULT;
 
   function normalizeLiveSpotPayload(data) {
-    const resolve =
-      globalThis.resolveWindContractV1 ||
-      (globalThis.WindContractV1 && globalThis.WindContractV1.resolveWindContractV1);
-    if (typeof resolve !== "function") {
-      lastNormalized = Object.freeze({ contract: "wind_decision_output_v1", loading: true, cache: "ui_loading" });
+    const adapter = globalThis.LiveSpotWindAdapterV1;
+    if (adapter && typeof adapter.normalizeLiveSpotPayload === "function") {
+      lastNormalized = Object.freeze(adapter.normalizeLiveSpotPayload(data));
       return lastNormalized;
     }
-    lastNormalized = Object.freeze(resolve(data).model);
+    const passive = globalThis.ServerContractPassiveV1;
+    if (passive && typeof passive.acceptPayload === "function") {
+      lastNormalized = Object.freeze(passive.acceptPayload(data).view);
+      return lastNormalized;
+    }
+    lastNormalized = Object.freeze({
+      contract_version: "server_contract_schema_lock_v1",
+      data_state: "error",
+      display: null
+    });
     return lastNormalized;
   }
 
   function buildLiveSpotReadonlyState(normalizedPayload) {
     const p = normalizedPayload || READONLY_DEFAULT;
+    const d = p.display && typeof p.display === "object" ? p.display : null;
+    const fieldText = (field) =>
+      field && typeof field === "object" && field.text != null ? String(field.text) : "";
     return {
-      speed: p.wind_knots,
-      gust: p.gust_knots,
-      direction: p.wind_direction == null ? "" : String(p.wind_direction),
-      updated_at: p.updated_at || "",
-      provider: p.source || "mock_visual",
+      speed: fieldText(d && d.wind),
+      gust: fieldText(d && d.gust),
+      direction: fieldText(d && d.direction),
+      updated_at: fieldText(d && d.updated_at),
+      provider: "server_contract_schema_lock_v1",
       meta: {
-        cache: p.cache || "mock_no_data",
-        confidence: p.confidence,
-        reliability: p.reliability,
-        kite_decision: p.kite_decision,
-        source_type: p.source_type,
-        observed_at: p.observed_at,
-        error: p.error,
-        forecast_3h: p.forecast_3h
+        data_state: p.data_state || "",
+        reliability: fieldText(d && d.reliability),
+        kite_decision: fieldText(d && d.kite_decision)
       }
     };
   }
 
   function renderLiveSpotReadonly(panelEl, normalizedPayload) {
-    const writer = globalThis.WindUISingleWriterV1 || globalThis;
-    const renderFn = writer.renderWindUI || globalThis.renderWindUI;
+    const renderFn = globalThis.renderWindUI ||
+      (globalThis.WindUISingleWriterV1 && globalThis.WindUISingleWriterV1.renderWindUI);
     if (!panelEl || typeof renderFn !== "function") return;
-    renderFn(panelEl, normalizedPayload || { loading: true, cache: "ui_loading", uiRenderState: "fetching" }, {
-      lang: currentLang,
-      formatDirectionForMode: (deg) => formatWindDirectionForMode(deg, liveSpotViewMode),
-      formatWindName: (deg, label) => formatWindDirectionNameI18n(deg, label)
-    });
+    const adapter = globalThis.LiveSpotWindAdapterV1;
+    const payload =
+      normalizedPayload ||
+      (adapter && typeof adapter.loadingPlaceholder === "function"
+        ? adapter.loadingPlaceholder()
+        : { contract_version: "server_contract_schema_lock_v1", data_state: "fetching", display: null });
+    renderFn(panelEl, payload, { lang: currentLang });
   }
 
   function getReadonlyState() {
@@ -1979,11 +1986,11 @@ showLiveSpot?.addEventListener("click", async () => {
       return;
     }
     windFetchActivated = true;
-    const contract = globalThis.WindContractV1;
+    const adapter = globalThis.LiveSpotWindAdapterV1;
     renderLiveSpotReadonly(
-      contract && typeof contract.loadingModel === "function"
-        ? contract.loadingModel()
-        : { contract: "wind_decision_output_v1", loading: true, uiRenderState: "fetching", cache: "ui_loading" }
+      adapter && typeof adapter.loadingPlaceholder === "function"
+        ? adapter.loadingPlaceholder()
+        : { contract_version: "server_contract_schema_lock_v1", data_state: "fetching", display: null }
     );
   };
   const scrollLiveSpotPanel = () => {
@@ -2022,8 +2029,12 @@ showLiveSpot?.addEventListener("click", async () => {
         if (adapter && typeof adapter.hasUsableLiveSpotData === "function") {
           return adapter.hasUsableLiveSpotData(data);
         }
-        const resolve = globalThis.resolveWindContractV1;
-        return typeof resolve === "function" && resolve(data).valid;
+        const adapterCheck = globalThis.LiveSpotWindAdapterV1;
+        if (adapterCheck && typeof adapterCheck.hasUsableLiveSpotData === "function") {
+          return adapterCheck.hasUsableLiveSpotData(data);
+        }
+        const passiveCheck = globalThis.ServerContractPassiveV1;
+        return passiveCheck && typeof passiveCheck.hasUsableWindData === "function" && passiveCheck.hasUsableWindData(data);
       };
 
       let realData = await fetchLiveSpotReal(spot);
@@ -2064,13 +2075,12 @@ showLiveSpot?.addEventListener("click", async () => {
               if (!hasUsableLiveSpotData(selectedData)) {
                 selectedData = await fetchLiveSpotReal(spot, candidate);
               }
-              const adapterSel = globalThis.LiveSpotWindAdapterV1;
-              const contractSel = globalThis.WindContractV1;
+              const passiveSel = globalThis.ServerContractPassiveV1;
               const selectedPayload = hasUsableLiveSpotData(selectedData)
                 ? LiveSpotReadonlyConnector.normalizeLiveSpotPayload(selectedData)
-                : contractSel && typeof contractSel.emptyModel === "function"
-                  ? contractSel.emptyModel()
-                  : { contract: "wind_decision_output_v1", uiRenderState: "empty", cache: "ui_empty" };
+                : passiveSel && typeof passiveSel.errorPayload === "function"
+                  ? passiveSel.errorPayload()
+                  : { contract_version: "server_contract_schema_lock_v1", data_state: "error", display: null };
               renderLiveSpotReadonly(selectedPayload);
               rememberRecentSpot(spot);
               refreshPayloadDebugPreview();
@@ -2092,20 +2102,20 @@ showLiveSpot?.addEventListener("click", async () => {
       }
 
       if (!hasUsableLiveSpotData(realData)) {
-        const contract = globalThis.WindContractV1;
+        const passive = globalThis.ServerContractPassiveV1;
         payload =
-          contract && typeof contract.emptyModel === "function"
-            ? contract.emptyModel()
-            : { contract: "wind_decision_output_v1", uiRenderState: "empty", cache: "ui_empty" };
+          passive && typeof passive.errorPayload === "function"
+            ? passive.errorPayload()
+            : { contract_version: "server_contract_schema_lock_v1", data_state: "error", display: null };
       } else {
         payload = LiveSpotReadonlyConnector.normalizeLiveSpotPayload(realData);
       }
     } else {
-      const contract = globalThis.WindContractV1;
+      const passive = globalThis.ServerContractPassiveV1;
       payload =
-        contract && typeof contract.emptyModel === "function"
-          ? contract.emptyModel()
-          : { contract: "wind_decision_output_v1", uiRenderState: "empty", cache: "ui_empty" };
+        passive && typeof passive.errorPayload === "function"
+          ? passive.errorPayload()
+          : { contract_version: "server_contract_schema_lock_v1", data_state: "error", display: null };
     }
 
     renderLiveSpotReadonly(payload);

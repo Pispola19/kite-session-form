@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import time
 from typing import Any
 
 from dotenv import load_dotenv
@@ -18,6 +19,12 @@ from tools.always_respond_wind_contract_v1 import (
     http_status_for_contract,
 )
 from tools.trust_enrichment_layer_v1 import enrich_trust_response
+from tools.zero_drift_kernel_v1 import (
+    CONTRACT_VERSION,
+    KERNEL_VERSION,
+    emit_wind_latest_contract,
+    kernel_health_flags,
+)
 
 
 init_runtime_db()
@@ -34,7 +41,8 @@ app.add_middleware(
 resolver = LiveSpotResolver()
 
 
-async def _wind_decision_ui_output(payload: dict[str, Any]) -> dict[str, Any]:
+async def _engine_envelope_from_resolver(payload: dict[str, Any]) -> dict[str, Any]:
+    """Internal — never exposed on /wind/latest."""
     output = await enforce_always_respond_wind_contract(payload)
     return enrich_trust_response(output, source_payload=payload)
 
@@ -49,6 +57,9 @@ async def health() -> dict[str, Any]:
         "updated_at": iso(utc_now()),
         "always_respond_wind_contract": "v1",
         "trust_enrichment_layer": "v1",
+        "server_contract_schema_lock": "v1",
+        "zero_drift_enforcer": "v1",
+        **kernel_health_flags(),
     }
 
 
@@ -58,6 +69,7 @@ async def wind_latest(
     lat: float | None = Query(None),
     lon: float | None = Query(None),
 ) -> JSONResponse:
+    started = time.perf_counter()
     payload: dict[str, Any]
     try:
         payload = await resolver.resolve(
@@ -80,9 +92,21 @@ async def wind_latest(
             "updated_at": iso(utc_now()),
         }
 
-    output = await _wind_decision_ui_output(payload)
-    status_code = http_status_for_contract(payload, output)
-    return JSONResponse(output, status_code=status_code)
+    latency_ms = int((time.perf_counter() - started) * 1000)
+    engine_envelope = await _engine_envelope_from_resolver(payload)
+
+    lock_contract = emit_wind_latest_contract(
+        engine_envelope,
+        payload,
+        latency_ms=latency_ms,
+    )
+
+    if lock_contract.get("data_state") in ("full", "partial"):
+        status_code = http_status_for_contract(payload, engine_envelope)
+    else:
+        status_code = 500
+
+    return JSONResponse(lock_contract, status_code=status_code)
 
 
 @app.get("/spot/candidates")

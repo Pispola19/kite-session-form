@@ -1,4 +1,5 @@
 /**
+ * SIERRA — NOT IN PRODUCTION LOCK V1 CHAIN.
  * UX TRUST LAYER MINIMO V1 — solo presentazione dati, zero DOM.
  * Tutti i testi via VentoLiveI18nV1.t(key, lang).
  */

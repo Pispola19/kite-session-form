@@ -1,4 +1,5 @@
 /**
+ * SIERRA — NOT IN PRODUCTION LOCK V1 CHAIN. Do not load in index.html.
  * VENTO LIVE UNIVERSAL CONTRACT V1 — unica verità logica frontend.
  * API → WIND DECISION OUTPUT V1 → resolveWindContractV1 → UX render.
  * Nessun legacy, nessun fallback semantico, nessuna interpretazione parallela del vento.
@@ -53,11 +54,12 @@
   }
 
   function emptyModel() {
-    return {
+    const base = {
       contract: CONTRACT_ID,
       loading: false,
       ok: false,
       uiRenderState: "empty",
+      data_state: "error",
       spot: "",
       wind_knots: null,
       gust_knots: null,
@@ -71,14 +73,16 @@
       forecast_2h: null,
       forecast_3h: null
     };
+    return attachDisplay(base);
   }
 
   function loadingModel() {
-    return {
+    const base = {
       contract: CONTRACT_ID,
       loading: true,
       ok: false,
       uiRenderState: "fetching",
+      data_state: "fetching",
       spot: "",
       wind_knots: null,
       gust_knots: null,
@@ -92,6 +96,30 @@
       forecast_2h: null,
       forecast_3h: null
     };
+    return attachDisplay(base);
+  }
+
+  function idleModel() {
+    const base = {
+      contract: CONTRACT_ID,
+      loading: false,
+      ok: false,
+      uiRenderState: "idle",
+      data_state: "idle",
+      spot: "",
+      wind_knots: null,
+      gust_knots: null,
+      wind_direction: null,
+      wind_direction_label: null,
+      kite_decision: null,
+      reliability: null,
+      updated_at: "",
+      cache: "ui_idle",
+      forecast_1h: null,
+      forecast_2h: null,
+      forecast_3h: null
+    };
+    return attachDisplay(base);
   }
 
   function hasWindNow(model) {
@@ -192,7 +220,35 @@
       _raw_v1: d
     };
     model.uiRenderState = deriveUiRenderState(model);
+    model.data_state = model.uiRenderState === "empty" ? "error" : model.uiRenderState;
+    const buildDisplay =
+      global.SingleTruthDisplayV1 && global.SingleTruthDisplayV1.buildSingleTruthDisplay;
+    if (typeof buildDisplay === "function") {
+      const timeLayer = global.TimeUILayerV1;
+      const normalizeTime = global.normalizeTimeToUI || (timeLayer && timeLayer.normalizeTimeToUI);
+      model.display = buildDisplay(model, {
+        formatTime: typeof normalizeTime === "function" ? normalizeTime : null
+      });
+    }
     return model;
+  }
+
+  function attachDisplay(model) {
+    if (!model || typeof model !== "object") return model;
+    const buildDisplay =
+      global.SingleTruthDisplayV1 && global.SingleTruthDisplayV1.buildSingleTruthDisplay;
+    if (typeof buildDisplay !== "function") return model;
+    const timeLayer = global.TimeUILayerV1;
+    const normalizeTime = global.normalizeTimeToUI || (timeLayer && timeLayer.normalizeTimeToUI);
+    const uiState = model.uiRenderState || deriveUiRenderState(model);
+    const next = Object.assign({}, model, {
+      uiRenderState: uiState,
+      data_state: uiState === "empty" ? "error" : uiState
+    });
+    next.display = buildDisplay(next, {
+      formatTime: typeof normalizeTime === "function" ? normalizeTime : null
+    });
+    return next;
   }
 
   /**
@@ -218,7 +274,7 @@
         valid: any,
         state: any ? uiState : "empty",
         productKey: PRODUCT_KEY,
-        model: Object.assign({}, payload, { uiRenderState: uiState, loading: false }),
+        model: attachDisplay(Object.assign({}, payload, { uiRenderState: uiState, loading: false })),
         legacyRejected: false,
         hasAnyWindData: any
       };
@@ -246,11 +302,11 @@
       };
     }
 
-    const model = parseWindDecisionV1(payload);
+    const model = attachDisplay(parseWindDecisionV1(payload));
     const any = hasAnyWindData(model);
     return {
       valid: any,
-      state: model.uiRenderState,
+      state: model.data_state || model.uiRenderState,
       productKey: PRODUCT_KEY,
       model,
       legacyRejected: false,
@@ -267,6 +323,8 @@
     deriveUiRenderState,
     loadingModel,
     emptyModel,
+    idleModel,
+    attachDisplay,
     resolveWindContractV1,
     directionToDeg
   });

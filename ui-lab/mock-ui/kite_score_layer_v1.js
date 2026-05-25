@@ -1,4 +1,5 @@
 /**
+ * SIERRA — NOT IN PRODUCTION LOCK V1 CHAIN.
  * KITE SCORE LAYER V1 — UX only. Traduce WIND DECISION OUTPUT V1 in score 0–100.
  * Non modifica backend, engine, contract V1 né decisioni API.
  */

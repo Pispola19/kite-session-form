@@ -4,9 +4,6 @@
 (function initUserIntentGate(global) {
   "use strict";
 
-  /**
-   * @param {{ spot?: string|null, intentActive?: boolean }} state
-   */
   function hasUserIntent(state) {
     if (!state || typeof state !== "object") return false;
     if (!state.intentActive) return false;
@@ -14,27 +11,15 @@
     return spot.length > 0;
   }
 
-  function idleViewModel(lang) {
-    const i18n = global.VentoLiveI18nV1;
-    const tt = i18n && typeof i18n.t === "function" ? (k) => i18n.t(k, lang) : (k) => k;
-    const missing = tt("wind_ui_field_missing");
+  function idleViewModel(_lang) {
+    const passive = global.ServerContractPassiveV1;
+    if (passive && typeof passive.idlePayload === "function") {
+      return passive.idlePayload();
+    }
     return {
-      contract: "wind_decision_output_v1",
-      uiRenderState: "idle",
-      loading: false,
-      ok: false,
-      spot: "",
-      cache: "ui_idle",
-      windDisplay: missing,
-      gustDisplay: missing,
-      windNameDisplay: missing,
-      directionDisplay: missing,
-      reliabilityDisplay: missing,
-      updatedAtDisplay: missing,
-      kiteScoreLine: missing,
-      trend1: { wind: missing, direction: missing, name: missing },
-      trend2: { wind: missing, direction: missing, name: missing },
-      trend3: { wind: missing, direction: missing, name: missing }
+      contract_version: "server_contract_schema_lock_v1",
+      data_state: "idle",
+      display: null
     };
   }
 

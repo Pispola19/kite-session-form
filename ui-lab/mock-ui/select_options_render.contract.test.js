@@ -129,11 +129,8 @@ function createHarness() {
   runScript(window, "ui-lab/mock-ui/ventolive_i18n_v1.js");
   runScript(window, "ui-lab/mock-ui/user_intent_gate_v1.js");
   runScript(window, "ui-lab/mock-ui/ventolive_api_routing_v1.js");
-  runScript(window, "ui-lab/mock-ui/resolve_wind_contract_v1.js");
+  runScript(window, "ui-lab/mock-ui/server_contract_passive_v1.js");
   runScript(window, "ui-lab/mock-ui/live_spot_wind_adapter_v1.js");
-  runScript(window, "ui-lab/mock-ui/kite_score_layer_v1.js");
-  runScript(window, "ui-lab/mock-ui/time_ui_v1.js");
-  runScript(window, "ui-lab/mock-ui/ux_trust_layer_v1.js");
   runScript(window, "ui-lab/mock-ui/wind_ui_single_writer_v1.js");
   runScript(window, "ui-lab/mock-ui/mock_ui.js");
 
@@ -142,6 +139,54 @@ function createHarness() {
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function buildLockContractFromEngine(engine) {
+  const product = engine["WIND DECISION OUTPUT V1"] || {};
+  const trend = product["WIND TREND (1h / 2h / 3h)"] || {};
+  const spot = typeof product["SPOT RESOLVED"] === "string" ? product["SPOT RESOLVED"].trim() : "";
+  const wind = product["WIND NOW (knots)"];
+  const gust = product["GUST NOW (knots)"];
+  const dir = typeof product["WIND DIRECTION (kite-relevant)"] === "string"
+    ? product["WIND DIRECTION (kite-relevant)"].trim().toUpperCase()
+    : "";
+  const kite = typeof product["KITE DECISION"] === "string" ? product["KITE DECISION"].trim().toUpperCase() : "";
+  const rel = typeof product.RELIABILITY === "string" ? product.RELIABILITY.trim().toUpperCase() : "";
+  const hasWind = typeof wind === "number" && !Number.isNaN(wind);
+  const hasDir = Boolean(dir);
+  const hasSpot = Boolean(spot);
+  let data_state = "error";
+  if (hasWind || hasDir || hasSpot) {
+    data_state = hasWind && hasDir && hasSpot ? "full" : "partial";
+  }
+  const fc = (key) => {
+    const v = trend[key];
+    if (typeof v === "number" && !Number.isNaN(v)) {
+      return { state: "present", text: `${v} kn` };
+    }
+    return { state: "no_forecast", text: "" };
+  };
+  return {
+    contract_version: "server_contract_schema_lock_v1",
+    schema_version: "wind_decision_output_engine_v1",
+    generated_at: engine.generated_at || "2026-05-25T02:34:00.000Z",
+    updated_at: engine.updated_at || "2026-05-25T02:34:00.000Z",
+    data_state,
+    display: {
+      wind: hasWind ? { state: "present", text: `${wind} kn` } : { state: "missing_data", text: "" },
+      gust: typeof gust === "number" ? { state: "present", text: `${gust} kn` } : { state: "missing_data", text: "" },
+      direction: hasDir ? { state: "present", text: dir } : { state: "missing_data", text: "" },
+      wind_name: hasDir ? { state: "present", text: dir } : { state: "missing_data", text: "" },
+      kite_decision: kite ? { state: "present", text: kite === "NO_GO" ? "NO GO" : kite } : { state: "missing_data", text: "" },
+      reliability: rel ? { state: "present", text: rel } : { state: "missing_data", text: "" },
+      spot: hasSpot ? { state: "present", text: spot } : { state: "missing_data", text: "" },
+      updated_at: { state: "present", text: "04:34" },
+      forecast_1h: fc("1h"),
+      forecast_2h: fc("2h"),
+      forecast_3h: fc("3h")
+    },
+    extensions: {}
+  };
 }
 
 async function main() {
@@ -253,27 +298,24 @@ async function main() {
 
   const idleWindOnLoad = document.querySelector('[data-live-spot-dd="wind"]');
   assert(idleWindOnLoad, "Missing wind dd on load");
-  assert(idleWindOnLoad.textContent.trim() === "—", "Idle UI must show neutral dash before user intent");
+  assert(idleWindOnLoad.textContent.trim() === "", "Idle UI must be empty before user intent");
   assert(!idleWindOnLoad.textContent.includes("Caricamento"), "No loading before user fetch");
   assert(!idleWindOnLoad.textContent.includes("Connessione vento"), "No connection message before user fetch");
 
   window.fetch = async () => ({
     ok: true,
-    json: async () => ({
-      "WIND DECISION OUTPUT V1": {
-        "SPOT RESOLVED": "Punta Trettu",
-        "WIND NOW (knots)": 12.5,
-        "WIND TREND (1h / 2h / 3h)": {
-          "1h": 13,
-          "2h": 14,
-          "3h": 15
-        },
-        "WIND DIRECTION (kite-relevant)": "NE",
-        "KITE DECISION": "GO",
-        "RELIABILITY": "HIGH",
-        updated_at: "2026-05-25T02:34:00.000Z"
-      }
-    })
+    json: async () =>
+      buildLockContractFromEngine({
+        "WIND DECISION OUTPUT V1": {
+          "SPOT RESOLVED": "Punta Trettu",
+          "WIND NOW (knots)": 12.5,
+          "WIND TREND (1h / 2h / 3h)": { "1h": 13, "2h": 14, "3h": 15 },
+          "WIND DIRECTION (kite-relevant)": "NE",
+          "KITE DECISION": "GO",
+          "RELIABILITY": "HIGH",
+          updated_at: "2026-05-25T02:34:00.000Z"
+        }
+      })
   });
 
   const liveSpotInput = field(document, "spot.location");
@@ -299,37 +341,52 @@ async function main() {
   const liveDecision = liveSpotPanel.querySelector('[data-live-spot-dd="anemometer"]');
   const liveForecast3 = liveSpotPanel.querySelector('[data-live-spot-fc="3"] strong');
   assert(liveWind && liveWind.textContent.trim() === "12.5 kn", "V1 wind was not rendered");
-  assert(liveDirection && liveDirection.textContent.trim() !== "---", "V1 direction arrow was not rendered");
-  assert(liveWindName && liveWindName.textContent.trim() !== "---", "V1 wind name was not rendered");
-  const expectedRel = window.RDK_TRANSLATIONS.it.wind_ui_reliability_high;
-  assert(
-    liveReliability && liveReliability.textContent.trim() === expectedRel,
-    `V1 reliability expected ${expectedRel} got ${liveReliability && liveReliability.textContent.trim()}`
-  );
+  assert(liveDirection && liveDirection.textContent.trim() === "NE", "V1 direction must be contract value");
+  assert(liveWindName && liveWindName.textContent.trim() === "NE", "V1 wind name must be contract label");
+  assert(liveReliability && liveReliability.textContent.trim() === "HIGH", "V1 reliability must be raw contract");
   assert(liveUpdated && liveUpdated.textContent.trim() === "04:34", "Europe/Rome time was not rendered");
   assert(!liveUpdated || !liveUpdated.textContent.includes("UTC"), "UTC must not appear in updated time");
-  assert(liveDecision && liveDecision.textContent.includes("KITE SCORE"), "Kite score was not rendered");
-  assert(liveDecision && liveDecision.textContent.includes("/ 100"), "Kite score scale was not rendered");
-  assert(liveDecision && liveDecision.textContent.includes("STATUS: GO"), "Kite score status was not rendered");
-  assert(
-    !liveDecision || !liveDecision.textContent.includes("Decisione NO GO"),
-    "Legacy decision text must not appear in anemometer row"
-  );
-  assert(!liveDecision || !liveDecision.textContent.includes("Rel HIGH"), "Legacy Rel HIGH must not appear");
+  assert(liveDecision && liveDecision.textContent.trim() === "GO", "KITE DECISION must be contract value only");
+  assert(!liveDecision || !liveDecision.textContent.includes("KITE SCORE"), "UI must not compute kite score");
+  assert(!liveDecision || !liveDecision.textContent.includes("Decisione"), "Legacy decision text forbidden");
+  assert(!liveDecision || !liveDecision.textContent.includes("Rel HIGH"), "Legacy Rel HIGH forbidden");
   assert(liveForecast3 && liveForecast3.textContent.trim() === "15 kn", "V1 forecast 3h was not rendered");
 
   window.fetch = async () => ({
     ok: true,
     json: async () => ({
       "WIND DECISION OUTPUT V1": {
-        "SPOT RESOLVED": "Chia",
-        "WIND NOW (knots)": 2.9,
-        "WIND TREND (1h / 2h / 3h)": { "1h": null, "2h": null, "3h": null },
-        "WIND DIRECTION (kite-relevant)": null,
-        "KITE DECISION": "NO GO",
+        "SPOT RESOLVED": "Legacy",
+        "WIND NOW (knots)": 99,
+        "WIND DIRECTION (kite-relevant)": "N",
+        "KITE DECISION": "GO",
         RELIABILITY: "HIGH"
       }
     })
+  });
+  typeText(window, liveSpotInput, "LegacyLeak");
+  showLiveSpot.click();
+  await wait(150);
+  const blockedWind = liveSpotPanel.querySelector('[data-live-spot-dd="wind"]');
+  assert(
+    blockedWind && blockedWind.textContent.includes("Connessione vento"),
+    "Legacy engine envelope must hard-block render (no wind parsing)"
+  );
+  assert(blockedWind.textContent.indexOf("99") === -1, "Legacy wind_knots must not appear in UI");
+
+  window.fetch = async () => ({
+    ok: true,
+    json: async () =>
+      buildLockContractFromEngine({
+        "WIND DECISION OUTPUT V1": {
+          "SPOT RESOLVED": "Chia",
+          "WIND NOW (knots)": 2.9,
+          "WIND TREND (1h / 2h / 3h)": { "1h": null, "2h": null, "3h": null },
+          "WIND DIRECTION (kite-relevant)": null,
+          "KITE DECISION": "NO GO",
+          RELIABILITY: "HIGH"
+        }
+      })
   });
   typeText(window, liveSpotInput, "Chia");
   showLiveSpot.click();
@@ -339,7 +396,7 @@ async function main() {
   const partialDir = liveSpotPanel.querySelector('[data-live-spot-dd="wind_name"]');
   assert(partialWind && partialWind.textContent.trim() === "2.9 kn", "Partial state must render wind");
   assert(partialSpot && partialSpot.textContent.trim() === "Chia", "Partial state must render spot");
-  assert(partialDir && partialDir.textContent.trim() === "—", "Partial state must use em dash for missing direction");
+  assert(partialDir && partialDir.textContent.trim() === "", "Partial missing direction must be empty per contract");
   assert(
     !partialWind.textContent.includes("Caricamento"),
     "Partial state must not show loading when wind data exists"
@@ -361,7 +418,8 @@ async function main() {
       "other_text_parent_change_clears_values",
       "other_text_reset_clears_values",
       "other_text_legacy_value_remains_other",
-      "wind_decision_output_v1_renders_legacy_ui_contract",
+      "server_contract_schema_lock_v1_passive_render",
+      "zero_drift_ui_hard_gate_blocks_legacy_engine",
       "ux_safe_render_partial_state_v1",
       "user_intent_gate_idle_v1"
     ]

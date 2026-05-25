@@ -1,0 +1,53 @@
+{
+  "contract_version": "server_contract_schema_lock_v1",
+  "schema_version": "wind_decision_output_engine_v1",
+  "generated_at": "2026-05-25T02:34:00.000Z",
+  "updated_at": "2026-05-25T02:34:00.000Z",
+  "data_state": "full",
+  "spot": {
+    "name": "Punta Trettu",
+    "lat": 39.0,
+    "lon": 9.0,
+    "source": "catalog",
+    "confidence": 0.0
+  },
+  "wind": {
+    "speed_knots": 12.5,
+    "gust_knots": 15.0,
+    "direction_deg": 45.0,
+    "direction_label": "NE",
+    "source": "model",
+    "confidence": 0.0
+  },
+  "forecast": {
+    "1h": { "wind_knots": 13.0, "gust_knots": null, "direction_deg": 45.0 },
+    "2h": { "wind_knots": 14.0, "gust_knots": null, "direction_deg": 45.0 },
+    "3h": { "wind_knots": 15.0, "gust_knots": null, "direction_deg": 45.0 }
+  },
+  "decision": {
+    "kite": "GO",
+    "reason_code": "WIND_OK",
+    "confidence": 0.0
+  },
+  "display": {
+    "wind": { "state": "present", "text": "12.5 kn" },
+    "gust": { "state": "present", "text": "15 kn" },
+    "direction": { "state": "present", "text": "NE" },
+    "wind_name": { "state": "present", "text": "NE" },
+    "kite_decision": { "state": "present", "text": "GO" },
+    "reliability": { "state": "present", "text": "HIGH" },
+    "spot": { "state": "present", "text": "Punta Trettu" },
+    "updated_at": { "state": "present", "text": "04:34" },
+    "forecast_1h": { "state": "present", "text": "13 kn" },
+    "forecast_2h": { "state": "present", "text": "14 kn" },
+    "forecast_3h": { "state": "present", "text": "15 kn" }
+  },
+  "meta": {
+    "engine": "wind_decision_output_engine_v1",
+    "relay_version": "relay_freeze_v1",
+    "sources_used": [],
+    "latency_ms": 0,
+    "cache": "miss"
+  },
+  "extensions": {}
+}

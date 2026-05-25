@@ -1,0 +1,15 @@
+{
+  "display": {
+    "wind": { "state": "missing_data", "text": "--" },
+    "gust": { "state": "missing_data", "text": "--" },
+    "direction": { "state": "missing_data", "text": "--" },
+    "wind_name": { "state": "missing_data", "text": "--" },
+    "kite_decision": { "state": "missing_data", "text": "ERROR" },
+    "reliability": { "state": "missing_data", "text": "LOW" },
+    "spot": { "state": "missing_data", "text": "--" },
+    "updated_at": { "state": "missing_data", "text": "--" },
+    "forecast_1h": { "state": "no_forecast", "text": "" },
+    "forecast_2h": { "state": "no_forecast", "text": "" },
+    "forecast_3h": { "state": "no_forecast", "text": "" }
+  }
+}
