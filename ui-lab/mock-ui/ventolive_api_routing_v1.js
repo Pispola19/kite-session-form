@@ -7,6 +7,7 @@
 
   const API_BASE = "https://api.ventolive.com";
   const WIND_LATEST_URL = API_BASE + "/wind/latest";
+  const SPOT_CANDIDATES_URL = API_BASE + "/spot/candidates";
 
   const BLOCKED_HOST_PATTERNS = [
     /^https?:\/\/100\.108\.166\.103/i,
@@ -14,6 +15,12 @@
     /^http:\/\/127\.0\.0\.1/i,
     /^http:\/\/localhost/i
   ];
+
+  function canonicalSpotCandidatesUrl(query) {
+    const q = query != null ? String(query).trim() : "";
+    if (!q) return SPOT_CANDIDATES_URL;
+    return SPOT_CANDIDATES_URL + "?q=" + encodeURIComponent(q);
+  }
 
   function canonicalWindLatestUrl(spot, queryExtra) {
     const q = spot != null && String(spot).trim() !== ""
@@ -58,7 +65,9 @@
   global.VENTOLIVE_ROUTING_V1 = Object.freeze({
     API_BASE,
     WIND_LATEST_URL,
+    SPOT_CANDIDATES_URL,
     FETCH_DEFAULTS,
+    canonicalSpotCandidatesUrl,
     canonicalWindLatestUrl,
     coerceCanonicalUrl,
     buildFetchFailSafeWindResponse

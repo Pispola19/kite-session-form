@@ -159,7 +159,7 @@ Checklist: `ui-lab/mock-ui/PRODUCTION_LOCK_DEPLOY_CHECKLIST.md`.
 
 1. **Deploy gap:** codice in git ≠ produzione finché non deploy server + FE.
 2. **Codice morto in `mock_ui.js`:** helper direzione legacy (SIERRA) — non in chain ma confonde manutenzione.
-3. **Disambiguazione spot:** UI prevede `needs_disambiguation` su `/wind/latest`; API usa `/spot/candidates` separato — allineare o rimuovere branch.
+3. ~~**Disambiguazione spot:**~~ **Ripristinata V1** — `/spot/candidates` prima di `/wind/latest` (vedi checkpoint 2026-05-27).
 4. **Form submit / DAM:** fuori scope PRODUCTION LOCK — restano su track separata.
 
 ### Direzione “sistema intelligente” (vento)
@@ -167,3 +167,66 @@ Checklist: `ui-lab/mock-ui/PRODUCTION_LOCK_DEPLOY_CHECKLIST.md`.
 - **Intelligenza** = solo server (resolver, engine, kernel relay).
 - **UI** = finestra passiva (PRODUCTION LOCK).
 - Discovery / SCART / triangulation = layer cognitivo **offline** — vedi BIBBIA_UNICA Parte I–II, non runtime UI.
+
+---
+
+## CHECKPOINT — AUDIT ARCHEOLOGICO DISAMBIGUAZIONE LIVE SPOT V1 — 2026-05-27
+
+### Audit eseguito
+
+- Report: [`audit/RESTORE_DISAMBIGUATION_UI_ARCHAEOLOGY_V1.md`](audit/RESTORE_DISAMBIGUATION_UI_ARCHAEOLOGY_V1.md)
+- Root: `/Users/PER_TEST/raccolta_dati_K_test` (grep/read-only su Bibbie markdown, `mock_ui.js`, adapter, handoff server).
+- **Nessuna** modifica runtime, UI, server deploy, API, payload submit, deploy o commit.
+
+### Esito sintetico
+
+| Domanda | Risposta |
+| --- | --- |
+| Chooser UI mai esistito? | **Sì** — `mock_ui.js` + CSS + `translations.js` |
+| Codice ancora presente? | **Sì, scollegato** — branch non raggiungibile dopo PRODUCTION LOCK |
+| Server supporta disambiguazione? | **Sì** su `/spot/candidates` e resolver interno; **no** su body pubblico `/wind/latest` lock |
+| Risposta persa? | **Sì** — `emit_wind_latest_contract` + `hardGate` |
+| Causa principale | **Contratto + adapter**, non i18n/CSS |
+| Patch minima futura | `GET /spot/candidates` → chooser esistente → `/wind/latest?lat&lon` (non implementata) |
+
+### Esempio Grado
+
+Documentato in handoff geocoder multilingua: Grado resta ambiguo (Italia / Spagna / El Grado) — utente deve scegliere; oggi il chooser non appare perché il FE non chiama `/spot/candidates` e `/wind/latest` non espone più `needs_disambiguation`.
+
+### Prossima patch possibile (non implementata)
+
+Vedi sezione 6 del report audit — strategia **candidates-first, wind-second** senza toccare DAM/payload né kernel lock.
+
+---
+
+## CHECKPOINT — RESTORE LIVE SPOT DISAMBIGUATION UI PATCH V1 — 2026-05-27
+
+### Implementato
+
+Flusso **candidates first, wind second** nella UI Live Spot (`mock_ui.js`):
+
+1. `GET /spot/candidates?q={spot}` via `live_spot_candidates_adapter_v1.js` + `ventolive_api_routing_v1.canonicalSpotCandidatesUrl`
+2. Se `needs_disambiguation` o più candidati con coordinate → chooser esistente (CSS/i18n invariati)
+3. Click candidato → `GET /wind/latest?spot=…&lat=…&lon=…` (PRODUCTION LOCK invariato)
+4. Un solo candidato sicuro → wind diretto senza chooser
+5. Errore/timeout `/spot/candidates` → fallback al flusso `/wind/latest` precedente
+
+### File toccati
+
+- `ui-lab/mock-ui/live_spot_candidates_adapter_v1.js` (nuovo)
+- `ui-lab/mock-ui/ventolive_api_routing_v1.js`
+- `ui-lab/mock-ui/mock_ui.js`
+- `index.html`, `ui-lab/mock-ui/index.html` (script tag)
+
+### Non toccato
+
+- DAM / payload submit / Google Sheet / WhatsApp
+- `server_contract_passive_v1.js` hardGate
+- zero-drift / kernel
+- `mock_engine` / `static_data`
+- contratto `/wind/latest` server
+- deploy automatico
+
+### Esempio Grado
+
+Label da `candidate.label` server (es. «Grado (Italia)») o fallback `name (country)`.

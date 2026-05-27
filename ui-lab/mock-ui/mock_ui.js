@@ -690,6 +690,101 @@ async function fetchLiveSpotReal(spot, candidate) {
   }
 }
 
+function hasUsableLiveSpotData(data) {
+  if (data && data.needs_disambiguation) return true;
+  const adapter = globalThis.LiveSpotWindAdapterV1;
+  if (adapter && typeof adapter.hasUsableLiveSpotData === "function") {
+    return adapter.hasUsableLiveSpotData(data);
+  }
+  const passiveCheck = globalThis.ServerContractPassiveV1;
+  return (
+    passiveCheck &&
+    typeof passiveCheck.hasUsableWindData === "function" &&
+    passiveCheck.hasUsableWindData(data)
+  );
+}
+
+async function fetchLiveSpotCandidatesFirst(spot) {
+  const cand = globalThis.LiveSpotCandidatesAdapterV1;
+  if (!cand || typeof cand.fetchCandidates !== "function") return null;
+  return cand.fetchCandidates(spot, LIVE_SPOT_CONFIG.TIMEOUT_MS);
+}
+
+async function applyLiveSpotWindAfterCandidateChoice(spot, candidate, lsUi, ctx) {
+  const setLiveSpotPanelFeedback = ctx.setLiveSpotPanelFeedback;
+  const scrollLiveSpotPanel = ctx.scrollLiveSpotPanel;
+
+  showLiveSpot.disabled = true;
+  showLiveSpot.classList.add("is-loading");
+  showLiveSpot.textContent = lsUi.loading;
+  windFetchActivated = true;
+  setLiveSpotPanelFeedback();
+
+  let selectedData = await fetchLiveSpotReal(spot, candidate);
+  if (!hasUsableLiveSpotData(selectedData)) {
+    selectedData = await fetchLiveSpotReal(spot, candidate);
+  }
+
+  const passiveSel = globalThis.ServerContractPassiveV1;
+  const selectedPayload = hasUsableLiveSpotData(selectedData)
+    ? LiveSpotReadonlyConnector.normalizeLiveSpotPayload(selectedData)
+    : passiveSel && typeof passiveSel.errorPayload === "function"
+      ? passiveSel.errorPayload()
+      : { contract_version: "server_contract_schema_lock_v1", data_state: "error", display: null };
+
+  renderLiveSpotReadonly(selectedPayload);
+  rememberRecentSpot(spot);
+  refreshPayloadDebugPreview();
+  if (liveSpotPanel) {
+    liveSpotPanel.classList.add("is-visible");
+  }
+  scrollLiveSpotPanel();
+
+  const candAdapter = globalThis.LiveSpotCandidatesAdapterV1;
+  const pickedLabel =
+    candAdapter && typeof candAdapter.formatCandidateLabel === "function"
+      ? candAdapter.formatCandidateLabel(candidate, spot)
+      : candidate.label || candidate.name || spot;
+
+  if (liveSpotMessage) {
+    liveSpotMessage.textContent = lsUi.updatedPrefix + pickedLabel;
+  }
+  showLiveSpot.disabled = false;
+  showLiveSpot.classList.remove("is-loading");
+  showLiveSpot.textContent = lsUi.idle;
+}
+
+function renderLiveSpotDisambiguationChooser(spot, candidates, lsUi, ctx) {
+  const candAdapter = globalThis.LiveSpotCandidatesAdapterV1;
+  const formatLabel =
+    candAdapter && typeof candAdapter.formatCandidateLabel === "function"
+      ? (c) => candAdapter.formatCandidateLabel(c, lsUi.locationFallback)
+      : (c) => c.label || c.name || lsUi.locationFallback;
+
+  if (!liveSpotMessage) return;
+  liveSpotMessage.textContent = "";
+
+  const intro = document.createElement("div");
+  intro.className = "live-spot-candidate-intro";
+  intro.textContent = lsUi.disambiguationPrompt;
+  liveSpotMessage.appendChild(intro);
+
+  const list = document.createElement("div");
+  list.className = "live-spot-candidate-list";
+  liveSpotMessage.appendChild(list);
+
+  candidates.slice(0, 5).forEach((candidate) => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "live-spot-candidate-button";
+    btn.textContent = formatLabel(candidate);
+    btn.addEventListener("click", () => {
+      applyLiveSpotWindAfterCandidateChoice(spot, candidate, lsUi, ctx);
+    });
+    list.appendChild(btn);
+  });
+}
+
 async function submitSessionPrimary(legacyPayload) {
   if (!SESSION_SUBMIT_CONFIG.ENABLE_REAL_SUBMIT) {
     return { ok: true, skipped: true, reason: "real_submit_disabled" };
@@ -2026,24 +2121,26 @@ showLiveSpot?.addEventListener("click", async () => {
       }
       windFetchActivated = true;
       setLiveSpotPanelFeedback();
-      const hasUsableLiveSpotData = (data) => {
-        if (data && data.needs_disambiguation) return true;
-        const adapter = globalThis.LiveSpotWindAdapterV1;
-        if (adapter && typeof adapter.hasUsableLiveSpotData === "function") {
-          return adapter.hasUsableLiveSpotData(data);
-        }
-        const adapterCheck = globalThis.LiveSpotWindAdapterV1;
-        if (adapterCheck && typeof adapterCheck.hasUsableLiveSpotData === "function") {
-          return adapterCheck.hasUsableLiveSpotData(data);
-        }
-        const passiveCheck = globalThis.ServerContractPassiveV1;
-        return passiveCheck && typeof passiveCheck.hasUsableWindData === "function" && passiveCheck.hasUsableWindData(data);
-      };
 
-      let realData = await fetchLiveSpotReal(spot);
+      const disambigCtx = { setLiveSpotPanelFeedback, scrollLiveSpotPanel };
+      const candidatesPayload = await fetchLiveSpotCandidatesFirst(spot);
+      const candAdapter = globalThis.LiveSpotCandidatesAdapterV1;
+
+      if (candAdapter && typeof candAdapter.needsChooser === "function" && candAdapter.needsChooser(candidatesPayload)) {
+        const list = Array.isArray(candidatesPayload.candidates) ? candidatesPayload.candidates : [];
+        renderLiveSpotDisambiguationChooser(spot, list, lsUi, disambigCtx);
+        return;
+      }
+
+      let windCandidate = null;
+      if (candAdapter && typeof candAdapter.singleCandidate === "function") {
+        windCandidate = candAdapter.singleCandidate(candidatesPayload);
+      }
+
+      let realData = await fetchLiveSpotReal(spot, windCandidate);
 
       if (!hasUsableLiveSpotData(realData) && !(realData && realData.needs_disambiguation)) {
-        realData = await fetchLiveSpotReal(spot);
+        realData = await fetchLiveSpotReal(spot, windCandidate);
       }
 
       if (
@@ -2052,55 +2149,7 @@ showLiveSpot?.addEventListener("click", async () => {
         Array.isArray(realData.candidates) &&
         realData.candidates.length
       ) {
-        if (liveSpotMessage) {
-          liveSpotMessage.textContent = "";
-          const intro = document.createElement("div");
-          intro.className = "live-spot-candidate-intro";
-          intro.textContent = lsUi.disambiguationPrompt;
-          liveSpotMessage.appendChild(intro);
-
-          const list = document.createElement("div");
-          list.className = "live-spot-candidate-list";
-          liveSpotMessage.appendChild(list);
-
-          realData.candidates.slice(0, 5).forEach((candidate) => {
-            const btn = document.createElement("button");
-            btn.type = "button";
-            btn.className = "live-spot-candidate-button";
-            btn.textContent = candidate.label || candidate.name || lsUi.locationFallback;
-            btn.addEventListener("click", async () => {
-              showLiveSpot.disabled = true;
-              showLiveSpot.classList.add("is-loading");
-              showLiveSpot.textContent = lsUi.loading;
-              windFetchActivated = true;
-              setLiveSpotPanelFeedback();
-              let selectedData = await fetchLiveSpotReal(spot, candidate);
-              if (!hasUsableLiveSpotData(selectedData)) {
-                selectedData = await fetchLiveSpotReal(spot, candidate);
-              }
-              const passiveSel = globalThis.ServerContractPassiveV1;
-              const selectedPayload = hasUsableLiveSpotData(selectedData)
-                ? LiveSpotReadonlyConnector.normalizeLiveSpotPayload(selectedData)
-                : passiveSel && typeof passiveSel.errorPayload === "function"
-                  ? passiveSel.errorPayload()
-                  : { contract_version: "server_contract_schema_lock_v1", data_state: "error", display: null };
-              renderLiveSpotReadonly(selectedPayload);
-              rememberRecentSpot(spot);
-              refreshPayloadDebugPreview();
-              if (liveSpotPanel) {
-                liveSpotPanel.classList.add("is-visible");
-              }
-              scrollLiveSpotPanel();
-              if (liveSpotMessage) {
-                liveSpotMessage.textContent = lsUi.updatedPrefix + (candidate.label || spot);
-              }
-              showLiveSpot.disabled = false;
-              showLiveSpot.classList.remove("is-loading");
-              showLiveSpot.textContent = lsUi.idle;
-            });
-            list.appendChild(btn);
-          });
-        }
+        renderLiveSpotDisambiguationChooser(spot, realData.candidates, lsUi, disambigCtx);
         return;
       }
 
