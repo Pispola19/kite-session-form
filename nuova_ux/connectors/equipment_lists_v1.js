@@ -1,7 +1,7 @@
 /**
  * NUOVA_UX — un buco liste. Se la fetta non è ready, MOCK_DATA resta com'è.
- * Se ready e le liste sono piene, sostituisce solo marca / modello / misura tavola.
- * Payload B resta stringa. W2 non cambia. Niente fetch, niente Registry, niente L3.
+ * Se ready e le liste sono piene, sostituisce marca / modello / misura tavola.
+ * Nessun merge col foglio manuale. Payload B resta stringa. W2 non cambia.
  */
 (function initNuovaUxEquipmentLists(global) {
   "use strict";
@@ -53,17 +53,15 @@
     return false;
   }
 
-  function cleanSizeMap(raw, base) {
+  function cleanSizeMap(raw) {
     const src = raw && typeof raw === "object" ? raw : {};
-    const fromBase = base && typeof base === "object" ? base : {};
     const out = {};
     BOARD_TYPES.forEach(function (type) {
       const keep = function (label) {
         return looksLikeBoardSize(type, label);
       };
       const fromSlice = cleanNames(src[type]).filter(keep);
-      const merged = cleanNames((fromBase[type] || []).concat(fromSlice)).filter(keep);
-      if (merged.length) out[type] = merged;
+      if (fromSlice.length) out[type] = fromSlice;
     });
     return out;
   }
@@ -77,7 +75,7 @@
     }
     const brands = cleanNames(slice.BRAND_LIST);
     const models = cleanModelMap(slice.MODELS_BY_BRAND);
-    const sizes = cleanSizeMap(slice.BOARD_SIZE_BY_TYPE, base.BOARD_SIZE_BY_TYPE);
+    const sizes = cleanSizeMap(slice.BOARD_SIZE_BY_TYPE);
     if (!brands.length) {
       return { applied: false, reason: "empty" };
     }

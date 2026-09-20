@@ -23,29 +23,19 @@
     "AXIS Kiteboarding",
     "Bali Hai Kiteboards",
     "Ben Wilson Surf",
-    "Big Blue Boards",
+    "Best",
     "big-air",
-    "Bigairkite",
-    "Bigairshop",
     "Blade",
-    "Blankforce Kiteboarding",
     "Brainchild Production",
     "Brunotti",
-    "bstoked",
     "BULL Sails & Kites",
     "BW Surf",
     "Cabrinha",
-    "CAMRIG",
-    "Carved",
     "Circle One",
     "CORE",
     "CrazyFly",
-    "DaSILVA Kiteboarding",
-    "Dritek",
     "Duotone",
-    "Duotonesports",
     "Eleveight",
-    "Elf Kites",
     "F-One",
     "Fanatic",
     "FIREWIRE",
@@ -55,78 +45,43 @@
     "Free",
     "Freeride",
     "Ga",
-    "Genetrix Kiteboarding",
-    "GIN",
-    "Globespirit",
-    "Gong",
-    "Griffin",
+    "Gaastra Kiteboarding",
     "Guide",
-    "GUNSAILS",
     "Harlem Kitesurfing",
     "Houstonkiteboarding",
-    "HQ Powerkites",
     "Jellyfish Boards",
     "Jimmy Lewis",
     "Kangaroo",
-    "Kazuma",
-    "Kiteloose",
-    "Kitestore",
-    "KSP",
-    "Kspsports",
+    "KSP Sports",
     "KT",
-    "Latitude",
+    "Liquid Force",
     "Maelstorm",
     "MASTERMODEL",
-    "MR.Kitesurf",
     "Mushow",
-    "Mushow Boards",
-    "Mutiny",
     "Naish",
-    "NeilPryde",
     "Nobile Kiteboarding",
     "Nomad Boards",
     "North",
-    "Northactionsports",
     "Ocean",
     "Ocean Rodeo",
     "Ozone",
-    "Patlove",
-    "Peter Lynn",
     "Pike Boards",
     "Pivot",
     "Reach",
     "Reedin",
     "RRD",
     "Section",
-    "Shinn",
-    "SignalWire",
-    "Skywalker",
+    "Slingshot",
     "Spleene",
-    "Starkites",
     "SU2",
     "Surfboards",
-    "Surftech",
     "Surftecheurope",
-    "Surgekitestore",
-    "Tablas",
-    "Takoon",
-    "Tona",
-    "Transcend",
-    "Tunafish",
-    "Twintip",
-    "Underground",
-    "Vari",
     "Ventum Kites",
-    "Ventumkiteboarding",
-    "Victoria Skimboards",
     "Vuoi",
-    "Wainman Hawaii",
     "Wave",
     "Wind-X",
     "Windance",
-    "Windwing",
-    "Wingandkite",
-    "Zeeko Kites"
+    "Wingandkite"
   ],
   "MODELS_BY_BRAND": {
     "9 BFT": [
@@ -139,9 +94,36 @@
       "Alpha"
     ],
     "Airush": [
+      "Drifter",
+      "Fundamental",
+      "Lift",
+      "Lift Team",
+      "Lift Team v4",
       "Lift v3",
+      "Lift v4",
       "Lithium",
-      "Ultra v5"
+      "Lithium Team v13",
+      "Lithium Team v14",
+      "Lithium v13",
+      "Lithium v14",
+      "Mach",
+      "Razor",
+      "Razor Team",
+      "Razor v10",
+      "Relax",
+      "Reo",
+      "Session",
+      "Session Team v2",
+      "Session v2",
+      "Thrust",
+      "Torch",
+      "Ultra",
+      "Ultra Team",
+      "Ultra Team DS v5",
+      "Ultra v5",
+      "Union",
+      "Union Team",
+      "Wing"
     ],
     "Airwave Kiteboarding": [
       "Wave"
@@ -175,26 +157,27 @@
     "Ben Wilson Surf": [
       "Jet"
     ],
-    "Big Blue Boards": [
-      "Blue"
+    "Best": [
+      "AYRA",
+      "AYRA Ultralight",
+      "HEX",
+      "JET",
+      "ROCA",
+      "STORM",
+      "SWOX",
+      "TRIO",
+      "ZEPHYR"
     ],
     "big-air": [
-      "kites"
-    ],
-    "Bigairkite": [
       "Core Pace Pro",
       "Core Sensor 3 Loops Sticks",
       "Core XR Pro",
-      "Core Xr8"
-    ],
-    "Bigairshop": [
-      "DTK Rebel D Lab Teal"
+      "Core Xr8",
+      "DTK Rebel D Lab Teal",
+      "kites"
     ],
     "Blade": [
       "Skinny boy"
-    ],
-    "Blankforce Kiteboarding": [
-      "Force"
     ],
     "Brainchild Production": [
       "Brain"
@@ -203,11 +186,7 @@
       "Boomer STR Kitewave",
       "Challenger Multifunctional Sup Blue",
       "Challenger Multifunctional Sup Grey",
-      "Challenger Multifunctionele Sup Yellow",
-      "Kite"
-    ],
-    "bstoked": [
-      "Stoked"
+      "Challenger Multifunctionele Sup Yellow"
     ],
     "BULL Sails & Kites": [
       "Bull"
@@ -218,11 +197,19 @@
     "Cabrinha": [
       "Ace",
       "Carbon Mast",
+      "Contra",
+      "Drifter",
       "Drifter Apex",
+      "FX",
+      "FX2",
       "Moto",
       "Moto Apex",
       "Moto X",
       "Moto X Apex",
+      "Moto X Lite",
+      "Moto XL",
+      "Moto XL Apex",
+      "Nitro",
       "Nitro Apex",
       "Skillit",
       "Socket",
@@ -232,62 +219,66 @@
       "Union Mast To Fusion Adapter",
       "XO"
     ],
-    "CAMRIG": [
-      "Cam"
-    ],
-    "Carved": [
-      "Carve"
-    ],
     "Circle One": [
       "Circle"
     ],
     "CORE": [
       "Air",
       "Air Pro",
+      "Badger Pro",
+      "GTS",
+      "GTS5",
+      "GTS6",
+      "GTS6 LW",
+      "Impact",
+      "Impact 2",
+      "Nexus",
+      "Nexus 2",
+      "Nexus 3",
+      "Nexus 4",
+      "Nexus 4 LW",
+      "Nexus LW",
       "NXS",
       "Pace",
+      "Pace Pro",
       "Pace Pro 2",
+      "Section",
+      "Section 2",
+      "Section 3",
+      "Section 4",
+      "Section 5",
+      "Section LW",
+      "Xlite",
+      "Xlite 2",
       "Xperience",
       "XR",
       "XR / XR Pro",
+      "XR Pro",
       "XR Pro 2",
       "XR X",
+      "XR5",
       "XR6",
       "XR7",
-      "XR8"
+      "XR8",
+      "XR8 LW"
     ],
     "CrazyFly": [
       "Hyper",
+      "Nuke",
       "Sculp"
     ],
-    "DaSILVA Kiteboarding": [
-      "DaSilva"
-    ],
-    "Dritek": [
-      "Tek"
-    ],
     "Duotone": [
+      "Boot",
       "Dice",
-      "Evo",
-      "Evo D/Lab",
-      "Evo SLS",
-      "Evo SLS / D-Lab",
-      "Juice",
-      "Juice D/LAB",
-      "Mono",
-      "Neo",
-      "Neo SLS",
-      "Rebel",
-      "Rebel SLS"
-    ],
-    "Duotonesports": [
       "Dice SLS",
-      "Duotone Boot",
       "Entity 360",
       "Entity Ergo",
       "Evo",
+      "Evo Concept Blue",
       "Evo D/LAB",
       "Evo SLS",
+      "Evo SLS / D-Lab",
+      "Gonzales",
       "Insert Pad",
       "Juice",
       "Juice D/LAB",
@@ -295,30 +286,47 @@
       "Neo",
       "Neo D/LAB",
       "Neo SLS",
+      "Rebel",
       "Rebel D/LAB",
       "Rebel SLS",
+      "Rebel SLS / D-Lab",
       "Traction Pad D/LAB Front",
       "Traction Pad Front",
-      "Vario Combo"
+      "Vario Combo",
+      "Vegas",
+      "Vegas Concept Blue",
+      "Vegas D/Lab",
+      "Volt",
+      "Volt D/Lab"
     ],
     "Eleveight": [
       "FS V8",
       "Os V7",
       "PS V10",
+      "PS V8",
+      "RS Pro",
       "RS Pro V2",
       "RS V10",
       "RS V3",
       "RS V9",
       "Stratos+",
-      "WS",
-      "WS V10"
-    ],
-    "Elf Kites": [
-      "Elf"
+      "WS V10",
+      "WS V8",
+      "XS V5"
     ],
     "F-One": [
+      "Addikt",
+      "Bandit",
+      "Bandit TEC",
+      "Bandit XV",
       "Bandit-S",
-      "BREEZE"
+      "BREEZE",
+      "Bullit",
+      "Chrono",
+      "Cobra",
+      "Diablo",
+      "Kyankka",
+      "Trax"
     ],
     "Fanatic": [
       "Sky"
@@ -330,7 +338,15 @@
       "Atom"
     ],
     "Flysurfer": [
-      "Sonic"
+      "Era",
+      "Era 2",
+      "Hybrid",
+      "Hybrid2",
+      "Indie",
+      "Peak3",
+      "Sonic",
+      "Soul3",
+      "Speed3"
     ],
     "Forcekiteandwake": [
       "Flitelab Amp Complete Set",
@@ -346,7 +362,6 @@
     "Freeride": [
       "Acquistare",
       "Guide",
-      "Kites",
       "Kitesurfing"
     ],
     "Ga": [
@@ -354,28 +369,20 @@
       "One",
       "Pure"
     ],
-    "Genetrix Kiteboarding": [
-      "Hadron"
-    ],
-    "GIN": [
-      "Gin"
-    ],
-    "Globespirit": [
-      "Spirit"
-    ],
-    "Gong": [
-      "Neos"
-    ],
-    "Griffin": [
-      "Vector"
+    "Gaastra Kiteboarding": [
+      "IQ",
+      "Max",
+      "One",
+      "Pure",
+      "Spark"
     ],
     "Guide": [
       "Kitesurfing"
     ],
-    "GUNSAILS": [
-      "Amp"
-    ],
     "Harlem Kitesurfing": [
+      "Force",
+      "Hadlow Pro",
+      "Peak",
       "Thrive"
     ],
     "Houstonkiteboarding": [
@@ -383,9 +390,6 @@
       "One-Lock Wake QuickStart Package",
       "Slingshot Ease Front Only",
       "Slingshot Ghost V3"
-    ],
-    "HQ Powerkites": [
-      "Apex"
     ],
     "Jellyfish Boards": [
       "Jelly"
@@ -396,23 +400,7 @@
     "Kangaroo": [
       "Roo"
     ],
-    "Kazuma": [
-      "Kazuma"
-    ],
-    "Kiteloose": [
-      "Loose"
-    ],
-    "Kitestore": [
-      "Duotone",
-      "F One Magnet Carbon",
-      "F-ONE",
-      "North"
-    ],
-    "KSP": [
-      "C-FIRE",
-      "KSP"
-    ],
-    "Kspsports": [
+    "KSP Sports": [
       "Arcade",
       "C-FIRE"
     ],
@@ -427,8 +415,18 @@
       "Naish S27 Pivot",
       "Naish S27 Triad"
     ],
-    "Latitude": [
-      "Lat"
+    "Liquid Force": [
+      "Momentum",
+      "NV",
+      "NV V8",
+      "NV V9",
+      "Recon",
+      "Solo",
+      "Testament",
+      "Trinity",
+      "WOW",
+      "WOW V3",
+      "WOW V4"
     ],
     "Maelstorm": [
       "Storm"
@@ -436,55 +434,47 @@
     "MASTERMODEL": [
       "Reedin"
     ],
-    "MR.Kitesurf": [
-      "MR"
-    ],
     "Mushow": [
       "Slingshot Era V2"
     ],
-    "Mushow Boards": [
-      "Mushow"
-    ],
-    "Mutiny": [
-      "Mutiny"
-    ],
     "Naish": [
+      "Boxer",
       "Dash",
-      "Hunt",
       "Pivot",
       "Pivot LTD",
       "Pivot LW",
       "Pivot NVision",
       "Psycho",
       "Psycho Nvision",
+      "Ride",
+      "Slash",
       "Torch",
       "Triad",
       "Wingsurfer Package",
       "Xeon Trainer"
     ],
-    "NeilPryde": [
-      "CR:X"
-    ],
     "Nobile Kiteboarding": [
-      "Childhood"
+      "Childhood",
+      "Childhood Light",
+      "Freedom",
+      "Maverick",
+      "Peanut",
+      "Peanut Light",
+      "Scrap",
+      "Squirt",
+      "Squirt Light",
+      "Step"
     ],
     "Nomad Boards": [
       "Nomad"
     ],
     "North": [
       "Carve",
+      "Code Zero",
       "Code Zero Pro",
       "Neo",
       "Orbit",
-      "Orbit Ultra",
-      "Pioneer",
-      "Pulse",
-      "Reach"
-    ],
-    "Northactionsports": [
-      "Carve",
-      "Code Zero Pro",
-      "Orbit",
+      "Orbit Pro",
       "Orbit Ultra",
       "Pioneer",
       "Pulse",
@@ -494,17 +484,27 @@
       "Rodeo"
     ],
     "Ocean Rodeo": [
-      "Flite A-Series"
+      "Crave",
+      "Flite A-Series",
+      "Prodigy",
+      "Razor",
+      "Rise 5",
+      "Roam"
     ],
     "Ozone": [
+      "Alpha",
+      "AMP",
       "Catalyst",
-      "Kites"
-    ],
-    "Patlove": [
-      "Pat"
-    ],
-    "Peter Lynn": [
-      "Escape"
+      "Chrono",
+      "Chrono V5",
+      "Edge",
+      "Enduro",
+      "Hyperlink",
+      "Kites",
+      "Reo",
+      "Vortex",
+      "Zephyr",
+      "Zephyr Ultra-X"
     ],
     "Pike Boards": [
       "Pike"
@@ -525,25 +525,37 @@
       "Whispermodel"
     ],
     "RRD": [
-      "Passion"
+      "Addiction",
+      "Emotion",
+      "Obsession",
+      "Obsession Gold",
+      "Passion",
+      "Passion LW Y30",
+      "Passion Y30",
+      "Religion",
+      "Religion Y30",
+      "Vision",
+      "Vision Y27"
     ],
     "Section": [
       "Kites"
     ],
-    "Shinn": [
-      "Shinn"
-    ],
-    "SignalWire": [
-      "Z"
-    ],
-    "Skywalker": [
-      "Sky"
+    "Slingshot": [
+      "Code",
+      "Code NXT",
+      "Code V2",
+      "Ghost",
+      "Ghost V3",
+      "Mistral",
+      "Rally",
+      "Rally GT",
+      "RPM",
+      "RPX",
+      "SST",
+      "UFO"
     ],
     "Spleene": [
       "Spleene"
-    ],
-    "Starkites": [
-      "Star"
     ],
     "SU2": [
       "SU2"
@@ -554,9 +566,6 @@
       "Juice D/LAB",
       "Mono",
       "Rebel SLS"
-    ],
-    "Surftech": [
-      "Surf"
     ],
     "Surftecheurope": [
       "Beach Cloud",
@@ -574,53 +583,7 @@
       "In Pink Tuflite Pro",
       "Little Darlin In Fusion HD"
     ],
-    "Surgekitestore": [
-      "Core Air",
-      "Core Impact 2",
-      "Core Nexus 4",
-      "Core Pace",
-      "Core Pace Pro",
-      "Core Section 5",
-      "Core Xlite 3",
-      "Core Xperience 2 0 Trainer",
-      "Core XR Pro 2",
-      "Core Xr8",
-      "Harlem Flow",
-      "Harlem Peak",
-      "Harlem Thrive"
-    ],
-    "Tablas": [
-      "Tabla"
-    ],
-    "Takoon": [
-      "Nova"
-    ],
-    "Tona": [
-      "Tona"
-    ],
-    "Transcend": [
-      "Transcend"
-    ],
-    "Tunafish": [
-      "Tuna"
-    ],
-    "Twintip": [
-      "Kiteboards"
-    ],
-    "Underground": [
-      "Under"
-    ],
-    "Vari": [
-      "Vari"
-    ],
     "Ventum Kites": [
-      "Mute V1 As",
-      "Reef V1 As",
-      "Sol",
-      "Xcite V3 As",
-      "Xplore V3"
-    ],
-    "Ventumkiteboarding": [
       "MT V1 As XCL",
       "Mute V1 As",
       "Reef V1 As",
@@ -631,14 +594,8 @@
       "XP V3 XCL",
       "Xplore V3"
     ],
-    "Victoria Skimboards": [
-      "Victoria"
-    ],
     "Vuoi": [
       "acquistare"
-    ],
-    "Wainman Hawaii": [
-      "Park"
     ],
     "Wave": [
       "Acquistare",
@@ -657,9 +614,6 @@
       "Slingshot Joystick V2",
       "Slingshot Sentry V3"
     ],
-    "Windwing": [
-      "Wing"
-    ],
     "Wingandkite": [
       "AIRBANK",
       "Airush Lithium V13",
@@ -669,58 +623,87 @@
       "Reedin Mastermodel Brainchild",
       "Reedin Whispermodel Brainchild",
       "Snowkite Lessons"
-    ],
-    "Zeeko Kites": [
-      "Zeeko"
     ]
   },
   "BOARD_SIZE_BY_TYPE": {
     "twintip": [
-      "11.0",
-      "12.0",
       "120x35",
+      "125x38",
       "126x36.5",
-      "13.0",
+      "129x38",
+      "130x39",
+      "132x39",
       "132x39.5",
       "132x40",
       "133x38.5",
+      "133x39",
       "133x39.5",
       "133x40",
+      "134x39",
+      "134x40",
       "135x40",
       "135x40.5",
       "135x41",
       "136x40",
+      "136x40.5",
       "136x41",
       "136x41.5",
+      "137x40",
+      "137x40.5",
+      "137x41",
       "137x41.5",
       "137x42",
       "138x41",
       "138x41.5",
       "138x42",
+      "139x41",
       "139x42",
       "139x42.5",
-      "14.0",
+      "140x41",
       "140x42",
       "140x48",
+      "141x41",
       "141x42",
       "141x42.5",
       "141x43",
       "142x42",
       "142x42.5",
       "143x53",
+      "144x41.5",
       "144x43",
       "144x43.5",
       "144x44",
+      "145x43",
       "145x44.5",
+      "146x43",
+      "147x44",
       "148x44",
-      "15.0",
+      "148x45",
+      "150x45",
+      "150x46",
       "152x44",
       "152x45",
-      "16.0",
-      "17.0"
+      "160x45",
+      "160x46"
     ],
     "surfboard": [
-      "5.0"
+      "5'0",
+      "5'1",
+      "5'10",
+      "5'11",
+      "5'2",
+      "5'3",
+      "5'4",
+      "5'5",
+      "5'6",
+      "5'7",
+      "5'8",
+      "5'9",
+      "6'0",
+      "6'1",
+      "6'2",
+      "6'3",
+      "6'4"
     ]
   }
 });
