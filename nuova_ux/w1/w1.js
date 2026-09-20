@@ -192,25 +192,28 @@
 
   function appendGroup(listEl, title, items, onPick) {
     if (!items.length) return;
-    const head = document.createElement("li");
-    head.className = "w1-list__group";
-    head.textContent = title;
-    listEl.appendChild(head);
+    const doc = listEl.ownerDocument || global.document;
+    if (title) {
+      const head = doc.createElement("li");
+      head.className = "w1-list__group";
+      head.textContent = title;
+      listEl.appendChild(head);
+    }
     items.forEach(function (c) {
-      const li = document.createElement("li");
-      const btn = document.createElement("button");
+      const li = doc.createElement("li");
+      const btn = doc.createElement("button");
       btn.type = "button";
-      const titleEl = document.createElement("strong");
+      const titleEl = doc.createElement("strong");
       titleEl.textContent = placeTitle(c);
       btn.appendChild(titleEl);
       if (c.where) {
-        const where = document.createElement("span");
+        const where = doc.createElement("span");
         where.className = "w1-list__where";
         where.textContent = c.where;
         btn.appendChild(where);
       }
       if (c.sameNameCount > 1) {
-        const badge = document.createElement("em");
+        const badge = doc.createElement("em");
         badge.className = "w1-list__same";
         badge.textContent = tt("nuova_ux_same_name_badge");
         btn.appendChild(badge);
@@ -231,20 +234,21 @@
       listEl.hidden = true;
       return;
     }
+    const doc = listEl.ownerDocument || global.document;
     if (waiting && !world.length) {
-      const wait = document.createElement("li");
+      const wait = doc.createElement("li");
       wait.className = "w1-list__banner";
       wait.textContent = tt("nuova_ux_spot_wait");
       listEl.appendChild(wait);
     }
     if (groups && groups.sameName) {
-      const banner = document.createElement("li");
+      const banner = doc.createElement("li");
       banner.className = "w1-list__banner";
       banner.textContent = tt("nuova_ux_same_name");
       listEl.appendChild(banner);
     }
-    appendGroup(listEl, tt("nuova_ux_yours"), recents, onPick);
-    appendGroup(listEl, tt("nuova_ux_other_places"), world, onPick);
+    appendGroup(listEl, recents.length ? tt("nuova_ux_yours") : "", recents, onPick);
+    appendGroup(listEl, recents.length ? tt("nuova_ux_other_places") : "", world, onPick);
     listEl.hidden = false;
   }
 
@@ -280,6 +284,11 @@
 
     function paintList() {
       renderPicker(listEl, groupsFor(lastTyped, lastCandidates), onPick, waitingPlaces);
+      const idle = root.querySelector("[data-w1-idle]");
+      if (idle && !idle.hidden) {
+        const hasRows = listEl.querySelectorAll("button").length > 0;
+        idle.textContent = hasRows ? tt("nuova_ux_spot_tap") : tt("nuova_ux_w1_idle");
+      }
     }
 
     function publishSpot(location, openSession) {

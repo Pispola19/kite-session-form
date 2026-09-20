@@ -41,6 +41,8 @@
       nuova_ux_w1_idle: "Pick a spot. We show the wind as it is. Then you can log the session.",
       nuova_ux_w1_next: "Been out? Fill in the session.",
       nuova_ux_spot_wait: "Looking up places…",
+      nuova_ux_spot_tap: "Tap the line of the spot.",
+      btn_send: "Send session",
       nuova_ux_how_open: "How it works",
       nuova_ux_how_title: "Three things",
       nuova_ux_how_what_k: "What it does",
@@ -51,9 +53,10 @@
       nuova_ux_how_compile: "1. Find the spot. 2. Fill the fields. 3. Send.",
       nuova_ux_home_open: "Save to Home",
       nuova_ux_home_title: "On your screen",
-      nuova_ux_home_ios: "1. Tap Share. 2. Add to Home Screen. 3. Add.",
+      nuova_ux_home_ios: "Tap Share (the square with the arrow). Scroll. Add to Home Screen. Add.",
       nuova_ux_home_android: "Browser menu: Add to Home screen.",
       nuova_ux_home_desktop: "Chrome or Edge: Install from the address bar. Safari on a computer cannot pin it like a phone.",
+      nuova_ux_home_inapp: "Open this page in Safari or Chrome. Then Share or the menu → Add to Home Screen.",
       ph_location: "e.g. Is Solinas"
     },
     it: {
@@ -89,6 +92,8 @@
       nuova_ux_w1_idle: "Scegli lo spot. Ti mostriamo il vento così com'è. Poi puoi raccontare l'uscita.",
       nuova_ux_w1_next: "Sei uscito? Compila la sessione.",
       nuova_ux_spot_wait: "Cerco le località…",
+      nuova_ux_spot_tap: "Tocca la riga dello spot.",
+      btn_send: "Invia sessione",
       nuova_ux_how_open: "Come funziona",
       nuova_ux_how_title: "Tre cose",
       nuova_ux_how_what_k: "Cosa fa",
@@ -99,9 +104,10 @@
       nuova_ux_how_compile: "1. Cerca lo spot. 2. Compila i campi. 3. Invia.",
       nuova_ux_home_open: "Salva in Home",
       nuova_ux_home_title: "Sullo schermo",
-      nuova_ux_home_ios: "1. Tocca Condividi. 2. Aggiungi a Home. 3. Aggiungi.",
+      nuova_ux_home_ios: "Tocca Condividi (il quadrato con la freccia). Scorri. Aggiungi a Home. Aggiungi.",
       nuova_ux_home_android: "Menu del browser: Aggiungi alla schermata Home.",
       nuova_ux_home_desktop: "Su Chrome o Edge: Installa dalla barra. Su Safari del computer non si può come sul telefono.",
+      nuova_ux_home_inapp: "Apri questa pagina in Safari o Chrome. Poi Condividi o il menu → Aggiungi a Home.",
       ph_location: "es. Is Solinas"
     },
     de: {
@@ -137,6 +143,8 @@
       nuova_ux_w1_idle: "Wähle den Spot. Wir zeigen den Wind, so wie er ist. Danach kannst du die Session eintragen.",
       nuova_ux_w1_next: "Warst du draußen? Trag die Session ein.",
       nuova_ux_spot_wait: "Orte werden gesucht…",
+      nuova_ux_spot_tap: "Tippe die Zeile des Spots.",
+      btn_send: "Session senden",
       nuova_ux_how_open: "So funktioniert's",
       nuova_ux_how_title: "Drei Dinge",
       nuova_ux_how_what_k: "Was es tut",
@@ -147,9 +155,10 @@
       nuova_ux_how_compile: "1. Spot suchen. 2. Felder ausfüllen. 3. Senden.",
       nuova_ux_home_open: "Auf Home sichern",
       nuova_ux_home_title: "Auf den Bildschirm",
-      nuova_ux_home_ios: "1. Teilen tippen. 2. Zum Home-Bildschirm. 3. Hinzufügen.",
+      nuova_ux_home_ios: "Teile tippen (Quadrat mit Pfeil). Scrollen. Zum Home-Bildschirm. Hinzufügen.",
       nuova_ux_home_android: "Browser-Menü: Zum Startbildschirm hinzufügen.",
       nuova_ux_home_desktop: "Chrome oder Edge: Installieren in der Leiste. Safari am Computer geht nicht wie am Handy.",
+      nuova_ux_home_inapp: "Diese Seite in Safari oder Chrome öffnen. Dann Teilen oder Menü → Zum Home-Bildschirm.",
       ph_location: "z.B. Is Solinas"
     },
     es: {
@@ -185,6 +194,8 @@
       nuova_ux_w1_idle: "Elige el spot. Te mostramos el viento tal cual. Luego puedes contar la sesión.",
       nuova_ux_w1_next: "¿Has salido? Completa la sesión.",
       nuova_ux_spot_wait: "Buscando lugares…",
+      nuova_ux_spot_tap: "Toca la línea del spot.",
+      btn_send: "Enviar sesión",
       nuova_ux_how_open: "Cómo funciona",
       nuova_ux_how_title: "Tres cosas",
       nuova_ux_how_what_k: "Qué hace",
@@ -195,9 +206,10 @@
       nuova_ux_how_compile: "1. Busca el spot. 2. Rellena los campos. 3. Envía.",
       nuova_ux_home_open: "Guardar en Inicio",
       nuova_ux_home_title: "En la pantalla",
-      nuova_ux_home_ios: "1. Toca Compartir. 2. Añadir a pantalla de inicio. 3. Añadir.",
+      nuova_ux_home_ios: "Toca Compartir (el cuadrado con la flecha). Desplaza. Añadir a pantalla de inicio. Añadir.",
       nuova_ux_home_android: "Menú del navegador: Añadir a pantalla de inicio.",
       nuova_ux_home_desktop: "Chrome o Edge: Instalar desde la barra. Safari de ordenador no puede como el teléfono.",
+      nuova_ux_home_inapp: "Abre esta página en Safari o Chrome. Luego Compartir o el menú → Añadir a pantalla de inicio.",
       ph_location: "p. ej. Is Solinas"
     },
     fr: {
@@ -233,6 +245,8 @@
       nuova_ux_w1_idle: "Choisis le spot. On montre le vent tel qu'il est. Ensuite tu peux raconter la session.",
       nuova_ux_w1_next: "Tu es sorti ? Remplis la session.",
       nuova_ux_spot_wait: "Recherche des spots…",
+      nuova_ux_spot_tap: "Touche la ligne du spot.",
+      btn_send: "Envoyer la session",
       nuova_ux_how_open: "Comment ça marche",
       nuova_ux_how_title: "Trois choses",
       nuova_ux_how_what_k: "Ce que ça fait",
@@ -243,9 +257,10 @@
       nuova_ux_how_compile: "1. Cherche le spot. 2. Remplis les champs. 3. Envoie.",
       nuova_ux_home_open: "Sur l’écran d’accueil",
       nuova_ux_home_title: "Sur l’écran",
-      nuova_ux_home_ios: "1. Touche Partager. 2. Sur l’écran d’accueil. 3. Ajouter.",
+      nuova_ux_home_ios: "Touche Partager (le carré avec la flèche). Fais défiler. Sur l’écran d’accueil. Ajouter.",
       nuova_ux_home_android: "Menu du navigateur : Ajouter à l’écran d’accueil.",
       nuova_ux_home_desktop: "Chrome ou Edge : Installer depuis la barre. Safari ordinateur ne peut pas comme le téléphone.",
+      nuova_ux_home_inapp: "Ouvre cette page dans Safari ou Chrome. Puis Partager ou le menu → Sur l’écran d’accueil.",
       ph_location: "ex. Is Solinas"
     },
     pl: {
@@ -281,6 +296,8 @@
       nuova_ux_w1_idle: "Wybierz spot. Pokazujemy wiatr taki, jaki jest. Potem możesz opisać sesję.",
       nuova_ux_w1_next: "Byłeś na wodzie? Uzupełnij sesję.",
       nuova_ux_spot_wait: "Szukam miejsc…",
+      nuova_ux_spot_tap: "Dotknij wiersza spotu.",
+      btn_send: "Wyślij sesję",
       nuova_ux_how_open: "Jak to działa",
       nuova_ux_how_title: "Trzy rzeczy",
       nuova_ux_how_what_k: "Co robi",
@@ -291,9 +308,10 @@
       nuova_ux_how_compile: "1. Znajdź spot. 2. Wypełnij pola. 3. Wyślij.",
       nuova_ux_home_open: "Na ekran główny",
       nuova_ux_home_title: "Na ekranie",
-      nuova_ux_home_ios: "1. Udostępnij. 2. Dodaj do ekranu głównego. 3. Dodaj.",
+      nuova_ux_home_ios: "Udostępnij (kwadrat ze strzałką). Przewiń. Dodaj do ekranu głównego. Dodaj.",
       nuova_ux_home_android: "Menu przeglądarki: Dodaj do ekranu głównego.",
       nuova_ux_home_desktop: "Chrome lub Edge: Zainstaluj z paska. Safari na komputerze nie umie jak telefon.",
+      nuova_ux_home_inapp: "Otwórz tę stronę w Safari lub Chrome. Potem Udostępnij lub menu → Dodaj do ekranu głównego.",
       ph_location: "np. Is Solinas"
     }
   });

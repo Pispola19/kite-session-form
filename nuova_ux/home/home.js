@@ -45,10 +45,16 @@
     return global.NuovaUxHowV1;
   }
 
+  function inAppBrowser() {
+    const ua = String((global.navigator && global.navigator.userAgent) || "");
+    return /Instagram|FBAN|FBAV|FB_IAB|Line\/|Twitter|WhatsApp/i.test(ua);
+  }
+
   function paintSteps(dialog) {
     const body = dialog && dialog.querySelector("[data-home-steps]");
     if (!body) return;
-    if (iosPhone()) body.textContent = tt("nuova_ux_home_ios");
+    if (inAppBrowser()) body.textContent = tt("nuova_ux_home_inapp");
+    else if (iosPhone()) body.textContent = tt("nuova_ux_home_ios");
     else if (androidPhone()) body.textContent = tt("nuova_ux_home_android");
     else body.textContent = tt("nuova_ux_home_desktop");
   }
