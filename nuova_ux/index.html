@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#1f4e79">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="VENTO LIVE">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <title data-i18n="nuova_ux_page_title">NUOVA_UX</title>
+    <link rel="stylesheet" href="skin/tokens.css?v=20260920g">
+    <link rel="stylesheet" href="skin/shell.css?v=20260920g">
+    <link rel="stylesheet" href="w1/w1.css?v=20260920g">
+    <link rel="stylesheet" href="w2/w2.css?v=20260920h">
+    <link rel="stylesheet" href="w3/w3.css?v=20260920a">
+    <link rel="stylesheet" href="w4/w4.css?v=20260920g">
+    <link rel="stylesheet" href="how/how.css?v=20260920h">
+  </head>
+  <body>
+    <div class="nuova-ux-shell">
+      <header class="nuova-ux-shell__head">
+        <div>
+          <p class="nuova-ux-shell__mark" data-i18n="nuova_ux_lab_mark">NUOVA_UX · lab · non è produzione</p>
+          <h1 class="nuova-ux-shell__title" data-i18n="nuova_ux_skin_title">Pelle</h1>
+        </div>
+        <nav class="nuova-ux-lang">
+          <label for="languageSelect" data-i18n="nuova_ux_lang">Lingua</label>
+          <select id="languageSelect" name="language" data-i18n-aria="nuova_ux_lang">
+            <option value="it">IT</option>
+            <option value="en">EN</option>
+            <option value="de">DE</option>
+            <option value="es">ES</option>
+            <option value="fr">FR</option>
+            <option value="pl">PL</option>
+          </select>
+        </nav>
+      </header>
+      <div class="nuova-ux-slots">
+        <div class="nuova-ux-col nuova-ux-col--wind">
+        <section class="nuova-ux-slot" data-slot="w1" aria-labelledby="w1-title">
+          <p class="nuova-ux-slot__id">W1</p>
+          <h2 class="nuova-ux-slot__name" id="w1-title" data-i18n="nuova_ux_w1_title">Vento e spot in uso</h2>
+          <label class="w1-spot">
+            <span data-i18n="nuova_ux_spot_pick">Cerca spot</span>
+            <input type="search" data-w1-spot-input autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" data-i18n-placeholder="ph_location" data-i18n-aria="nuova_ux_spot_pick">
+          </label>
+          <ul class="w1-list" data-w1-candidates hidden></ul>
+          <p class="w1-msg" data-w1="msg" role="status"></p>
+          <p class="w1-idle" data-w1-idle data-i18n="nuova_ux_w1_idle">Scegli lo spot. Ti mostriamo il vento così com'è. Poi puoi raccontare l'uscita.</p>
+          <div class="w1-grid" data-w1-grid hidden>
+            <article class="w1-card">
+              <h3 data-i18n="nuova_ux_spot_in_use">Spot in uso</h3>
+              <p class="w1-spot-now" data-w1="spot">—</p>
+              <dl>
+                <dt data-i18n="live_spot_mock_confidence">Affidabilità</dt><dd data-w1="reliability">—</dd>
+                <dt data-i18n="live_spot_mock_last_update">Aggiornato</dt><dd data-w1="updated">—</dd>
+              </dl>
+            </article>
+            <article class="w1-card w1-ka" data-w1-ka>
+              <h3 data-i18n="nuova_ux_ka">Session Status</h3>
+              <p data-w1="ka">—</p>
+            </article>
+            <article class="w1-card">
+              <h3 data-i18n="live_spot_mock_wind_now_heading">NOW</h3>
+              <dl>
+                <dt data-i18n="live_spot_mock_wind_speed">Vento</dt><dd data-w1="now-wind">—</dd>
+                <dt data-i18n="live_spot_mock_wind_gust">Raffica</dt><dd data-w1="now-gust">—</dd>
+                <dt data-i18n="live_spot_mock_wind_direction">Direzione</dt><dd data-w1="now-dir">—</dd>
+                <dt data-i18n="live_spot_mock_wind_name_label">Nome</dt><dd data-w1="now-name">—</dd>
+              </dl>
+            </article>
+            <article class="w1-card" style="grid-column: 1 / -1">
+              <h3 data-i18n="live_spot_mock_forecast_heading">+1h / +2h / +3h</h3>
+              <div class="w1-fc">
+                <article>
+                  <span data-i18n="live_spot_mock_fc_1">+1h</span>
+                  <strong data-w1="fc1-wind">—</strong>
+                  <em data-w1="fc1-gust" hidden></em>
+                  <b class="w1-fc-dir" data-w1="fc1-dir"></b>
+                </article>
+                <article>
+                  <span data-i18n="live_spot_mock_fc_2">+2h</span>
+                  <strong data-w1="fc2-wind">—</strong>
+                  <em data-w1="fc2-gust" hidden></em>
+                  <b class="w1-fc-dir" data-w1="fc2-dir"></b>
+                </article>
+                <article>
+                  <span data-i18n="live_spot_mock_fc_3">+3h</span>
+                  <strong data-w1="fc3-wind">—</strong>
+                  <em data-w1="fc3-gust" hidden></em>
+                  <b class="w1-fc-dir" data-w1="fc3-dir"></b>
+                </article>
+              </div>
+            </article>
+          </div>
+          <p class="w1-next" data-w1-next hidden data-i18n="nuova_ux_w1_next">Sei uscito? Compila la sessione.</p>
+        </section>
+        <details class="nuova-ux-slot nuova-ux-slot--appear" data-slot="w4" data-window-slot aria-labelledby="w4-title">
+          <summary class="nuova-ux-slot__summary">
+            <p class="nuova-ux-slot__id">W4</p>
+            <div>
+              <h2 class="nuova-ux-slot__name" id="w4-title" data-i18n="nuova_ux_w4_title">KiteAware</h2>
+              <p class="w4-tease" data-w4-hold data-i18n="nuova_ux_w4_hold">In arrivo</p>
+            </div>
+          </summary>
+          <button type="button" class="nuova-ux-slot__close" data-window-close data-i18n="nuova_ux_close" data-i18n-aria="nuova_ux_close">Chiudi</button>
+        </details>
+        </div>
+        <div class="nuova-ux-col nuova-ux-col--session">
+        <details class="nuova-ux-slot nuova-ux-slot--appear" data-slot="w2" data-window-slot aria-labelledby="w2-title">
+          <summary class="nuova-ux-slot__summary">
+            <p class="nuova-ux-slot__id">W2</p>
+            <h2 class="nuova-ux-slot__name" id="w2-title" data-i18n="nuova_ux_w2_title">Sessione</h2>
+          </summary>
+          <button type="button" class="nuova-ux-slot__close" data-window-close data-i18n="nuova_ux_close" data-i18n-aria="nuova_ux_close">Chiudi</button>
+          <form class="w2-form" data-w2-form novalidate>
+            <label class="w2-field" data-w2-field="location">
+              <span data-i18n="label_location">Spot</span>
+              <input data-w2="location" autocomplete="off" data-i18n-placeholder="ph_location">
+            </label>
+            <label class="w2-field" data-w2-field="weight" data-w2-required>
+              <span data-i18n="label_weight">Peso</span>
+              <input data-w2="weight" inputmode="numeric" autocomplete="off" data-i18n-placeholder="ph_weight">
+            </label>
+            <label class="w2-field" data-w2-field="level" data-w2-required>
+              <span data-i18n="label_level">Livello</span>
+              <input data-w2="level" data-option-cat="level" autocomplete="off">
+              <ul class="w2-combo-list" data-w2-list="level" hidden></ul>
+            </label>
+            <label class="w2-field">
+              <span data-i18n="label_gender">Genere</span>
+              <input data-w2="gender" data-option-cat="gender" autocomplete="off">
+              <ul class="w2-combo-list" data-w2-list="gender" hidden></ul>
+            </label>
+            <label class="w2-field" data-w2-field="board" data-w2-required>
+              <span data-i18n="label_board">Tipo tavola</span>
+              <input data-w2="board" data-option-cat="board" autocomplete="off">
+              <ul class="w2-combo-list" data-w2-list="board" hidden></ul>
+            </label>
+            <label class="w2-field">
+              <span data-i18n="label_board_size">Misura tavola</span>
+              <input data-w2="boardSize" data-option-cat="boardSize" autocomplete="off">
+              <ul class="w2-combo-list" data-w2-list="boardSize" hidden></ul>
+            </label>
+            <label class="w2-field" data-w2-appear="boardSizeOther" hidden>
+              <span data-i18n="nuova_ux_board_size_other">Misura tavola libera (se Other)</span>
+              <input data-w2="boardSizeOther" autocomplete="off" data-i18n-placeholder="ph_board_size_custom">
+            </label>
+            <label class="w2-field">
+              <span data-i18n="label_brand">Marca</span>
+              <input data-w2="brand" data-option-cat="brand" autocomplete="off">
+              <ul class="w2-combo-list" data-w2-list="brand" hidden></ul>
+            </label>
+            <label class="w2-field">
+              <span data-i18n="label_model">Modello</span>
+              <input data-w2="model" data-option-cat="model" autocomplete="off">
+              <ul class="w2-combo-list" data-w2-list="model" hidden></ul>
+            </label>
+            <label class="w2-field" data-w2-appear="modelOther" hidden>
+              <span data-i18n="nuova_ux_model_other">Modello libero (se Other)</span>
+              <input data-w2="modelOther" autocomplete="off" data-i18n-placeholder="ph_model_custom">
+            </label>
+            <label class="w2-field" data-w2-field="kite" data-w2-required>
+              <span data-i18n="label_kite_size">Misura vela</span>
+              <input data-w2="kite" inputmode="numeric" autocomplete="off" data-i18n-placeholder="ph_kite_size">
+            </label>
+            <label class="w2-field">
+              <span data-i18n="label_water">Acqua</span>
+              <input data-w2="water" data-option-cat="water" autocomplete="off">
+              <ul class="w2-combo-list" data-w2-list="water" hidden></ul>
+            </label>
+            <label class="w2-field" data-w2-field="wind" data-w2-required>
+              <span data-i18n="label_wind">Vento percepito</span>
+              <input data-w2="wind" inputmode="numeric" autocomplete="off" data-i18n-placeholder="ph_wind">
+            </label>
+            <label class="w2-field" data-w2-field="result" data-w2-required>
+              <span data-i18n="label_result">Esito</span>
+              <input data-w2="result" data-option-cat="result" autocomplete="off">
+              <ul class="w2-combo-list" data-w2-list="result" hidden></ul>
+            </label>
+            <label class="w2-field">
+              <span data-i18n="label_notes">Note</span>
+              <textarea data-w2="note" rows="3" data-i18n-placeholder="ph_notes"></textarea>
+            </label>
+            <p class="w2-err" data-w2-err hidden></p>
+            <div class="w2-actions">
+              <button type="submit" data-i18n="btn_send">Invia sessione</button>
+              <p class="w2-thanks" data-w2-thanks hidden></p>
+            </div>
+          </form>
+        </details>
+        <details class="nuova-ux-slot nuova-ux-slot--popup" data-slot="w3" data-window-slot hidden aria-labelledby="w3-title">
+          <summary class="nuova-ux-slot__summary">
+            <p class="nuova-ux-slot__id">W3</p>
+            <h2 class="w3-line w3-line--shout" id="w3-title" data-i18n="nuova_ux_thanks_rider">Grazie Rider</h2>
+          </summary>
+          <p class="w3-line w3-line--body" data-w3-safe data-i18n="nuova_ux_thanks_safe">I tuoi dati sono al sicuro per la prossima sessione.</p>
+          <p class="w3-line w3-line--shout" data-w3-wind data-i18n="nuova_ux_thanks_wind">Buon vento!</p>
+          <a class="w3-wa" data-wa-consent hidden href="#" rel="noopener noreferrer" data-i18n="nuova_ux_wa_open">Apri WhatsApp</a>
+          <button type="button" class="nuova-ux-slot__close" data-window-close data-i18n="nuova_ux_close" data-i18n-aria="nuova_ux_close">Chiudi</button>
+        </details>
+        </div>
+      </div>
+      <button type="button" class="nuova-ux-how-open" data-how-open data-i18n="nuova_ux_how_open" data-i18n-aria="nuova_ux_how_open">Come</button>
+    </div>
+    <dialog class="nuova-ux-how" data-slot="how" data-how aria-labelledby="how-title">
+      <div class="nuova-ux-how__sheet">
+        <span class="nuova-ux-how__handle" aria-hidden="true"></span>
+        <header class="nuova-ux-how__head">
+          <h2 id="how-title" data-i18n="nuova_ux_how_title">Tre cose</h2>
+          <button type="button" data-how-close data-i18n="nuova_ux_close" data-i18n-aria="nuova_ux_close">Chiudi</button>
+        </header>
+        <ul class="nuova-ux-how__list">
+          <li>
+            <strong data-i18n="nuova_ux_how_what_k">Cosa fa</strong>
+            <p data-i18n="nuova_ux_how_what">Ti mostriamo il vento dello spot che scegli. Così com'è.</p>
+          </li>
+          <li>
+            <strong data-i18n="nuova_ux_how_why_k">A che serve</strong>
+            <p data-i18n="nuova_ux_how_why">Controlli prima di uscire. Poi, se vuoi, racconti la sessione.</p>
+          </li>
+          <li>
+            <strong data-i18n="nuova_ux_how_compile_k">Come si fa</strong>
+            <p data-i18n="nuova_ux_how_compile">1. Cerca lo spot. 2. Compila i campi rossi. 3. Invia.</p>
+          </li>
+        </ul>
+      </div>
+    </dialog>
+    <script src="connectors/cutover_flag_v1.js?v=20260920c"></script>
+    <script src="connectors/ports_v1.js?v=20260920h"></script>
+    <script src="/translations.js"></script>
+    <script src="/ui-lab/mock-ui/ventolive_i18n_v1.js"></script>
+    <script src="i18n/catalog_v1.js?v=20260920j"></script>
+    <script src="i18n/apply_v1.js?v=20260917i"></script>
+    <script src="/ui-lab/mock-ui/ventolive_api_routing_v1.js"></script>
+    <script src="/ui-lab/mock-ui/server_contract_passive_v1.js"></script>
+    <script src="/ui-lab/mock-ui/live_spot_candidates_adapter_v1.js"></script>
+    <script src="/ui-lab/mock-ui/static_data.js"></script>
+    <script src="/ui-lab/mock-ui/wind_ui_visual_presentation_v1.js"></script>
+    <script src="/f4_wind_name/f4_wind_name_v1.js?v=20260917m"></script>
+    <script src="w1/expose_display_v1.js"></script>
+    <script src="connectors/wind_from_a.js?v=20260917k"></script>
+    <script src="connectors/transport_v1.js?v=20260920b"></script>
+    <script src="w2/payload_legacy_v1.js"></script>
+    <script src="memory/local_convenience_v1.js"></script>
+    <script src="windows/slot_window_v1.js"></script>
+    <script src="w1/w1.js?v=20260920g"></script>
+    <script src="w2/w2.js?v=20260920f"></script>
+    <script src="w3/w3.js?v=20260918d"></script>
+    <script src="connectors/sheet_control_v1.js?v=20260920a"></script>
+    <script src="connectors/whatsapp_consent_v1.js?v=20260920a"></script>
+    <script src="w4/w4.js"></script>
+    <script src="how/how.js?v=20260920g"></script>
+    <script src="connectors/cutover_face_v1.js?v=20260920d"></script>
+  </body>
+</html>

@@ -1,0 +1,68 @@
+.w2-form { display: grid; gap: 0.7rem; }
+.w2-field { display: flex; flex-direction: column; gap: 0.25rem; position: relative; }
+.w2-field[hidden] { display: none; }
+.w2-field input,
+.w2-field textarea {
+  font: inherit;
+  font-size: 16px;
+  padding: 0.5rem 0.65rem;
+  border: 2px solid rgba(26, 26, 26, 0.55);
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.42);
+  color: var(--ink);
+  -webkit-appearance: none;
+  appearance: none;
+}
+.w2-field[data-w2-required] input,
+.w2-field[data-w2-required] textarea { border-color: var(--danger); }
+.w2-field.is-ok input,
+.w2-field.is-ok textarea { border-color: var(--ok); }
+.w2-field.is-missing input,
+.w2-field.is-missing textarea { border-color: var(--danger); }
+.w2-combo-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: 12;
+  background: var(--panel-opaque);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  border: 1px solid rgba(31, 78, 121, 0.45);
+  border-radius: var(--radius-sm);
+  max-height: min(16rem, 45vh);
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  box-shadow: var(--shadow);
+}
+.w2-combo-list[hidden] { display: none; }
+.w2-combo-list button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  border: 0;
+  background: transparent;
+  padding: 0.4rem 0.6rem;
+  cursor: pointer;
+}
+.w2-combo-list button:hover { background: var(--hover); }
+.w2-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; }
+.w2-actions button {
+  font: inherit;
+  border: 0;
+  border-radius: var(--radius-sm);
+  min-height: 2.75rem;
+  padding: 0.55rem 0.9rem;
+  background: var(--accent);
+  color: var(--on-accent);
+  cursor: pointer;
+}
+.w2-thanks { color: var(--ok); font-weight: 600; }
+.w2-err { color: var(--danger); font-size: 0.9rem; }
+#slot-w2.nuova-ux-slot--dormant { opacity: 1; }

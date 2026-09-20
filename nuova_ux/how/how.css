@@ -1,0 +1,111 @@
+.nuova-ux-how-open {
+  position: fixed;
+  z-index: 30;
+  left: 50%;
+  bottom: max(0.85rem, env(safe-area-inset-bottom));
+  transform: translateX(-50%);
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  padding: 0.55rem 1.15rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font: inherit;
+  font-size: 1rem;
+  font-weight: 650;
+  letter-spacing: 0.02em;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+.nuova-ux-how-open:focus {
+  outline: 2px solid var(--on-accent);
+  outline-offset: 2px;
+}
+.nuova-ux-how {
+  width: min(32rem, 100%);
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+}
+.nuova-ux-how::backdrop {
+  background: rgba(15, 30, 45, 0.42);
+}
+.nuova-ux-how[open] {
+  display: block;
+  position: fixed;
+  inset: auto 0 0 0;
+  margin: 0 auto;
+}
+.nuova-ux-how__sheet {
+  background: var(--panel-opaque);
+  border-radius: var(--radius) var(--radius) 0 0;
+  box-shadow: var(--shadow);
+  max-height: min(70dvh, 32rem);
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 0.35rem 1.1rem max(1.1rem, env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling: touch;
+}
+.nuova-ux-how__handle {
+  display: block;
+  width: 2.4rem;
+  height: 0.28rem;
+  margin: 0.45rem auto 0.65rem;
+  border-radius: 999px;
+  background: var(--line);
+}
+.nuova-ux-how__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 0 0 0.7rem;
+}
+.nuova-ux-how__head h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.nuova-ux-how__head button {
+  flex: 0 0 auto;
+  min-height: 2.75rem;
+  min-width: 2.75rem;
+  padding: 0.35rem 0.7rem;
+  font: inherit;
+  font-size: 0.95rem;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.nuova-ux-how__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+.nuova-ux-how__list li {
+  margin: 0;
+}
+.nuova-ux-how__list strong {
+  display: block;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.2rem;
+}
+.nuova-ux-how__list p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.35;
+  font-weight: 600;
+}

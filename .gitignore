@@ -1,0 +1,76 @@
+# NUOVA_UX public git — only the rider face.
+# Everything else stays on this disk and must never be committed.
+
+# --- never public ---
+.env
+*.env
+*.local
+dam/
+dam/.env
+dam/.env.save
+public_dam_gateway/
+_handoff_server_live_spot/
+legacy_sierra/
+ingest_api/
+fabbrica_output/
+tabelle_kite_ordinate/
+docs/
+ux_lab/
+.cursor/
+node_modules/
+__pycache__/
+*.log
+*.jsonl
+*.bak*
+*.BACKUP_*
+*.DS_Store
+
+# old face / old site copies
+app.js
+styles.css
+live_spot.html
+index_legacy_backup.html
+ui_extras.safe.js
+ui_readonly.safe.js
+pwa.js
+manifest.json
+assets/
+icons/
+ui-lab/mock-engine/
+ui-lab/SPEC_*.md
+ui-lab/README.md
+ui-lab/mock-ui/*
+!ui-lab/mock-ui/ventolive_api_routing_v1.js
+!ui-lab/mock-ui/ventolive_i18n_v1.js
+!ui-lab/mock-ui/server_contract_passive_v1.js
+!ui-lab/mock-ui/live_spot_candidates_adapter_v1.js
+!ui-lab/mock-ui/static_data.js
+!ui-lab/mock-ui/wind_ui_visual_presentation_v1.js
+
+# Via del Vento / F4 tooling (not the tiny client helper)
+f4_wind_name/*.py
+f4_wind_name/*.json
+
+# local operator / tests / canons
+nuova_ux/tests/
+nuova_ux/cutover/
+nuova_ux/how/*.md
+package.json
+package-lock.json
+tests/
+audit/
+google_sheet_ingest_reference.py
+google_sheets_webhook.gs
+test_google_sheet_ingest_reference.py
+APP_JS_MAP.md
+CODEBASE_MAP.md
+INGEST_SPEC.md
+ANTI_BREAK_BASELINE.md
+BIBBIA_PROBLEMI_UX_20260509.md
+MODULE_BOUNDARIES.md
+NUOVA_UX_CANON_V1.md
+SPEC_LOCAL_TRIANGULATION_ENGINE_V1.md
+UX_FACE_SHELL_CANON_V1.md
+VIA_DEL_VENTO_FC_GUST_CANON_V1.md
+VIA_DEL_VENTO_WIND_NAME_CANON_V1.md
+main

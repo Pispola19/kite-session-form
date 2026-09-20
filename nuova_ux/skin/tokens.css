@@ -1,0 +1,32 @@
+/* NUOVA_UX — pelle. Cambiare qui non tocca W1, W2, W3, payload, prese A/B. */
+:root {
+  --ink: #1a1a1a;
+  --muted: #5c5c5c;
+  --paper: #f6f3ee;
+  --panel: rgba(255, 255, 255, 0.14);
+  --panel-opaque: rgba(228, 244, 252, 0.97);
+  --panel-blur: 0.55rem;
+  --field: rgba(255, 255, 255, 0.08);
+  --line: rgba(255, 255, 255, 0.45);
+  --hover: rgba(255, 255, 255, 0.28);
+  --ok: #2f7d4a;
+  --danger: #b42318;
+  --caution: #b54708;
+  --accent: #1f4e79;
+  --on-accent: #fff;
+  --shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --font: "Segoe UI", system-ui, sans-serif;
+  --font-size: clamp(0.9375rem, 0.9rem + 0.22vw, 1.0625rem);
+  --font-size-title: clamp(1.15rem, 1rem + 0.55vw, 1.5rem);
+  --font-size-slot: clamp(1rem, 0.94rem + 0.28vw, 1.2rem);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --space: clamp(0.75rem, 3.2vw, 1.35rem);
+  --space-slot: 0.85rem 0.95rem 1rem;
+  --shell-max: min(92vw, 82rem);
+  --slot-gap: clamp(0.6rem, 1.2vw, 1rem);
+  --bg-image: url("KITER_SFONDO_ESEMPIO.jpg?v=20260917e");
+  --bg-size: cover;
+  --bg-position: center;
+  --bg-repeat: no-repeat;
+}
