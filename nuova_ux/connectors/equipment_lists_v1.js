@@ -48,7 +48,11 @@
     if (type === "surfboard") return /^\d+\s*'\s*\d{1,2}\s*"?$/.test(n);
     if (type === "foil") {
       if (looksLikeLxW(n)) return true;
-      return /^\d+(?:[.,]\d+)?\s*l(?:itri|iters)?$/i.test(n);
+      if (/^\d+(?:[.,]\d+)?\s*l(?:itri|iters)?$/i.test(n)) return true;
+      const cm = n.match(/^(\d+(?:[.,]\d+)?)\s*cm$/i);
+      if (!cm) return false;
+      const val = parseFloat(String(cm[1]).replace(",", "."));
+      return val >= 50 && val <= 200;
     }
     return false;
   }

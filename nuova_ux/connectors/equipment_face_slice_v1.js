@@ -24,6 +24,7 @@
     "Bali Hai Kiteboards",
     "Ben Wilson Surf",
     "Best",
+    "Big Blue Boards",
     "big-air",
     "Blade",
     "Brainchild Production",
@@ -126,6 +127,7 @@
       "Wing"
     ],
     "Airwave Kiteboarding": [
+      "Alma",
       "Wave"
     ],
     "AK Durable Supply Co.": [
@@ -167,6 +169,9 @@
       "SWOX",
       "TRIO",
       "ZEPHYR"
+    ],
+    "Big Blue Boards": [
+      "Blue"
     ],
     "big-air": [
       "Core Pace Pro",
@@ -704,6 +709,25 @@
       "6'2",
       "6'3",
       "6'4"
+    ],
+    "foil": [
+      "100cm",
+      "104cm",
+      "110cm",
+      "120cm",
+      "130cm",
+      "140cm",
+      "150cm",
+      "16L",
+      "50cm",
+      "60cm",
+      "65cm",
+      "70cm",
+      "75cm",
+      "80cm",
+      "85cm",
+      "90cm",
+      "95cm"
     ]
   }
 });
