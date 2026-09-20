@@ -5,7 +5,7 @@
 (function initNuovaUxW1(global) {
   "use strict";
 
-  const DEBOUNCE_MS = 280;
+  const DEBOUNCE_MS = 160;
 
   function $(sel, root) {
     return (root || document).querySelector(sel);
@@ -223,13 +223,19 @@
     });
   }
 
-  function renderPicker(listEl, groups, onPick) {
+  function renderPicker(listEl, groups, onPick, waiting) {
     listEl.innerHTML = "";
     const recents = (groups && groups.recents) || [];
     const world = (groups && groups.world) || [];
-    if (!recents.length && !world.length) {
+    if (!recents.length && !world.length && !waiting) {
       listEl.hidden = true;
       return;
+    }
+    if (waiting && !world.length) {
+      const wait = document.createElement("li");
+      wait.className = "w1-list__banner";
+      wait.textContent = tt("nuova_ux_spot_wait");
+      listEl.appendChild(wait);
     }
     if (groups && groups.sameName) {
       const banner = document.createElement("li");
@@ -259,6 +265,9 @@
     let lastExposed = null;
     let lastDisplay = null;
     let lastGeo = null;
+    let searchSeq = 0;
+    let waitingPlaces = false;
+    let searchAbort = null;
 
     setStage(root, "idle");
 
@@ -270,7 +279,7 @@
     }
 
     function paintList() {
-      renderPicker(listEl, groupsFor(lastTyped, lastCandidates), onPick);
+      renderPicker(listEl, groupsFor(lastTyped, lastCandidates), onPick, waitingPlaces);
     }
 
     function publishSpot(location, openSession) {
@@ -323,22 +332,39 @@
       lastTyped = typed;
       if (!String(typed || "").trim()) {
         lastCandidates = [];
+        waitingPlaces = false;
+        if (searchAbort) searchAbort.abort();
         paintList();
         return;
       }
-      const res = await fromA.fetchSpotCandidates(typed);
-      lastCandidates = res.candidates || [];
+      paintList();
+      const seq = (searchSeq += 1);
+      if (searchAbort) searchAbort.abort();
+      searchAbort = typeof global.AbortController === "function" ? new global.AbortController() : null;
+      waitingPlaces = true;
+      paintList();
+      try {
+        const res = await fromA.fetchSpotCandidates(typed, searchAbort ? { signal: searchAbort.signal } : {});
+        if (seq !== searchSeq) return;
+        lastCandidates = res.candidates || [];
+      } catch (_err) {
+        if (seq !== searchSeq) return;
+      }
+      waitingPlaces = false;
       paintList();
     }
 
     input.addEventListener("focus", function () {
       lastTyped = input.value;
       paintList();
+      if (String(input.value || "").trim()) searchTyped(input.value);
     });
 
     input.addEventListener("input", function () {
       const typed = input.value;
-      publishSpot(typed, String(typed || "").trim() !== "");
+      lastTyped = typed;
+      paintList();
+      publishSpot(typed, false);
       window.clearTimeout(debounceTimer);
       debounceTimer = window.setTimeout(function () {
         searchTyped(typed);

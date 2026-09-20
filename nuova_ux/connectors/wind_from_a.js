@@ -97,7 +97,21 @@
     return (r && r.FETCH_DEFAULTS) || { cache: "no-store" };
   }
 
-  async function fetchSpotCandidates(query) {
+  function normalizeCandidate(raw) {
+    if (!raw || typeof raw !== "object") return null;
+    const name = String(raw.name || raw.label || "").trim();
+    if (!name) return null;
+    return {
+      name: name,
+      label: String(raw.label || name).trim(),
+      lat: raw.lat,
+      lon: raw.lon,
+      country: String(raw.country || "").trim(),
+      region: String(raw.region || raw.admin1 || "").trim()
+    };
+  }
+
+  async function fetchSpotCandidates(query, opts) {
     if (!windPlugged()) return { ok: true, candidates: [], unplugged: true };
     const r = routing();
     const adapter = candidatesAdapter();
@@ -105,7 +119,9 @@
       return { ok: false, candidates: [] };
     }
     const url = r.canonicalSpotCandidatesUrl(query);
-    const res = await global.fetch(url, fetchDefaults());
+    const fetchOpts = Object.assign({}, fetchDefaults());
+    if (opts && opts.signal) fetchOpts.signal = opts.signal;
+    const res = await global.fetch(url, fetchOpts);
     if (!res.ok) return { ok: false, candidates: [] };
     const payload = await res.json();
     const normalized =
@@ -113,7 +129,10 @@
         ? adapter.normalizeCandidatesPayload(payload)
         : payload;
     const list = normalized && Array.isArray(normalized.candidates) ? normalized.candidates : [];
-    return { ok: true, candidates: list };
+    return {
+      ok: true,
+      candidates: list.map(normalizeCandidate).filter(Boolean)
+    };
   }
 
   function prefixFilter(candidates, typed) {

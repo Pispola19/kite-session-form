@@ -7,7 +7,7 @@
 
   const WEBHOOK_URL =
     "https://script.google.com/macros/s/AKfycbyBvRK58kLL13TwOPPNqyAmNn-eRb-lYKzHsfKr1OG0UAVzHzyhG1l2T_svP_it3IICag/exec";
-  const TIMEOUT_MS = 25000;
+  const TIMEOUT_MS = 8000;
 
   function ports() {
     return global.NuovaUxPortsV1 || {};
@@ -51,56 +51,35 @@
   }
 
   function postRow(row) {
-    const doc = global.document;
-    if (!doc || !doc.body) {
-      return Promise.resolve({ ok: false, control: true, error: "no_document" });
+    if (typeof global.fetch !== "function") {
+      return Promise.resolve({ ok: false, control: true, error: "fetch_missing" });
     }
-    return new Promise(function (resolve) {
-      const targetName = "nuova-ux-sheet-" + Date.now();
-      const iframe = doc.createElement("iframe");
-      const postForm = doc.createElement("form");
-      let settled = false;
-      const settle = function (value) {
-        if (settled) return;
-        settled = true;
-        try {
-          postForm.remove();
-        } catch (_e) {}
-        try {
-          iframe.remove();
-        } catch (_e2) {}
-        resolve(value);
-      };
-      const timer = global.setTimeout(function () {
-        settle({ ok: false, control: true, error: "sheet_timeout" });
-      }, TIMEOUT_MS);
-      try {
-        iframe.name = targetName;
-        iframe.setAttribute("aria-hidden", "true");
-        iframe.style.display = "none";
-        iframe.addEventListener("load", function () {
-          global.clearTimeout(timer);
-          settle({ ok: true, control: true, probable: true });
-        });
-        postForm.method = "POST";
-        postForm.action = WEBHOOK_URL;
-        postForm.target = targetName;
-        postForm.style.display = "none";
-        Object.keys(row).forEach(function (key) {
-          const input = doc.createElement("input");
-          input.type = "hidden";
-          input.name = key;
-          input.value = row[key] == null ? "" : String(row[key]);
-          postForm.appendChild(input);
-        });
-        doc.body.appendChild(iframe);
-        doc.body.appendChild(postForm);
-        postForm.submit();
-      } catch (_err) {
-        global.clearTimeout(timer);
-        settle({ ok: false, control: true, error: "sheet_failed" });
-      }
+    const body = new URLSearchParams();
+    Object.keys(row).forEach(function (key) {
+      body.append(key, row[key] == null ? "" : String(row[key]));
     });
+    const controller = typeof global.AbortController === "function" ? new global.AbortController() : null;
+    const timer = global.setTimeout(function () {
+      if (controller) controller.abort();
+    }, TIMEOUT_MS);
+    const opts = {
+      method: "POST",
+      mode: "no-cors",
+      body: body,
+      keepalive: true,
+      cache: "no-store"
+    };
+    if (controller) opts.signal = controller.signal;
+    return global
+      .fetch(WEBHOOK_URL, opts)
+      .then(function () {
+        global.clearTimeout(timer);
+        return { ok: true, control: true, opaque: true };
+      })
+      .catch(function () {
+        global.clearTimeout(timer);
+        return { ok: false, control: true, error: "sheet_failed" };
+      });
   }
 
   function mirror(legacy, opts) {
