@@ -47,11 +47,21 @@
   flex-direction: column;
   align-items: center;
   margin: 0;
-  padding: 1.45rem 1.5rem 1rem;
+  padding: 1.15rem 1.5rem 1rem;
   text-align: center;
   background: #1e7eb8;
   color: #b8f5c8;
   border-radius: var(--radius);
+}
+.w3-xray {
+  display: block;
+  width: auto;
+  height: clamp(9.75rem, 26vw, 12.25rem);
+  margin: 0 0 0.7rem;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 0.35rem;
+  box-shadow: 0 0 0 1px rgba(184, 245, 200, 0.28);
 }
 .w3-line {
   width: 100%;
