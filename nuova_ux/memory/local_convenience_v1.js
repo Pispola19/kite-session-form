@@ -16,10 +16,7 @@
     "board",
     "boardSize",
     "boardSizeOther",
-    "brand",
-    "model",
-    "modelOther",
-    "kite"
+    "brand"
   ]);
   const WEIGHT_MIN = 20;
   const WEIGHT_MAX = 200;

@@ -230,16 +230,7 @@
         const el = root.querySelector('[data-w2="boardSizeOther"]');
         return el ? el.value : "";
       })(),
-      brand: comboVal(root, "brand", "brand"),
-      model: comboVal(root, "model", "model"),
-      modelOther: (function () {
-        const el = root.querySelector('[data-w2="modelOther"]');
-        return el ? el.value : "";
-      })(),
-      kite: (function () {
-        const el = root.querySelector('[data-w2="kite"]');
-        return el ? el.value : "";
-      })()
+      brand: comboVal(root, "brand", "brand")
     };
   }
 
@@ -268,9 +259,6 @@
     paintStoredField(root, "boardSize", "boardSize", kit.boardSize);
     paintStoredField(root, "boardSizeOther", "", kit.boardSizeOther);
     paintStoredField(root, "brand", "brand", kit.brand);
-    paintStoredField(root, "model", "model", kit.model);
-    paintStoredField(root, "modelOther", "", kit.modelOther);
-    paintStoredField(root, "kite", "", kit.kite);
   }
 
   function saveKit(root) {
