@@ -37,12 +37,33 @@
     return out;
   }
 
-  function cleanSizeMap(raw) {
+  function looksLikeLxW(name) {
+    return /^\d+(?:[.,]\d+)?\s*[x×]\s*\d+(?:[.,]\d+)?(?:\s*cm)?$/i.test(String(name || "").trim());
+  }
+
+  function looksLikeBoardSize(type, name) {
+    const n = String(name || "").trim();
+    if (!n) return false;
+    if (type === "twintip") return looksLikeLxW(n) && !/\bcm\b/i.test(n);
+    if (type === "surfboard") return /^\d+\s*'\s*\d{1,2}\s*"?$/.test(n);
+    if (type === "foil") {
+      if (looksLikeLxW(n)) return true;
+      return /^\d+(?:[.,]\d+)?\s*l(?:itri|iters)?$/i.test(n);
+    }
+    return false;
+  }
+
+  function cleanSizeMap(raw, base) {
     const src = raw && typeof raw === "object" ? raw : {};
+    const fromBase = base && typeof base === "object" ? base : {};
     const out = {};
     BOARD_TYPES.forEach(function (type) {
-      const list = cleanNames(src[type]);
-      if (list.length) out[type] = list;
+      const keep = function (label) {
+        return looksLikeBoardSize(type, label);
+      };
+      const fromSlice = cleanNames(src[type]).filter(keep);
+      const merged = cleanNames((fromBase[type] || []).concat(fromSlice)).filter(keep);
+      if (merged.length) out[type] = merged;
     });
     return out;
   }
@@ -56,7 +77,7 @@
     }
     const brands = cleanNames(slice.BRAND_LIST);
     const models = cleanModelMap(slice.MODELS_BY_BRAND);
-    const sizes = cleanSizeMap(slice.BOARD_SIZE_BY_TYPE);
+    const sizes = cleanSizeMap(slice.BOARD_SIZE_BY_TYPE, base.BOARD_SIZE_BY_TYPE);
     if (!brands.length) {
       return { applied: false, reason: "empty" };
     }
@@ -64,9 +85,7 @@
       CANONICAL_VALUES: base.CANONICAL_VALUES,
       BRAND_LIST: Object.freeze(brands),
       MODELS_BY_BRAND: Object.freeze(models),
-      BOARD_SIZE_BY_TYPE: Object.freeze(
-        Object.assign({}, base.BOARD_SIZE_BY_TYPE || {}, sizes)
-      )
+      BOARD_SIZE_BY_TYPE: Object.freeze(sizes)
     });
     return { applied: true, reason: "slice" };
   }
@@ -75,6 +94,7 @@
 
   global.NuovaUxEquipmentListsV1 = Object.freeze({
     applyOntoMock: applyOntoMock,
+    looksLikeBoardSize: looksLikeBoardSize,
     lastApply: result
   });
 })(typeof window !== "undefined" ? window : globalThis);
