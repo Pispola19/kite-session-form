@@ -1,6 +1,7 @@
 /**
- * NUOVA_UX — WhatsApp = consenso dopo durable. Non è B. Non si apre da solo.
- * Stesso numero già in opera. Non parte da 127.0.0.1. Non parte sul mock.
+ * NUOVA_UX — WhatsApp dopo durable. Non è B.
+ * Non parte all'invio. Parte quando il rider chiude il grazie (stesso tap).
+ * Non parte da 127.0.0.1. Non parte sul mock.
  */
 (function initNuovaUxWhatsAppConsent(global) {
   "use strict";
@@ -21,6 +22,10 @@
     ["label_notes", "note"]
   ]);
 
+  let pendingHref = "";
+  let launched = false;
+  let boundRoot = null;
+
   function ports() {
     return global.NuovaUxPortsV1 || {};
   }
@@ -36,6 +41,7 @@
   }
 
   function skip(reason) {
+    pendingHref = "";
     return { ok: true, skipped: true, consent: true, reason: reason || "skipped" };
   }
 
@@ -67,10 +73,35 @@
     anchor.removeAttribute("href");
   }
 
+  function launch(loc) {
+    if (launched || !pendingHref) return { ok: false, skipped: true, reason: "idle" };
+    launched = true;
+    const href = pendingHref;
+    pendingHref = "";
+    const where = loc || global.location;
+    if (where) where.href = href;
+    return { ok: true, href: href };
+  }
+
+  function bindRoot(root) {
+    if (!root || boundRoot === root) return;
+    boundRoot = root;
+    const closeBtn = root.querySelector("[data-window-close]");
+    if (closeBtn) {
+      closeBtn.addEventListener("click", function () {
+        launch();
+      });
+    }
+    root.addEventListener("toggle", function () {
+      if (!root.open) launch();
+    });
+  }
+
   function offer(root, detail, loc) {
     const slot = root || (global.document && global.document.querySelector("[data-slot=w3]"));
     const anchor = slot && slot.querySelector("[data-wa-consent]");
     const payload = detail && detail.legacy;
+    bindRoot(slot);
     if (!plugged()) {
       hide(anchor);
       return skip("unplugged");
@@ -87,10 +118,13 @@
       hide(anchor);
       return skip("no_button");
     }
+    const href = consentHref(payload);
+    pendingHref = href;
+    launched = false;
     anchor.hidden = false;
-    anchor.setAttribute("href", consentHref(payload));
+    anchor.setAttribute("href", href);
     anchor.setAttribute("rel", "noopener noreferrer");
-    return { ok: true, consent: true, href: anchor.getAttribute("href") };
+    return { ok: true, consent: true, href: href };
   }
 
   function onDurable(ev) {
@@ -109,7 +143,8 @@
     summary,
     consentHref,
     offer,
-    skip
+    skip,
+    launch
   });
 
   boot();
