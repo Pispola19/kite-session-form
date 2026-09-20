@@ -103,6 +103,20 @@
     setAppear(root, "modelOther", comboVal(root, "model", "model") === "Other");
   }
 
+  function phoneFace() {
+    if (typeof global.matchMedia !== "function") return false;
+    try {
+      return global.matchMedia("(max-width: 55.99rem)").matches;
+    } catch (_e) {
+      return false;
+    }
+  }
+
+  function keepSessionOpen(root) {
+    if (!root || String(root.tagName || "").toUpperCase() !== "DETAILS") return;
+    if (phoneFace()) root.open = true;
+  }
+
   function openForCompile(root) {
     if (root && root.tagName === "DETAILS") root.open = true;
   }
@@ -172,8 +186,23 @@
 
   function resetAfterDurable(root) {
     if (!root) return;
-    root.querySelectorAll("[data-w2]").forEach(function (el) {
-      if (el.getAttribute("data-w2") === "location") return;
+    [
+      "wind",
+      "result",
+      "note",
+      "weight",
+      "level",
+      "gender",
+      "board",
+      "boardSize",
+      "boardSizeOther",
+      "brand",
+      "model",
+      "modelOther",
+      "kite"
+    ].forEach(function (name) {
+      const el = root.querySelector('[data-w2="' + name + '"]');
+      if (!el) return;
       el.value = "";
       el.removeAttribute("data-canonical");
     });
@@ -183,13 +212,75 @@
     root.querySelectorAll(".w2-combo-list").forEach(function (list) {
       list.hidden = true;
     });
-    const memory = global.NuovaUxLocalConvenienceV1;
-    const weightEl = root.querySelector('[data-w2="weight"]');
-    if (memory && weightEl) {
-      weightEl.value = memory.readStoredWeight() || "";
-    }
+    restoreKit(root);
     syncAppear(root);
-    if (root.tagName === "DETAILS") root.open = false;
+    if (root.tagName === "DETAILS") {
+      if (phoneFace()) root.open = true;
+      else root.open = false;
+    }
+  }
+
+  function kitSnapshot(root) {
+    return {
+      level: comboVal(root, "level", "level"),
+      gender: comboVal(root, "gender", "gender"),
+      board: comboVal(root, "board", "board"),
+      boardSize: comboVal(root, "boardSize", "boardSize"),
+      boardSizeOther: (function () {
+        const el = root.querySelector('[data-w2="boardSizeOther"]');
+        return el ? el.value : "";
+      })(),
+      brand: comboVal(root, "brand", "brand"),
+      model: comboVal(root, "model", "model"),
+      modelOther: (function () {
+        const el = root.querySelector('[data-w2="modelOther"]');
+        return el ? el.value : "";
+      })(),
+      kite: (function () {
+        const el = root.querySelector('[data-w2="kite"]');
+        return el ? el.value : "";
+      })()
+    };
+  }
+
+  function paintStoredField(root, name, category, value) {
+    const el = root.querySelector('[data-w2="' + name + '"]');
+    if (!el || value == null || String(value).trim() === "") return;
+    const apply = i18nApply();
+    if (category) {
+      el.setAttribute("data-canonical", String(value));
+      el.value = apply ? apply.optionLabel(category, value) : String(value);
+      if (!el.value) el.value = String(value);
+    } else {
+      el.value = String(value);
+    }
+  }
+
+  function restoreKit(root) {
+    const memory = global.NuovaUxLocalConvenienceV1;
+    if (!memory || !root) return;
+    const weightEl = root.querySelector('[data-w2="weight"]');
+    if (weightEl) weightEl.value = memory.readStoredWeight() || "";
+    const kit = typeof memory.readStoredKit === "function" ? memory.readStoredKit() : {};
+    paintStoredField(root, "level", "level", kit.level);
+    paintStoredField(root, "gender", "gender", kit.gender);
+    paintStoredField(root, "board", "board", kit.board);
+    paintStoredField(root, "boardSize", "boardSize", kit.boardSize);
+    paintStoredField(root, "boardSizeOther", "", kit.boardSizeOther);
+    paintStoredField(root, "brand", "brand", kit.brand);
+    paintStoredField(root, "model", "model", kit.model);
+    paintStoredField(root, "modelOther", "", kit.modelOther);
+    paintStoredField(root, "kite", "", kit.kite);
+  }
+
+  function saveKit(root) {
+    const memory = global.NuovaUxLocalConvenienceV1;
+    if (!memory) return;
+    const weightEl = root.querySelector('[data-w2="weight"]');
+    if (weightEl && typeof memory.writeStoredWeight === "function") {
+      memory.writeStoredWeight(weightEl.value);
+    }
+    if (typeof memory.writeStoredKit === "function") memory.writeStoredKit(kitSnapshot(root));
   }
 
   function readUiState(root) {
@@ -247,18 +338,21 @@
     if (!root || !api) return;
 
     root.classList.remove("nuova-ux-slot--dormant");
+    keepSessionOpen(root);
     const errEl = $("[data-w2-err]", root);
     const thanksEl = $("[data-w2-thanks]", root);
     const memory = global.NuovaUxLocalConvenienceV1;
-    const weightEl = $('[data-w2="weight"]', root);
 
-    if (memory && weightEl && !String(weightEl.value || "").trim()) {
-      weightEl.value = memory.readStoredWeight() || "";
-    }
-    if (memory && weightEl) {
-      weightEl.addEventListener("blur", function () {
-        memory.writeStoredWeight(weightEl.value);
-      });
+    restoreKit(root);
+    if (memory && typeof global.matchMedia === "function") {
+      try {
+        const mq = global.matchMedia("(max-width: 55.99rem)");
+        const onWidth = function () {
+          keepSessionOpen(root);
+        };
+        if (typeof mq.addEventListener === "function") mq.addEventListener("change", onWidth);
+        else if (typeof mq.addListener === "function") mq.addListener(onWidth);
+      } catch (_e) {}
     }
 
     attachCombo($('[data-w2="level"]', root), $('[data-w2-list="level"]', root), function () {
@@ -304,6 +398,25 @@
       return canonicalMap("result");
     }, "result");
 
+    [
+      "weight",
+      "level",
+      "gender",
+      "board",
+      "boardSize",
+      "boardSizeOther",
+      "brand",
+      "model",
+      "modelOther",
+      "kite"
+    ].forEach(function (name) {
+      const el = root.querySelector('[data-w2="' + name + '"]');
+      if (!el) return;
+      el.addEventListener("blur", function () {
+        saveKit(root);
+      });
+    });
+
     syncAppear(root);
 
     REQUIRED_PATHS.forEach(function (pair) {
@@ -320,7 +433,7 @@
       const loc = detail.location;
       const locInput = $('[data-w2="location"]', root);
       if (locInput && loc != null) locInput.value = loc;
-      if (detail.openSession) openForCompile(root);
+      if (detail.openSession && !phoneFace()) openForCompile(root);
     });
 
     const locInput = $('[data-w2="location"]', root);
@@ -411,6 +524,7 @@
             }
             return;
           }
+          saveKit(root);
           root.setAttribute("data-w2-last-session", legacy.session_id);
           if (typeof global.CustomEvent === "function") {
             document.dispatchEvent(

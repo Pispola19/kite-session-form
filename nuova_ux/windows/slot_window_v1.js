@@ -1,6 +1,6 @@
 /**
  * NUOVA_UX — finestra a comparsa.
- * Titolo: apre e può chiudere. Chiudi: chiude. W2 si apre anche quando si scrive lo spot in W1.
+ * Titolo: apre e può chiudere. Chiudi: chiude. Sul telefono W2 resta aperta.
  */
 (function initNuovaUxSlotWindow(global) {
   "use strict";

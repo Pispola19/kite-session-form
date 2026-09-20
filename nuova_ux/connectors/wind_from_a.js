@@ -176,9 +176,12 @@
     if (adapter && typeof adapter.windLatestQueryParams === "function") {
       extra = adapter.windLatestQueryParams(spotText, candidate);
     }
-    const spot = extra && extra.spot ? extra.spot : spotText;
+    extra = extra && typeof extra === "object" ? extra : {};
+    if (extra.lat == null) extra.lat = pickNum(candidate && candidate.lat);
+    if (extra.lon == null) extra.lon = pickNum(candidate && candidate.lon);
+    const spot = extra.spot ? extra.spot : spotText;
     const coords =
-      extra && extra.lat != null && extra.lon != null ? { lat: extra.lat, lon: extra.lon } : extra;
+      extra.lat != null && extra.lon != null ? { lat: extra.lat, lon: extra.lon } : extra;
     const url = r.canonicalWindLatestUrl(spot, coords);
     let payload = null;
     try {

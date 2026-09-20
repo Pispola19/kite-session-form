@@ -8,7 +8,19 @@
   const NAMES_KEY = "vento_live_recent_spots_v1";
   const RICH_KEY = "nuova_ux_recent_spots_rich_v1";
   const WEIGHT_KEY = "vento_live_rider_weight_kg_v1";
+  const KIT_KEY = "nuova_ux_rider_kit_v1";
   const LIMIT = 5;
+  const KIT_FIELDS = Object.freeze([
+    "level",
+    "gender",
+    "board",
+    "boardSize",
+    "boardSizeOther",
+    "brand",
+    "model",
+    "modelOther",
+    "kite"
+  ]);
   const WEIGHT_MIN = 20;
   const WEIGHT_MAX = 200;
 
@@ -208,10 +220,41 @@
     }
   }
 
+  function cleanKit(raw) {
+    const src = raw && typeof raw === "object" ? raw : {};
+    const out = {};
+    KIT_FIELDS.forEach(function (key) {
+      const value = src[key] == null ? "" : String(src[key]).trim();
+      if (value) out[key] = value;
+    });
+    return out;
+  }
+
+  function readStoredKit() {
+    return cleanKit(readJson(KIT_KEY, {}));
+  }
+
+  function writeStoredKit(raw) {
+    const kit = cleanKit(raw);
+    if (!Object.keys(kit).length) {
+      const store = storage();
+      if (!store) return false;
+      try {
+        store.removeItem(KIT_KEY);
+        return true;
+      } catch (_e) {
+        return false;
+      }
+    }
+    return writeJson(KIT_KEY, kit);
+  }
+
   global.NuovaUxLocalConvenienceV1 = Object.freeze({
     NAMES_KEY,
     RICH_KEY,
     WEIGHT_KEY,
+    KIT_KEY,
+    KIT_FIELDS,
     LIMIT,
     readNameRecents,
     writeNameRecents,
@@ -223,7 +266,9 @@
     pickerGroups,
     cleanRiderWeightKg,
     readStoredWeight,
-    writeStoredWeight
+    writeStoredWeight,
+    readStoredKit,
+    writeStoredKit
   });
 })(typeof window !== "undefined" ? window : globalThis);
 
