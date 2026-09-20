@@ -1,6 +1,6 @@
 /**
  * NUOVA_UX W2 — compilazione sessione → LegacyPayload. Mock durable in lab (non DAM live, non Google).
- * Liste da static_data (S1). Label via i18n; value payload resta canonico.
+ * Liste da MOCK_DATA (static_data oggi; fetta attrezzo quando ready). Label via i18n; value payload resta canonico.
  */
 (function initNuovaUxW2(global) {
   "use strict";
