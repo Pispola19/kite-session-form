@@ -8,6 +8,8 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-title" content="VENTO LIVE">
+    <link rel="manifest" href="home/manifest.webmanifest">
+    <link rel="apple-touch-icon" href="home/icon-192.png">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
     <title data-i18n="nuova_ux_page_title">NUOVA_UX</title>
     <link rel="stylesheet" href="skin/tokens.css?v=20260920g">
@@ -16,7 +18,7 @@
     <link rel="stylesheet" href="w2/w2.css?v=20260920h">
     <link rel="stylesheet" href="w3/w3.css?v=20260920b">
     <link rel="stylesheet" href="w4/w4.css?v=20260920g">
-    <link rel="stylesheet" href="how/how.css?v=20260920i">
+    <link rel="stylesheet" href="how/how.css?v=20260920j">
   </head>
   <body>
     <div class="nuova-ux-shell">
@@ -205,7 +207,10 @@
         </details>
         </div>
       </div>
-      <button type="button" class="nuova-ux-how-open" data-how-open data-i18n="nuova_ux_how_open" data-i18n-aria="nuova_ux_how_open">Come funziona</button>
+      <div class="nuova-ux-chrome-end">
+        <button type="button" class="nuova-ux-how-open" data-how-open data-i18n="nuova_ux_how_open" data-i18n-aria="nuova_ux_how_open">Come funziona</button>
+        <button type="button" class="nuova-ux-how-open nuova-ux-how-open--quiet" data-home-open data-i18n="nuova_ux_home_open" data-i18n-aria="nuova_ux_home_open">Salva in Home</button>
+      </div>
     </div>
     <dialog class="nuova-ux-how" data-slot="how" data-how aria-labelledby="how-title">
       <div class="nuova-ux-how__sheet">
@@ -221,20 +226,30 @@
           </li>
           <li>
             <strong data-i18n="nuova_ux_how_why_k">A che serve</strong>
-            <p data-i18n="nuova_ux_how_why">Controlli prima di uscire. Poi, se vuoi, racconti la sessione.</p>
+            <p data-i18n="nuova_ux_how_why">Il vento ti serve per uscire. La sessione che racconti resta alla comunità di kiter.</p>
           </li>
           <li>
             <strong data-i18n="nuova_ux_how_compile_k">Come si fa</strong>
-            <p data-i18n="nuova_ux_how_compile">1. Cerca lo spot. 2. Compila i campi rossi. 3. Invia.</p>
+            <p data-i18n="nuova_ux_how_compile">1. Cerca lo spot. 2. Compila i campi. 3. Invia.</p>
           </li>
         </ul>
+      </div>
+    </dialog>
+    <dialog class="nuova-ux-how" data-home aria-labelledby="home-title">
+      <div class="nuova-ux-how__sheet">
+        <span class="nuova-ux-how__handle" aria-hidden="true"></span>
+        <header class="nuova-ux-how__head">
+          <h2 id="home-title" data-i18n="nuova_ux_home_title">Sullo schermo</h2>
+          <button type="button" data-home-close data-i18n="nuova_ux_close" data-i18n-aria="nuova_ux_close">Chiudi</button>
+        </header>
+        <p data-home-steps>1. Tocca Condividi. 2. Aggiungi a Home. 3. Aggiungi.</p>
       </div>
     </dialog>
     <script src="connectors/cutover_flag_v1.js?v=20260920c"></script>
     <script src="connectors/ports_v1.js?v=20260920h"></script>
     <script src="/translations.js"></script>
     <script src="/ui-lab/mock-ui/ventolive_i18n_v1.js"></script>
-    <script src="i18n/catalog_v1.js?v=20260920n"></script>
+    <script src="i18n/catalog_v1.js?v=20260920p"></script>
     <script src="i18n/apply_v1.js?v=20260917i"></script>
     <script src="/ui-lab/mock-ui/ventolive_api_routing_v1.js"></script>
     <script src="/ui-lab/mock-ui/server_contract_passive_v1.js"></script>
@@ -255,6 +270,7 @@
     <script src="connectors/whatsapp_consent_v1.js?v=20260920b"></script>
     <script src="w4/w4.js"></script>
     <script src="how/how.js?v=20260920g"></script>
+    <script src="home/home.js?v=20260920a"></script>
     <script src="connectors/cutover_face_v1.js?v=20260920d"></script>
   </body>
 </html>
