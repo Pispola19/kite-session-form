@@ -188,6 +188,7 @@
     if (!root) return;
     [
       "wind",
+      "windGust",
       "result",
       "note",
       "weight",
@@ -294,7 +295,7 @@
         model: comboVal(root, "model", "model"),
         modelOtherText: val("modelOther")
       },
-      windUserInput: { wind: val("wind") },
+      windUserInput: { wind: val("wind"), windGust: val("windGust") },
       spot: { location: val("location") },
       water: { water: comboVal(root, "water", "water") },
       result: { result: comboVal(root, "result", "result") },

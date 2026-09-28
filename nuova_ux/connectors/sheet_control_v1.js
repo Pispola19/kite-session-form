@@ -43,6 +43,7 @@
       marca: lp.brand,
       modello: lp.model,
       vento_kn: lp.wind,
+      raffica_kn: lp.windGust,
       spot: lp.location,
       acqua: lp.water,
       risultato: lp.result,

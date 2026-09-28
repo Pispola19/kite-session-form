@@ -57,6 +57,8 @@
       nuova_ux_home_android: "Browser menu: Add to Home screen.",
       nuova_ux_home_desktop: "Chrome or Edge: Install from the address bar. Safari on a computer cannot pin it like a phone.",
       nuova_ux_home_inapp: "Open this page in Safari or Chrome. Then Share or the menu → Add to Home Screen.",
+      label_wind_gust: "Gust (kts)",
+      ph_wind_gust: "e.g. 24",
       ph_location: "e.g. Is Solinas"
     },
     it: {
@@ -108,6 +110,8 @@
       nuova_ux_home_android: "Menu del browser: Aggiungi alla schermata Home.",
       nuova_ux_home_desktop: "Su Chrome o Edge: Installa dalla barra. Su Safari del computer non si può come sul telefono.",
       nuova_ux_home_inapp: "Apri questa pagina in Safari o Chrome. Poi Condividi o il menu → Aggiungi a Home.",
+      label_wind_gust: "Raffica (kts)",
+      ph_wind_gust: "es. 24",
       ph_location: "es. Is Solinas"
     },
     de: {
@@ -159,6 +163,8 @@
       nuova_ux_home_android: "Browser-Menü: Zum Startbildschirm hinzufügen.",
       nuova_ux_home_desktop: "Chrome oder Edge: Installieren in der Leiste. Safari am Computer geht nicht wie am Handy.",
       nuova_ux_home_inapp: "Diese Seite in Safari oder Chrome öffnen. Dann Teilen oder Menü → Zum Home-Bildschirm.",
+      label_wind_gust: "Böe (kts)",
+      ph_wind_gust: "z. B. 24",
       ph_location: "z.B. Is Solinas"
     },
     es: {
@@ -210,6 +216,8 @@
       nuova_ux_home_android: "Menú del navegador: Añadir a pantalla de inicio.",
       nuova_ux_home_desktop: "Chrome o Edge: Instalar desde la barra. Safari de ordenador no puede como el teléfono.",
       nuova_ux_home_inapp: "Abre esta página en Safari o Chrome. Luego Compartir o el menú → Añadir a pantalla de inicio.",
+      label_wind_gust: "Racha (kts)",
+      ph_wind_gust: "p. ej. 24",
       ph_location: "p. ej. Is Solinas"
     },
     fr: {
@@ -261,6 +269,8 @@
       nuova_ux_home_android: "Menu du navigateur : Ajouter à l’écran d’accueil.",
       nuova_ux_home_desktop: "Chrome ou Edge : Installer depuis la barre. Safari ordinateur ne peut pas comme le téléphone.",
       nuova_ux_home_inapp: "Ouvre cette page dans Safari ou Chrome. Puis Partager ou le menu → Sur l’écran d’accueil.",
+      label_wind_gust: "Rafale (kts)",
+      ph_wind_gust: "ex. 24",
       ph_location: "ex. Is Solinas"
     },
     pl: {
@@ -312,6 +322,8 @@
       nuova_ux_home_android: "Menu przeglądarki: Dodaj do ekranu głównego.",
       nuova_ux_home_desktop: "Chrome lub Edge: Zainstaluj z paska. Safari na komputerze nie umie jak telefon.",
       nuova_ux_home_inapp: "Otwórz tę stronę w Safari lub Chrome. Potem Udostępnij lub menu → Dodaj do ekranu głównego.",
+      label_wind_gust: "Szkwał (kts)",
+      ph_wind_gust: "np. 24",
       ph_location: "np. Is Solinas"
     }
   });

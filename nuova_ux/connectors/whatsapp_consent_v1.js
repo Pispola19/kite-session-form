@@ -16,6 +16,7 @@
     ["label_brand", "brand"],
     ["label_model", "model"],
     ["label_wind", "wind"],
+    ["label_wind_gust", "windGust"],
     ["label_location", "location"],
     ["label_water", "water"],
     ["label_result", "result"],

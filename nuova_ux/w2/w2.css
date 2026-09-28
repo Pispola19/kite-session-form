@@ -1,4 +1,10 @@
 .w2-form { display: grid; gap: 0.7rem; }
+.w2-pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.7rem;
+  align-items: start;
+}
 .w2-field { display: flex; flex-direction: column; gap: 0.25rem; position: relative; }
 .w2-field[hidden] { display: none; }
 .w2-field input,
