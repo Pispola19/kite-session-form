@@ -155,6 +155,27 @@
     });
   }
 
+  async function fetchConsults() {
+    if (!windPlugged()) return { ok: false };
+    const r = routing();
+    const url = r && r.WIND_CONSULTS_URL;
+    if (!url) return { ok: false };
+    try {
+      const res = await global.fetch(url, fetchDefaults());
+      if (!res.ok) return { ok: false };
+      const payload = await res.json();
+      const total = Number(payload && payload.wind_consults_total);
+      if (!Number.isFinite(total)) return { ok: false };
+      return {
+        ok: true,
+        total: total,
+        started_at: String((payload && payload.started_at_utc) || "").trim()
+      };
+    } catch (_err) {
+      return { ok: false };
+    }
+  }
+
   async function fetchWindLatest(spotText, candidate) {
     if (!windPlugged()) {
       return {
@@ -218,6 +239,7 @@
     },
     fetchSpotCandidates,
     prefixFilter,
+    fetchConsults,
     fetchWindLatest,
     applyF4WindName
   });

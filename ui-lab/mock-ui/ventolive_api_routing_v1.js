@@ -7,6 +7,7 @@
 
   const API_BASE = "https://api.ventolive.com";
   const WIND_LATEST_URL = API_BASE + "/wind/latest";
+  const WIND_CONSULTS_URL = API_BASE + "/wind/consults";
   const SPOT_CANDIDATES_URL = API_BASE + "/spot/candidates";
   const DAM_SUBMIT_URL = "https://nx1smwgmbe.execute-api.us-east-1.amazonaws.com/prod/dam/submit";
 
@@ -66,6 +67,7 @@
   global.VENTOLIVE_ROUTING_V1 = Object.freeze({
     API_BASE,
     WIND_LATEST_URL,
+    WIND_CONSULTS_URL,
     SPOT_CANDIDATES_URL,
     DAM_SUBMIT_URL,
     FETCH_DEFAULTS,

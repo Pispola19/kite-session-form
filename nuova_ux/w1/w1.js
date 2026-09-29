@@ -119,6 +119,53 @@
     el.textContent = on ? String(value) : "";
   }
 
+  const CONSULTS_SHOW_FROM = 1000;
+
+  function formatConsultCount(total, lang) {
+    try {
+      return new Intl.NumberFormat(lang).format(total);
+    } catch (_e) {
+      return String(total);
+    }
+  }
+
+  function formatConsultSince(iso, lang) {
+    const raw = String(iso || "").trim();
+    if (!raw) return "";
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) return raw.slice(0, 10);
+    try {
+      return new Intl.DateTimeFormat(lang, {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        timeZone: "UTC"
+      }).format(d);
+    } catch (_e) {
+      return raw.slice(0, 10);
+    }
+  }
+
+  function paintConsults(root, payload) {
+    const el = root.querySelector('[data-w1="consults"]');
+    if (!el) return;
+    const total = payload && payload.total;
+    if (total == null || !Number.isFinite(Number(total)) || Number(total) < CONSULTS_SHOW_FROM) {
+      el.hidden = true;
+      el.textContent = "";
+      return;
+    }
+    const lang = uiLang();
+    const api = i18n();
+    const n = formatConsultCount(Number(total), lang);
+    const since = formatConsultSince(payload.started_at, lang);
+    el.textContent =
+      api && typeof api.t === "function"
+        ? api.t("nuova_ux_wind_consults", { n: n, since: since })
+        : n;
+    el.hidden = false;
+  }
+
   function setStage(root, stage) {
     const idle = root.querySelector("[data-w1-idle]");
     const grid = root.querySelector("[data-w1-grid]");
@@ -269,11 +316,25 @@
     let lastExposed = null;
     let lastDisplay = null;
     let lastGeo = null;
+    let lastConsults = null;
     let searchSeq = 0;
     let waitingPlaces = false;
     let searchAbort = null;
 
     setStage(root, "idle");
+
+    async function refreshConsults() {
+      if (typeof fromA.fetchConsults !== "function") {
+        lastConsults = null;
+        paintConsults(root, null);
+        return;
+      }
+      const res = await fromA.fetchConsults();
+      lastConsults = res && res.ok ? res : null;
+      paintConsults(root, lastConsults);
+    }
+
+    refreshConsults();
 
     function groupsFor(typed, world) {
       if (memory && typeof memory.pickerGroups === "function") {
@@ -323,6 +384,7 @@
       setStage(root, "wind");
       paintExpose(root, exposed, "", lastDisplay);
       publishSpot((exposed && exposed.spot) || spotText, true);
+      refreshConsults();
     }
 
     function onPick(candidate) {
@@ -403,11 +465,12 @@
         }
         paintExpose(root, lastExposed, "", lastDisplay);
       }
+      paintConsults(root, lastConsults);
       if (!listEl.hidden) paintList();
     });
   }
 
-  global.NuovaUxW1 = Object.freeze({ boot, paintExpose, paintOptional, setStage, renderPicker, kaTone });
+  global.NuovaUxW1 = Object.freeze({ boot, paintExpose, paintOptional, paintConsults, setStage, renderPicker, kaTone });
 
   if (global.document && global.document.readyState !== "loading") {
     boot(global.document.querySelector("[data-slot=w1]"));
