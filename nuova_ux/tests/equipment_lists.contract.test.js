@@ -73,6 +73,13 @@ function main() {
   runScript(window, "nuova_ux/connectors/equipment_face_slice_v1.js");
   runScript(window, "nuova_ux/connectors/equipment_lists_v1.js");
   const lists = window.NuovaUxEquipmentListsV1;
+  assert(lists && typeof lists.looksLikeBoardSize === "function", "size units helper is on the list hole");
+  assert(lists.looksLikeBoardSize("twintip", "136x41") === true, "twintip is length x width");
+  assert(lists.looksLikeBoardSize("twintip", "11.0") === false, "kite m2 is not a twintip");
+  assert(lists.looksLikeBoardSize("surfboard", "5'6\"") === true, "surf is feet and inches");
+  assert(lists.looksLikeBoardSize("surfboard", "5.0") === false, "surf is not a bare metre");
+  assert(lists.looksLikeBoardSize("foil", "12L") === true, "foil volume in litres");
+  assert(lists.looksLikeBoardSize("foil", "50") === false, "foil is not a bare number");
   assert(lists && lists.lastApply, "list hole reports apply result");
   if (!sliceReady) {
     assert(lists.lastApply.applied === false, "hold does not rewrite lists");
@@ -81,6 +88,16 @@ function main() {
     assert(lists.lastApply.applied === true, "Anora slice replaces gear lists");
     assert((window.MOCK_DATA.BRAND_LIST || []).length > 0, "ready slice brands appear");
     assert(window.MOCK_DATA.BRAND_LIST.indexOf("Other") === -1, "Other is not a brand");
+    assert(window.MOCK_DATA.BRAND_LIST.indexOf("CORE") !== -1, "one Core stem display");
+    assert(window.MOCK_DATA.BRAND_LIST.indexOf("Core Kiteboarding") === -1, "Core Kiteboarding is not a second brand");
+    assert(window.MOCK_DATA.BRAND_LIST.indexOf("Duotonesports") === -1, "glued shop suffix is not a second brand");
+    assert(window.MOCK_DATA.BRAND_LIST.indexOf("Kitestore") === -1, "shop names stay off the face");
+    const liveTwin = window.MOCK_DATA.BOARD_SIZE_BY_TYPE.twintip || [];
+    assert(liveTwin.indexOf("11.0") === -1, "live twintip must not list kite m2");
+    const liveSurf = window.MOCK_DATA.BOARD_SIZE_BY_TYPE.surfboard || [];
+    assert(liveSurf.indexOf("5.0") === -1, "bare metres are not surf sizes");
+    const liveFoil = window.MOCK_DATA.BOARD_SIZE_BY_TYPE.foil || [];
+    assert(liveFoil.indexOf("50") === -1 && liveFoil.indexOf("12") === -1, "live foil must not list a bare number");
   }
 
   window.NuovaUxEquipmentFaceSliceV1 = {
@@ -99,7 +116,12 @@ function main() {
     ready: true,
     BRAND_LIST: ["BRAND_ESEMPIO", "Other", "__brand_other__"],
     MODELS_BY_BRAND: { BRAND_ESEMPIO: ["MODELLO_ESEMPIO"] },
-    BOARD_SIZE_BY_TYPE: { twintip: ["136x41"], directional: ["nope"] }
+    BOARD_SIZE_BY_TYPE: {
+      twintip: ["11.0", "136x41"],
+      directional: ["nope"],
+      surfboard: ["5.0", "5'6\""],
+      foil: ["50", "12L", "120cm"]
+    }
   };
   const on = lists.applyOntoMock(window);
   assert(on.applied === true, "full slice replaces gear lists");
@@ -107,7 +129,13 @@ function main() {
   assert(window.MOCK_DATA.BRAND_LIST.indexOf("Other") === -1, "Other is not a brand");
   assert(window.MOCK_DATA.MODELS_BY_BRAND.BRAND_ESEMPIO.indexOf("MODELLO_ESEMPIO") !== -1, "model follows brand");
   assert(window.MOCK_DATA.BOARD_SIZE_BY_TYPE.twintip.indexOf("136x41") !== -1, "twintip sizes from slice");
+  assert(window.MOCK_DATA.BOARD_SIZE_BY_TYPE.twintip.indexOf("125x38") === -1, "static sizes must not merge onto the slice");
+  assert(window.MOCK_DATA.BOARD_SIZE_BY_TYPE.twintip.indexOf("11.0") === -1, "kite square metres must not become board sizes");
   assert(window.MOCK_DATA.BOARD_SIZE_BY_TYPE.directional == null, "unknown board type is dropped");
+  assert(window.MOCK_DATA.BOARD_SIZE_BY_TYPE.surfboard.indexOf("5.0") === -1, "bare metres are not surfboard feet");
+  assert(window.MOCK_DATA.BOARD_SIZE_BY_TYPE.foil.indexOf("12L") !== -1, "foil keeps litres");
+  assert(window.MOCK_DATA.BOARD_SIZE_BY_TYPE.foil.indexOf("120cm") !== -1, "foil keeps labelled cm");
+  assert(window.MOCK_DATA.BOARD_SIZE_BY_TYPE.foil.indexOf("50") === -1, "foil drops a bare number");
   assert(window.MOCK_DATA.CANONICAL_VALUES.board.twintip, "session enums stay on MOCK_DATA");
 
   console.log("NUOVA_UX_EQUIPMENT_LISTS_OK");

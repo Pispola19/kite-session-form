@@ -27,6 +27,7 @@
     "Big Blue Boards",
     "big-air",
     "Blade",
+    "Blankforce Kiteboarding",
     "Brainchild Production",
     "Brunotti",
     "BULL Sails & Kites",
@@ -35,6 +36,7 @@
     "Circle One",
     "CORE",
     "CrazyFly",
+    "DaSILVA Kiteboarding",
     "Duotone",
     "Eleveight",
     "F-One",
@@ -47,6 +49,7 @@
     "Freeride",
     "Ga",
     "Gaastra Kiteboarding",
+    "GIN",
     "Guide",
     "Harlem Kitesurfing",
     "Houstonkiteboarding",
@@ -63,6 +66,7 @@
     "Nobile Kiteboarding",
     "Nomad Boards",
     "North",
+    "NP Surf",
     "Ocean",
     "Ocean Rodeo",
     "Ozone",
@@ -70,18 +74,23 @@
     "Pivot",
     "Reach",
     "Reedin",
+    "Ridecore",
     "RRD",
     "Section",
+    "Sfekites",
     "Slingshot",
     "Spleene",
+    "Starkites",
     "SU2",
     "Surfboards",
     "Surftecheurope",
+    "Tona",
     "Ventum Kites",
     "Vuoi",
     "Wave",
     "Wind-X",
     "Windance",
+    "Windwing",
     "Wingandkite"
   ],
   "MODELS_BY_BRAND": {
@@ -148,6 +157,7 @@
       "at"
     ],
     "Armstrong Foils": [
+      "Apf Front",
       "HA480"
     ],
     "AXIS Kiteboarding": [
@@ -184,6 +194,9 @@
     "Blade": [
       "Skinny boy"
     ],
+    "Blankforce Kiteboarding": [
+      "Force"
+    ],
     "Brainchild Production": [
       "Brain"
     ],
@@ -207,6 +220,7 @@
       "Drifter Apex",
       "FX",
       "FX2",
+      "Logic",
       "Moto",
       "Moto Apex",
       "Moto X",
@@ -272,6 +286,9 @@
       "Nuke",
       "Sculp"
     ],
+    "DaSILVA Kiteboarding": [
+      "DaSilva"
+    ],
     "Duotone": [
       "Boot",
       "Dice",
@@ -321,17 +338,27 @@
     ],
     "F-One": [
       "Addikt",
+      "ADDIKT 2",
+      "ADDIKT TEC",
       "Bandit",
+      "BANDIT 18",
+      "BANDIT BRAINCHILD",
       "Bandit TEC",
       "Bandit XV",
+      "Bandit XVI",
       "Bandit-S",
+      "BANGER QUADX",
       "BREEZE",
+      "Breeze 6 Tec HTML",
       "Bullit",
       "Chrono",
       "Cobra",
       "Diablo",
       "Kyankka",
-      "Trax"
+      "Trax",
+      "TRIGGER BRAINCHILD",
+      "TRIGGER V2 BY BRAINCHILD",
+      "Trigger V2 Tec HTML"
     ],
     "Fanatic": [
       "Sky"
@@ -380,6 +407,9 @@
       "One",
       "Pure",
       "Spark"
+    ],
+    "GIN": [
+      "Gin"
     ],
     "Guide": [
       "Kitesurfing"
@@ -485,11 +515,23 @@
       "Pulse",
       "Reach"
     ],
+    "NP Surf": [
+      "NP"
+    ],
     "Ocean": [
       "Rodeo"
     ],
     "Ocean Rodeo": [
       "Crave",
+      "Crave A Series",
+      "Crave A Series Launch Edition",
+      "Crave Pro Dacron",
+      "Flight 3s Pro Dacron",
+      "Flite 3s A Series",
+      "Flite 3s A Series Launch Edition",
+      "Flite 5s A Series",
+      "Flite 5s A Series Launch Edition",
+      "Flite 5s Pro Dacron",
       "Flite A-Series",
       "Prodigy",
       "Razor",
@@ -498,16 +540,22 @@
     ],
     "Ozone": [
       "Alpha",
+      "Alpha V3 Ultra X",
       "AMP",
       "Catalyst",
       "Chrono",
       "Chrono V5",
       "Edge",
+      "Edge VT Ultra X",
       "Enduro",
       "Hyperlink",
       "Kites",
+      "Mach1",
+      "Reflex",
       "Reo",
+      "Uno V2",
       "Vortex",
+      "Vortex V2 Ultra X",
       "Zephyr",
       "Zephyr Ultra-X"
     ],
@@ -525,9 +573,18 @@
       "Dreamstick X",
       "Feather 12l",
       "Mastermodel Bladders",
+      "Nobrainer",
       "Snackpack",
       "Supermodel",
+      "Superwave",
       "Whispermodel"
+    ],
+    "Ridecore": [
+      "NXS",
+      "Pace",
+      "Pace Pro 2",
+      "Xperience",
+      "XR X"
     ],
     "RRD": [
       "Addiction",
@@ -545,6 +602,11 @@
     "Section": [
       "Kites"
     ],
+    "Sfekites": [
+      "All Purpose",
+      "Center Piece",
+      "Spar"
+    ],
     "Slingshot": [
       "Code",
       "Code NXT",
@@ -561,6 +623,9 @@
     ],
     "Spleene": [
       "Spleene"
+    ],
+    "Starkites": [
+      "Star"
     ],
     "SU2": [
       "SU2"
@@ -588,11 +653,18 @@
       "In Pink Tuflite Pro",
       "Little Darlin In Fusion HD"
     ],
+    "Tona": [
+      "Flow 2 0",
+      "Joy Ride",
+      "Pop 2 0",
+      "Ting"
+    ],
     "Ventum Kites": [
       "MT V1 As XCL",
       "Mute V1 As",
       "Reef V1 As",
       "RF V1 As XCL",
+      "Sol",
       "XC V3 As XCL",
       "Xcite V3 As",
       "XP V3 As XCL",
@@ -619,6 +691,9 @@
       "Slingshot Joystick V2",
       "Slingshot Sentry V3"
     ],
+    "Windwing": [
+      "Wing"
+    ],
     "Wingandkite": [
       "AIRBANK",
       "Airush Lithium V13",
@@ -634,6 +709,7 @@
     "twintip": [
       "120x35",
       "125x38",
+      "125x42.5",
       "126x36.5",
       "129x38",
       "130x39",
@@ -664,6 +740,7 @@
       "139x41",
       "139x42",
       "139x42.5",
+      "140x40",
       "140x41",
       "140x42",
       "140x48",
@@ -684,14 +761,17 @@
       "147x44",
       "148x44",
       "148x45",
+      "150x40",
       "150x45",
       "150x46",
       "152x44",
       "152x45",
       "160x45",
-      "160x46"
+      "160x46",
+      "165x45"
     ],
     "surfboard": [
+      "4'10",
       "5'0",
       "5'1",
       "5'10",
@@ -711,23 +791,72 @@
       "6'4"
     ],
     "foil": [
-      "100cm",
-      "104cm",
+      "10.5L",
+      "100L",
+      "101cm",
+      "109cm",
       "110cm",
-      "120cm",
+      "110L",
+      "115L",
+      "12.0L",
+      "12.5L",
+      "122cm",
+      "127cm",
+      "12L",
+      "13.8L",
       "130cm",
-      "140cm",
+      "130L",
+      "135L",
+      "13L",
+      "142cm",
+      "146cm",
       "150cm",
-      "16L",
-      "50cm",
-      "60cm",
-      "65cm",
-      "70cm",
-      "75cm",
-      "80cm",
-      "85cm",
-      "90cm",
-      "95cm"
+      "15L",
+      "16.90L",
+      "17.2L",
+      "17.8L",
+      "18.5L",
+      "19L",
+      "20.00L",
+      "20.5L",
+      "20.7L",
+      "20L",
+      "21.5L",
+      "22.5L",
+      "22L",
+      "23.5L",
+      "23.7L",
+      "23L",
+      "24.8L",
+      "24L",
+      "25.5L",
+      "25L",
+      "26.44L",
+      "26.8L",
+      "28L",
+      "29.00L",
+      "31.72L",
+      "32L",
+      "34.60L",
+      "34L",
+      "35L",
+      "36L",
+      "37.66L",
+      "38L",
+      "40.89L",
+      "40L",
+      "42L",
+      "45L",
+      "48L",
+      "55L",
+      "58L",
+      "65L",
+      "70L",
+      "75L",
+      "80L",
+      "85L",
+      "90L",
+      "95L"
     ]
   }
 });
