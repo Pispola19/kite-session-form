@@ -6,7 +6,7 @@
 (function initNuovaUxWhatsAppConsent(global) {
   "use strict";
 
-  const PHONE = "393205316981";
+  const PHONE = "393516517705";
   const SUMMARY_KEYS = Object.freeze([
     ["label_weight", "weight"],
     ["label_board", "board"],
