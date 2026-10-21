@@ -16,7 +16,7 @@
     <link rel="stylesheet" href="skin/tokens.css?v=20261021b">
     <link rel="stylesheet" href="skin/shell.css?v=20261021c">
     <link rel="stylesheet" href="w1/w1.css?v=20261021c">
-    <link rel="stylesheet" href="w2/w2.css?v=20261021b">
+    <link rel="stylesheet" href="w2/w2.css?v=20261021d">
     <link rel="stylesheet" href="w3/w3.css?v=20260921a">
     <link rel="stylesheet" href="w4/w4.css?v=20260920g">
     <link rel="stylesheet" href="how/how.css?v=20260920j">
@@ -120,6 +120,7 @@
           </summary>
           <button type="button" class="nuova-ux-slot__close" data-window-close data-i18n="nuova_ux_close" data-i18n-aria="nuova_ux_close">Chiudi</button>
           <form class="w2-form" data-w2-form novalidate>
+            <p class="w2-lead" data-i18n="nuova_ux_w2_lead">Le caselle rosse sono il grazie: compilale e invia. Il verde è già a posto.</p>
             <label class="w2-field" data-w2-field="location">
               <span data-i18n="label_location">Spot</span>
               <input data-w2="location" autocomplete="off" data-i18n-placeholder="ph_location">
@@ -177,14 +178,15 @@
             </label>
             <div class="w2-pair">
             <label class="w2-field" data-w2-field="wind" data-w2-required>
-              <span data-i18n="label_wind">Vento percepito</span>
+              <span data-i18n="label_wind">Vento che hai sentito (kn)</span>
               <input data-w2="wind" inputmode="numeric" autocomplete="off" data-i18n-placeholder="ph_wind">
             </label>
             <label class="w2-field" data-w2-field="windGust">
-              <span data-i18n="label_wind_gust">Raffica percepita</span>
+              <span data-i18n="label_wind_gust">Raffica che hai sentito (kn)</span>
               <input data-w2="windGust" inputmode="numeric" autocomplete="off" data-i18n-placeholder="ph_wind_gust">
             </label>
             </div>
+            <p class="w2-hint" data-i18n="nuova_ux_wind_felt">Il vento che hai sentito in acqua, non i numeri di sopra.</p>
             <label class="w2-field" data-w2-field="result" data-w2-required>
               <span data-i18n="label_result">Esito</span>
               <input data-w2="result" data-option-cat="result" autocomplete="off">
@@ -239,7 +241,7 @@
           </li>
           <li>
             <strong data-i18n="nuova_ux_how_compile_k">Come si fa</strong>
-            <p data-i18n="nuova_ux_how_compile">1. Cerca lo spot. 2. Compila i campi. 3. Invia.</p>
+            <p data-i18n="nuova_ux_how_compile">1. Cerca lo spot. 2. Compila le caselle rosse. 3. Invia.</p>
           </li>
         </ul>
       </div>
@@ -258,7 +260,7 @@
     <script src="connectors/ports_v1.js?v=20260920h"></script>
     <script src="/translations.js"></script>
     <script src="/ui-lab/mock-ui/ventolive_i18n_v1.js"></script>
-    <script src="i18n/catalog_v1.js?v=20260930c"></script>
+    <script src="i18n/catalog_v1.js?v=20261021d"></script>
     <script src="i18n/apply_v1.js?v=20260917i"></script>
     <script src="/ui-lab/mock-ui/ventolive_api_routing_v1.js?v=20260930c"></script>
     <script src="/ui-lab/mock-ui/server_contract_passive_v1.js"></script>
@@ -274,7 +276,7 @@
     <script src="w2/payload_legacy_v1.js?v=20260928a"></script>
     <script src="memory/local_convenience_v1.js?v=20260920b"></script>
     <script src="windows/slot_window_v1.js?v=20261021c"></script>
-    <script src="w1/w1.js?v=20261021c"></script>
+    <script src="w1/w1.js?v=20261021d"></script>
     <script src="w2/w2.js?v=20261021c"></script>
     <script src="w3/w3.js?v=20260918d"></script>
     <script src="connectors/sheet_control_v1.js?v=20260928a"></script>

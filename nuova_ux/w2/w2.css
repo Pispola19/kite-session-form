@@ -1,4 +1,15 @@
 .w2-form { display: grid; gap: 0.7rem; min-width: 0; }
+.w2-lead {
+  margin: 0;
+  font-weight: 650;
+  line-height: 1.35;
+}
+.w2-hint {
+  margin: -0.35rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.35;
+  color: var(--muted);
+}
 .w2-pair {
   display: grid;
   grid-template-columns: 1fr 1fr;

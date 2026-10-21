@@ -282,7 +282,7 @@
       return;
     }
     const doc = listEl.ownerDocument || global.document;
-    if (waiting && !world.length) {
+    if (waiting && !world.length && !recents.length) {
       const wait = doc.createElement("li");
       wait.className = "w1-list__banner";
       wait.textContent = tt("nuova_ux_spot_wait");
