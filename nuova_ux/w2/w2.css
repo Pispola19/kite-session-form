@@ -1,14 +1,18 @@
-.w2-form { display: grid; gap: 0.7rem; }
+.w2-form { display: grid; gap: 0.7rem; min-width: 0; }
 .w2-pair {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.7rem;
   align-items: start;
+  min-width: 0;
 }
-.w2-field { display: flex; flex-direction: column; gap: 0.25rem; position: relative; }
+.w2-field { display: flex; flex-direction: column; gap: 0.25rem; position: relative; min-width: 0; }
 .w2-field[hidden] { display: none; }
 .w2-field input,
 .w2-field textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   font: inherit;
   font-size: 16px;
   padding: 0.5rem 0.65rem;
