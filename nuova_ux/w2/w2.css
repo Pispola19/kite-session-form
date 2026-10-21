@@ -18,7 +18,7 @@
   padding: 0.5rem 0.65rem;
   border: 2px solid rgba(26, 26, 26, 0.55);
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.42);
+  background: var(--field);
   color: var(--ink);
   -webkit-appearance: none;
   appearance: none;
