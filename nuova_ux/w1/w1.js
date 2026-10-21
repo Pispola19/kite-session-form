@@ -323,6 +323,14 @@
 
     setStage(root, "idle");
 
+    const next = root.querySelector("[data-w1-next]");
+    if (next) {
+      next.addEventListener("click", function () {
+        const w2 = global.document && global.document.querySelector("[data-slot=w2]");
+        if (w2 && String(w2.tagName || "").toUpperCase() === "DETAILS") w2.open = true;
+      });
+    }
+
     async function refreshConsults() {
       if (typeof fromA.fetchConsults !== "function") {
         lastConsults = null;
@@ -391,6 +399,9 @@
       const name = placeTitle(candidate);
       input.value = name;
       lastTyped = name;
+      searchSeq += 1;
+      waitingPlaces = false;
+      if (searchAbort) searchAbort.abort();
       listEl.hidden = true;
       if (memory && typeof memory.rememberSpot === "function") {
         memory.rememberSpot(candidate);

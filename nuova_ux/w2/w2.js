@@ -103,20 +103,6 @@
     setAppear(root, "modelOther", comboVal(root, "model", "model") === "Other");
   }
 
-  function phoneFace() {
-    if (typeof global.matchMedia !== "function") return false;
-    try {
-      return global.matchMedia("(max-width: 55.99rem)").matches;
-    } catch (_e) {
-      return false;
-    }
-  }
-
-  function keepSessionOpen(root) {
-    if (!root || String(root.tagName || "").toUpperCase() !== "DETAILS") return;
-    if (phoneFace()) root.open = true;
-  }
-
   function openForCompile(root) {
     if (root && root.tagName === "DETAILS") root.open = true;
   }
@@ -171,6 +157,9 @@
     input.addEventListener("focus", function () {
       paint(input.value);
     });
+    input.addEventListener("click", function () {
+      paint(input.value);
+    });
     input.addEventListener("blur", function () {
       window.setTimeout(function () {
         listEl.hidden = true;
@@ -215,10 +204,8 @@
     });
     restoreKit(root);
     syncAppear(root);
-    if (root.tagName === "DETAILS") {
-      if (phoneFace()) root.open = true;
-      else root.open = false;
-    }
+    validate(root);
+    if (root.tagName === "DETAILS") root.open = false;
   }
 
   function kitSnapshot(root) {
@@ -327,22 +314,11 @@
     if (!root || !api) return;
 
     root.classList.remove("nuova-ux-slot--dormant");
-    keepSessionOpen(root);
     const errEl = $("[data-w2-err]", root);
     const thanksEl = $("[data-w2-thanks]", root);
-    const memory = global.NuovaUxLocalConvenienceV1;
 
     restoreKit(root);
-    if (memory && typeof global.matchMedia === "function") {
-      try {
-        const mq = global.matchMedia("(max-width: 55.99rem)");
-        const onWidth = function () {
-          keepSessionOpen(root);
-        };
-        if (typeof mq.addEventListener === "function") mq.addEventListener("change", onWidth);
-        else if (typeof mq.addListener === "function") mq.addListener(onWidth);
-      } catch (_e) {}
-    }
+    validate(root);
 
     attachCombo($('[data-w2="level"]', root), $('[data-w2-list="level"]', root), function () {
       return canonicalMap("level");
@@ -422,7 +398,7 @@
       const loc = detail.location;
       const locInput = $('[data-w2="location"]', root);
       if (locInput && loc != null) locInput.value = loc;
-      if (detail.openSession && !phoneFace()) openForCompile(root);
+      if (detail.openSession) openForCompile(root);
     });
 
     const locInput = $('[data-w2="location"]', root);

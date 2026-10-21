@@ -78,7 +78,7 @@
 .w1-idle[hidden],
 .w1-next[hidden],
 .w1-grid[hidden] { display: none; }
-.w1-next { margin: 0.7rem 0 0; font-weight: 650; }
+.w1-next { margin: 0.7rem 0 0; font-weight: 650; cursor: pointer; }
 .w1-grid { display: grid; gap: 0.75rem; }
 @media (min-width: 56rem) {
   .w1-grid { grid-template-columns: 1fr 1fr; }

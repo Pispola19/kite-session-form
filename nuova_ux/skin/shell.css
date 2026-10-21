@@ -137,6 +137,4 @@ body::before {
   [data-slot="w1"] { order: 1; }
   [data-slot="w2"] { order: 2; }
   [data-slot="w4"] { order: 3; }
-  [data-slot="w2"].nuova-ux-slot--appear[open] > .nuova-ux-slot__close { display: none; }
-  [data-slot="w2"].nuova-ux-slot--appear[open] > .nuova-ux-slot__summary { padding-right: 0; }
 }
