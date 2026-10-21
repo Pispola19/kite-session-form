@@ -171,9 +171,13 @@
     const idle = root.querySelector("[data-w1-idle]");
     const grid = root.querySelector("[data-w1-grid]");
     const next = root.querySelector("[data-w1-next]");
+    const working = root.querySelector("[data-w1-working]");
     if (idle) idle.hidden = stage !== "idle";
     if (grid) grid.hidden = stage !== "wind";
     if (next) next.hidden = stage !== "wind";
+    if (working) working.hidden = stage !== "wait";
+    if (stage === "wait") root.setAttribute("aria-busy", "true");
+    else root.removeAttribute("aria-busy");
   }
 
   function paintExpose(root, exposed, scritta, display) {
@@ -313,7 +317,9 @@
     let lastGeo = null;
     let lastConsults = null;
     let searchSeq = 0;
+    let windSeq = 0;
     let waitingPlaces = false;
+    let waitingWind = false;
     let waitHintTimer = null;
     let searchAbort = null;
 
@@ -392,8 +398,10 @@
       );
     }
 
-    async function loadWind(spotText, candidate) {
+    async function loadWind(spotText, candidate, seq) {
       const result = await fromA.fetchWindLatest(spotText, candidate);
+      if (seq != null && seq !== windSeq) return;
+      waitingWind = false;
       if (!result.ok) {
         lastFailed = true;
         lastExposed = null;
@@ -419,14 +427,19 @@
       input.value = name;
       lastTyped = name;
       searchSeq += 1;
+      const seq = (windSeq += 1);
       setWaitingPlaces(false);
       if (searchAbort) searchAbort.abort();
       listEl.hidden = true;
+      const msg = root.querySelector('[data-w1="msg"]');
+      if (msg) msg.textContent = "";
+      waitingWind = true;
+      setStage(root, "wait");
       if (memory && typeof memory.rememberSpot === "function") {
         memory.rememberSpot(candidate);
       }
       publishSpot(name, true);
-      loadWind(name, candidate);
+      loadWind(name, candidate, seq);
     }
 
     async function searchTyped(typed) {
@@ -484,7 +497,9 @@
     });
 
     document.addEventListener("nuova-ux-lang", function () {
-      if (lastFailed) {
+      if (waitingWind) {
+        setStage(root, "wait");
+      } else if (lastFailed) {
         setStage(root, "fail");
         paintExpose(root, null, tt("nuova_ux_wind_unavailable"));
       } else if (lastDisplay) {
