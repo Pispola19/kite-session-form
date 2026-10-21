@@ -6,6 +6,7 @@
   "use strict";
 
   const DEBOUNCE_MS = 160;
+  const WAIT_HINT_MS = 300;
 
   function $(sel, root) {
     return (root || document).querySelector(sel);
@@ -277,17 +278,11 @@
     listEl.innerHTML = "";
     const recents = (groups && groups.recents) || [];
     const world = (groups && groups.world) || [];
-    if (!recents.length && !world.length && !waiting) {
+    if (!recents.length && !world.length) {
       listEl.hidden = true;
       return;
     }
     const doc = listEl.ownerDocument || global.document;
-    if (waiting && !world.length && !recents.length) {
-      const wait = doc.createElement("li");
-      wait.className = "w1-list__banner";
-      wait.textContent = tt("nuova_ux_spot_wait");
-      listEl.appendChild(wait);
-    }
     if (groups && groups.sameName) {
       const banner = doc.createElement("li");
       banner.className = "w1-list__banner";
@@ -319,6 +314,7 @@
     let lastConsults = null;
     let searchSeq = 0;
     let waitingPlaces = false;
+    let waitHintTimer = null;
     let searchAbort = null;
 
     setStage(root, "idle");
@@ -349,6 +345,29 @@
         return memory.pickerGroups(typed, world);
       }
       return { recents: [], world: world || [], sameName: false };
+    }
+
+    function paintSearching(on) {
+      const hint = root.querySelector("[data-w1-searching]");
+      if (!hint) return;
+      const label = hint.querySelector("[data-i18n=\"nuova_ux_spot_wait\"]");
+      if (label) label.textContent = tt("nuova_ux_spot_wait");
+      hint.hidden = !on;
+    }
+
+    function setWaitingPlaces(on) {
+      waitingPlaces = !!on;
+      window.clearTimeout(waitHintTimer);
+      if (waitingPlaces) {
+        listEl.setAttribute("aria-busy", "true");
+        waitHintTimer = window.setTimeout(function () {
+          if (!waitingPlaces) return;
+          paintSearching(true);
+        }, WAIT_HINT_MS);
+      } else {
+        listEl.removeAttribute("aria-busy");
+        paintSearching(false);
+      }
     }
 
     function paintList() {
@@ -400,7 +419,7 @@
       input.value = name;
       lastTyped = name;
       searchSeq += 1;
-      waitingPlaces = false;
+      setWaitingPlaces(false);
       if (searchAbort) searchAbort.abort();
       listEl.hidden = true;
       if (memory && typeof memory.rememberSpot === "function") {
@@ -414,7 +433,7 @@
       lastTyped = typed;
       if (!String(typed || "").trim()) {
         lastCandidates = [];
-        waitingPlaces = false;
+        setWaitingPlaces(false);
         if (searchAbort) searchAbort.abort();
         paintList();
         return;
@@ -423,7 +442,7 @@
       const seq = (searchSeq += 1);
       if (searchAbort) searchAbort.abort();
       searchAbort = typeof global.AbortController === "function" ? new global.AbortController() : null;
-      waitingPlaces = true;
+      setWaitingPlaces(true);
       paintList();
       try {
         const res = await fromA.fetchSpotCandidates(typed, searchAbort ? { signal: searchAbort.signal } : {});
@@ -432,7 +451,7 @@
       } catch (_err) {
         if (seq !== searchSeq) return;
       }
-      waitingPlaces = false;
+      setWaitingPlaces(false);
       paintList();
     }
 
@@ -477,6 +496,7 @@
         paintExpose(root, lastExposed, "", lastDisplay);
       }
       paintConsults(root, lastConsults);
+      if (waitingPlaces) paintSearching(true);
       if (!listEl.hidden) paintList();
     });
   }
