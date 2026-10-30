@@ -15,7 +15,7 @@
     <title data-i18n="nuova_ux_page_title">NUOVA_UX</title>
     <link rel="stylesheet" href="/nuova_ux/skin/tokens.css?v=20261021b">
     <link rel="stylesheet" href="/nuova_ux/skin/shell.css?v=20261021c">
-    <link rel="stylesheet" href="/nuova_ux/w1/w1.css?v=20261021g">
+    <link rel="stylesheet" href="/nuova_ux/w1/w1.css?v=20261030b">
     <link rel="stylesheet" href="/nuova_ux/w2/w2.css?v=20261021d">
     <link rel="stylesheet" href="/nuova_ux/w3/w3.css?v=20260921a">
     <link rel="stylesheet" href="/nuova_ux/w4/w4.css?v=20260920g">
@@ -69,7 +69,17 @@
               <p class="w1-spot-now" data-w1="spot">—</p>
               <dl>
                 <dt data-i18n="live_spot_mock_confidence">Affidabilità</dt><dd data-w1="reliability">—</dd>
-                <dt data-i18n="live_spot_mock_last_update">Ultimo aggiornamento (ora di Roma)</dt><dd data-w1="updated">—</dd>
+                <dt data-w1-updated-label data-i18n="live_spot_mock_last_update_rome">Ultimo aggiornamento (ora di Roma)</dt>
+                <dd class="w1-updated">
+                  <span data-w1="updated">—</span>
+                  <details class="w1-tz" data-w1-tz>
+                    <summary data-w1-tz-summary data-i18n="nuova_ux_tz_phone">Fuso del telefono</summary>
+                    <div class="w1-tz__box">
+                      <input type="search" data-w1-tz-q autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="search" data-i18n-placeholder="nuova_ux_tz_search" data-i18n-aria="nuova_ux_tz_search" placeholder="Cerca città">
+                      <ul class="w1-tz__list" data-w1-tz-list></ul>
+                    </div>
+                  </details>
+                </dd>
               </dl>
             </article>
             <article class="w1-card w1-ka" data-w1-ka>
@@ -270,7 +280,7 @@
     <script src="/nuova_ux/connectors/ports_v1.js?v=20260920h"></script>
     <script src="/translations.js"></script>
     <script src="/ui-lab/mock-ui/ventolive_i18n_v1.js"></script>
-    <script src="/nuova_ux/i18n/catalog_v1.js?v=20261030a"></script>
+    <script src="/nuova_ux/i18n/catalog_v1.js?v=20261030b"></script>
     <script src="/nuova_ux/i18n/apply_v1.js?v=20260917i"></script>
     <script src="/ui-lab/mock-ui/ventolive_api_routing_v1.js?v=20260930c"></script>
     <script src="/ui-lab/mock-ui/server_contract_passive_v1.js"></script>
@@ -284,9 +294,10 @@
     <script src="/nuova_ux/connectors/wind_from_a.js?v=20260930c"></script>
     <script src="/nuova_ux/connectors/transport_v1.js?v=20260920b"></script>
     <script src="/nuova_ux/w2/payload_legacy_v1.js?v=20260928a"></script>
-    <script src="/nuova_ux/memory/local_convenience_v1.js?v=20260920b"></script>
+    <script src="/nuova_ux/memory/local_convenience_v1.js?v=20261030b"></script>
     <script src="/nuova_ux/windows/slot_window_v1.js?v=20261021c"></script>
-    <script src="/nuova_ux/w1/w1.js?v=20261021f"></script>
+    <script src="/nuova_ux/w1/timezone_face_v1.js?v=20261030b"></script>
+    <script src="/nuova_ux/w1/w1.js?v=20261030b"></script>
     <script src="/nuova_ux/w2/w2.js?v=20261021c"></script>
     <script src="/nuova_ux/w3/w3.js?v=20260918d"></script>
     <script src="/nuova_ux/connectors/sheet_control_v1.js?v=20260928a"></script>

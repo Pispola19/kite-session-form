@@ -78,6 +78,58 @@
     );
   }
 
+  function tzApi() {
+    return global.NuovaUxTimezoneFaceV1;
+  }
+
+  function memoryApi() {
+    return global.NuovaUxLocalConvenienceV1;
+  }
+
+  function chosenZone() {
+    const mem = memoryApi();
+    const stored = mem && typeof mem.readStoredTz === "function" ? mem.readStoredTz() : "";
+    if (stored) return stored;
+    const api = tzApi();
+    return api && typeof api.phoneZone === "function" ? api.phoneZone() : "UTC";
+  }
+
+  function tzRowLabel(id, phone) {
+    if (!id || id === phone) return tt("nuova_ux_tz_phone");
+    if (id === "Europe/Rome") return tt("nuova_ux_tz_rome");
+    const api = tzApi();
+    return api && typeof api.cityOf === "function" ? api.cityOf(id) : id;
+  }
+
+  function paintUpdatedClock(root, exposed, display) {
+    const api = tzApi();
+    const el = root.querySelector('[data-w1="updated"]');
+    const label = root.querySelector("[data-w1-updated-label]");
+    const box = root.querySelector("[data-w1-tz]");
+    const zone = chosenZone();
+    const field = display && display.updated_at;
+    const fallback = exposed && exposed.updated_at;
+    const painted =
+      api && typeof api.paintClock === "function"
+        ? api.paintClock(fallback, field, zone, uiLang())
+        : { text: fallback || "", hasInstant: false, zone: zone };
+    setText(el, painted.text);
+    if (label) {
+      const key = painted.hasInstant ? "live_spot_mock_last_update" : "live_spot_mock_last_update_rome";
+      label.setAttribute("data-i18n", key);
+      label.textContent = tt(key);
+    }
+    if (box) {
+      box.hidden = false;
+      const sum = box.querySelector("[data-w1-tz-summary]");
+      if (sum) {
+        const mem = memoryApi();
+        const stored = mem && typeof mem.readStoredTz === "function" ? mem.readStoredTz() : "";
+        sum.textContent = stored ? tzRowLabel(stored, "") : tt("nuova_ux_tz_phone");
+      }
+    }
+  }
+
   function clearDirVisual(el) {
     if (!el) return;
     el.classList.remove("wind-dir-arrow", "wind-dir-meteo");
@@ -217,7 +269,7 @@
     const V = visual();
     setText(root.querySelector('[data-w1="spot"]'), exposed.spot);
     setText(root.querySelector('[data-w1="reliability"]'), exposed.reliability);
-    setText(root.querySelector('[data-w1="updated"]'), exposed.updated_at);
+    paintUpdatedClock(root, exposed, display);
     setText(root.querySelector('[data-w1="now-wind"]'), exposed.now.wind);
     setText(root.querySelector('[data-w1="now-gust"]'), exposed.now.gust);
     if (V && display) {
@@ -345,6 +397,47 @@
     }
 
     refreshConsults();
+
+    function bindTz() {
+      const box = root.querySelector("[data-w1-tz]");
+      if (!box || box.getAttribute("data-bound") === "1") return;
+      box.setAttribute("data-bound", "1");
+      const q = box.querySelector("[data-w1-tz-q]");
+      const list = box.querySelector("[data-w1-tz-list]");
+
+      function refreshList() {
+        const api = tzApi();
+        if (!api || !list) return;
+        const phone = api.phoneZone();
+        const query = q ? q.value : "";
+        const searching = String(query || "").trim() !== "";
+        const ids = api.suggestions(query, phone);
+        list.textContent = "";
+        ids.forEach(function (id) {
+          const li = global.document.createElement("li");
+          const btn = global.document.createElement("button");
+          btn.type = "button";
+          btn.textContent = tzRowLabel(id, searching ? "" : phone);
+          btn.addEventListener("click", function () {
+            if (memory && typeof memory.writeStoredTz === "function") {
+              memory.writeStoredTz(id === phone ? "" : id);
+            }
+            box.open = false;
+            if (lastExposed) paintExpose(root, lastExposed, "", lastDisplay);
+            else paintUpdatedClock(root, lastExposed, lastDisplay);
+          });
+          li.appendChild(btn);
+          list.appendChild(li);
+        });
+      }
+
+      if (q) q.addEventListener("input", refreshList);
+      box.addEventListener("toggle", function () {
+        if (box.open) refreshList();
+      });
+    }
+
+    bindTz();
 
     function groupsFor(typed, world) {
       if (memory && typeof memory.pickerGroups === "function") {

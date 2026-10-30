@@ -9,6 +9,7 @@
   const RICH_KEY = "nuova_ux_recent_spots_rich_v1";
   const WEIGHT_KEY = "vento_live_rider_weight_kg_v1";
   const KIT_KEY = "nuova_ux_rider_kit_v1";
+  const TZ_KEY = "nuova_ux_display_tz_v1";
   const LIMIT = 5;
   const KIT_FIELDS = Object.freeze([
     "level",
@@ -246,11 +247,49 @@
     return writeJson(KIT_KEY, kit);
   }
 
+  function cleanTz(value) {
+    const zone = String(value || "").trim();
+    if (!zone) return "";
+    try {
+      Intl.DateTimeFormat("en", { timeZone: zone }).format(new Date());
+      return zone;
+    } catch (_e) {
+      return "";
+    }
+  }
+
+  function readStoredTz() {
+    const store = storage();
+    if (!store) return "";
+    try {
+      return cleanTz(store.getItem(TZ_KEY));
+    } catch (_e) {
+      return "";
+    }
+  }
+
+  function writeStoredTz(value) {
+    const zone = cleanTz(value);
+    const store = storage();
+    if (!store) return false;
+    try {
+      if (!zone) {
+        store.removeItem(TZ_KEY);
+        return true;
+      }
+      store.setItem(TZ_KEY, zone);
+      return true;
+    } catch (_e) {
+      return false;
+    }
+  }
+
   global.NuovaUxLocalConvenienceV1 = Object.freeze({
     NAMES_KEY,
     RICH_KEY,
     WEIGHT_KEY,
     KIT_KEY,
+    TZ_KEY,
     KIT_FIELDS,
     LIMIT,
     readNameRecents,
@@ -265,7 +304,10 @@
     readStoredWeight,
     writeStoredWeight,
     readStoredKit,
-    writeStoredKit
+    writeStoredKit,
+    cleanTz,
+    readStoredTz,
+    writeStoredTz
   });
 })(typeof window !== "undefined" ? window : globalThis);
 
