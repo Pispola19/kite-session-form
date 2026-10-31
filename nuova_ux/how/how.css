@@ -44,9 +44,9 @@
   outline-color: var(--accent);
 }
 .nuova-ux-how {
-  width: min(32rem, 100%);
+  width: min(32rem, calc(100% - 1.5rem));
   max-width: 100%;
-  margin: 0 auto;
+  margin: auto;
   padding: 0;
   border: 0;
   background: transparent;
@@ -55,15 +55,12 @@
 .nuova-ux-how::backdrop {
   background: rgba(15, 30, 45, 0.42);
 }
-.nuova-ux-how[open] {
-  display: block;
-  position: fixed;
-  inset: auto 0 0 0;
-  margin: 0 auto;
+.nuova-ux-how:modal {
+  max-height: min(70dvh, 32rem);
 }
 .nuova-ux-how__sheet {
   background: var(--panel-opaque);
-  border-radius: var(--radius) var(--radius) 0 0;
+  border-radius: var(--radius);
   box-shadow: var(--shadow);
   max-height: min(70dvh, 32rem);
   overflow: auto;
