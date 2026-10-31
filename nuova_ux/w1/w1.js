@@ -502,6 +502,7 @@
         lastGeo = null;
         setStage(root, "fail");
         paintExpose(root, null, tt("nuova_ux_wind_unavailable"));
+        publishSpot(spotText, true);
         return;
       }
       lastFailed = false;
@@ -531,7 +532,6 @@
       if (memory && typeof memory.rememberSpot === "function") {
         memory.rememberSpot(candidate);
       }
-      publishSpot(name, true);
       loadWind(name, candidate, seq);
     }
 
