@@ -144,6 +144,8 @@
           input.setAttribute("data-canonical", c.name);
           listEl.hidden = true;
           if (onCommit) onCommit(c.name);
+          const slot = input.closest("[data-slot=\"w2\"]");
+          if (slot) validate(slot);
         });
         li.appendChild(btn);
         listEl.appendChild(li);
@@ -291,6 +293,14 @@
     };
   }
 
+  function fieldWrap(root, field) {
+    return (
+      root.querySelector('[data-w2-field="' + field + '"]') ||
+      (root.querySelector('[data-w2="' + field + '"]') &&
+        root.querySelector('[data-w2="' + field + '"]').closest(".w2-field"))
+    );
+  }
+
   function validate(root) {
     const api = payloadApi();
     const uiState = readUiState(root);
@@ -298,8 +308,15 @@
     const missing = api.missingRequired(legacy);
     REQUIRED_PATHS.forEach(function (pair) {
       const field = pair[0];
-      const wrap = root.querySelector('[data-w2-field="' + field + '"]');
-      markField(wrap, missing.indexOf(field) === -1);
+      markField(fieldWrap(root, field), missing.indexOf(field) === -1);
+    });
+    ["location", "gender", "boardSize", "brand", "model", "water", "windGust", "note"].forEach(function (field) {
+      const wrap = fieldWrap(root, field);
+      const input = root.querySelector('[data-w2="' + field + '"]');
+      if (!wrap || !input) return;
+      const filled = String(input.value || "").trim() !== "";
+      wrap.classList.toggle("is-ok", filled);
+      wrap.classList.remove("is-missing");
     });
     return { uiState: uiState, missing: missing };
   }
