@@ -204,14 +204,12 @@
 .w1-tz > summary::-webkit-details-marker { display: none; }
 .w1-tz > summary::after { content: " ▾"; font-size: 0.7em; }
 .w1-tz__box {
-  position: absolute;
-  left: 0;
-  top: calc(100% + 0.15rem);
-  z-index: 9;
-  width: min(14rem, 72vw);
+  position: static;
+  width: min(14rem, 100%);
   display: flex;
   flex-direction: column;
   gap: 0.28rem;
+  margin-top: 0.2rem;
   padding: 0.4rem;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);

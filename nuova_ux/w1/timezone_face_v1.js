@@ -60,6 +60,22 @@
     return last.replace(/_/g, " ");
   }
 
+  const SEARCH_ALIAS = {
+    "Europe/Rome": "roma rome",
+    "Atlantic/Canary": "canarie canary islands las palmas tenerife",
+    "Europe/Lisbon": "lisbona lisboa",
+    "Europe/Madrid": "madrid",
+    "Africa/Casablanca": "casablanca",
+    "Asia/Dubai": "dubai",
+    "Asia/Manila": "manila"
+  };
+
+  function hayOf(id) {
+    return (String(id || "") + " " + cityOf(id) + " " + (SEARCH_ALIAS[id] || ""))
+      .toLowerCase()
+      .replace(/_/g, " ");
+  }
+
   function allZones() {
     try {
       if (typeof Intl.supportedValuesOf === "function") {
@@ -93,10 +109,7 @@
     }
 
     zones.forEach(function (id) {
-      const hay = String(id)
-        .toLowerCase()
-        .replace(/_/g, " ");
-      if (hay.indexOf(q) !== -1) push(id);
+      if (hayOf(id).indexOf(q) !== -1) push(id);
     });
     return out.slice(0, 40);
   }
@@ -112,8 +125,7 @@
       hour: "2-digit",
       minute: "2-digit",
       hourCycle: "h23",
-      timeZone: tz,
-      timeZoneName: "short"
+      timeZone: tz
     }).format(new Date(ms));
     return { text: text, hasInstant: true, zone: tz };
   }

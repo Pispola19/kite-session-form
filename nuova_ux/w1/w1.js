@@ -30,6 +30,20 @@
     return tt("wind_ui_field_missing") || "—";
   }
 
+  function reliabilityText(raw) {
+    const code = String(raw || "")
+      .trim()
+      .toLowerCase()
+      .replace(/\s+/g, "_");
+    if (code === "high" || code === "medium" || code === "low") {
+      const labeled = tt("wind_ui_reliability_" + code);
+      if (labeled && labeled !== "wind_ui_reliability_" + code) {
+        return labeled.charAt(0).toUpperCase() + labeled.slice(1);
+      }
+    }
+    return raw;
+  }
+
   function setText(el, value) {
     if (el) el.textContent = value == null || value === "" ? missingMark() : String(value);
   }
@@ -94,11 +108,26 @@
     return api && typeof api.phoneZone === "function" ? api.phoneZone() : "UTC";
   }
 
-  function tzRowLabel(id, phone) {
-    if (!id || id === phone) return tt("nuova_ux_tz_phone");
-    if (id === "Europe/Rome") return tt("nuova_ux_tz_rome");
+  const TZ_CITY_KEYS = {
+    "Europe/Rome": "nuova_ux_tz_rome",
+    "Atlantic/Canary": "nuova_ux_tz_canary",
+    "Europe/Lisbon": "nuova_ux_tz_lisbon",
+    "Europe/Madrid": "nuova_ux_tz_madrid",
+    "Africa/Casablanca": "nuova_ux_tz_casablanca",
+    "Asia/Dubai": "nuova_ux_tz_dubai",
+    "Asia/Manila": "nuova_ux_tz_manila"
+  };
+
+  function tzCityLabel(id) {
+    const key = TZ_CITY_KEYS[id];
+    if (key) return tt(key);
     const api = tzApi();
     return api && typeof api.cityOf === "function" ? api.cityOf(id) : id;
+  }
+
+  function tzRowLabel(id, phone) {
+    if (!id || id === phone) return tt("nuova_ux_tz_phone");
+    return tzCityLabel(id);
   }
 
   function paintUpdatedClock(root, exposed, display) {
@@ -123,9 +152,7 @@
       box.hidden = false;
       const sum = box.querySelector("[data-w1-tz-summary]");
       if (sum) {
-        const mem = memoryApi();
-        const stored = mem && typeof mem.readStoredTz === "function" ? mem.readStoredTz() : "";
-        sum.textContent = stored ? tzRowLabel(stored, "") : tt("nuova_ux_tz_phone");
+        sum.textContent = tzCityLabel(zone);
       }
     }
   }
@@ -268,7 +295,7 @@
     if (!exposed) return;
     const V = visual();
     setText(root.querySelector('[data-w1="spot"]'), exposed.spot);
-    setText(root.querySelector('[data-w1="reliability"]'), exposed.reliability);
+    setText(root.querySelector('[data-w1="reliability"]'), reliabilityText(exposed.reliability));
     paintUpdatedClock(root, exposed, display);
     setText(root.querySelector('[data-w1="now-wind"]'), exposed.now.wind);
     setText(root.querySelector('[data-w1="now-gust"]'), exposed.now.gust);
