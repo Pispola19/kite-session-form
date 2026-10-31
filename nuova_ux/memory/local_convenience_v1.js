@@ -154,13 +154,28 @@
     return label.indexOf(q) === 0 || name.indexOf(q) === 0;
   }
 
+  function geoKey(place) {
+    if (!place || typeof place !== "object") return "";
+    const lat = Number(place.lat);
+    const lon = Number(place.lon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return "";
+    return lat.toFixed(4) + "," + lon.toFixed(4);
+  }
+
+  function samePlace(a, b) {
+    if (nameKey(a) !== nameKey(b) || !nameKey(a)) return false;
+    const ga = geoKey(a);
+    const gb = geoKey(b);
+    if (ga && gb) return ga === gb;
+    const wa = whereLine(a).toLowerCase();
+    const wb = whereLine(b).toLowerCase();
+    if (wa && wb) return wa === wb;
+    if (!ga && !gb && !wa && !wb) return true;
+    return false;
+  }
+
   function pickerGroups(typed, worldCandidates) {
     const q = String(typed || "").trim();
-    const world = annotateSameName(
-      (worldCandidates || []).filter(function (c) {
-        return prefixMatch(c, q);
-      })
-    );
     const rich = readRichRecents().filter(function (c) {
       return prefixMatch(c, q);
     });
@@ -178,7 +193,17 @@
     const recents = annotateSameName(rich.map(function (c) {
       return Object.assign({ fromMemory: true }, c);
     }).concat(nameOnly));
+    const world = annotateSameName(
+      (worldCandidates || []).filter(function (c) {
+        if (!prefixMatch(c, q)) return false;
+        return !recents.some(function (recent) {
+          return samePlace(c, recent);
+        });
+      })
+    );
     const sameName = world.some(function (c) {
+      return c.sameNameCount > 1;
+    }) || recents.some(function (c) {
       return c.sameNameCount > 1;
     });
     return { recents: recents, world: world, sameName: sameName };
