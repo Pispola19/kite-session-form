@@ -571,7 +571,6 @@
       const typed = input.value;
       lastTyped = typed;
       paintList();
-      publishSpot(typed, false);
       window.clearTimeout(debounceTimer);
       debounceTimer = window.setTimeout(function () {
         searchTyped(typed);
