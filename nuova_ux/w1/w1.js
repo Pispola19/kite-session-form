@@ -321,15 +321,8 @@
     return String((place && (place.name || place.label)) || "");
   }
 
-  function appendGroup(listEl, title, items, onPick) {
-    if (!items.length) return;
-    const doc = listEl.ownerDocument || global.document;
-    if (title) {
-      const head = doc.createElement("li");
-      head.className = "w1-list__group";
-      head.textContent = title;
-      listEl.appendChild(head);
-    }
+  function appendRows(host, items, onPick) {
+    const doc = host.ownerDocument || global.document;
     items.forEach(function (c) {
       const li = doc.createElement("li");
       const btn = doc.createElement("button");
@@ -353,12 +346,29 @@
         onPick(c);
       });
       li.appendChild(btn);
-      listEl.appendChild(li);
+      host.appendChild(li);
     });
+  }
+
+  function appendPane(listEl, kind, title, items, onPick) {
+    if (!items.length) return;
+    const doc = listEl.ownerDocument || global.document;
+    const pane = doc.createElement("li");
+    pane.className = "w1-list__pane w1-list__pane--" + kind;
+    const head = doc.createElement("p");
+    head.className = "w1-list__group";
+    head.textContent = title;
+    pane.appendChild(head);
+    const rows = doc.createElement("ul");
+    rows.className = "w1-list__rows";
+    appendRows(rows, items, onPick);
+    pane.appendChild(rows);
+    listEl.appendChild(pane);
   }
 
   function renderPicker(listEl, groups, onPick, waiting) {
     listEl.innerHTML = "";
+    listEl.classList.remove("w1-list--split");
     const recents = (groups && groups.recents) || [];
     const world = (groups && groups.world) || [];
     if (!recents.length && !world.length) {
@@ -372,8 +382,9 @@
       banner.textContent = tt("nuova_ux_same_name");
       listEl.appendChild(banner);
     }
-    appendGroup(listEl, recents.length ? tt("nuova_ux_yours") : "", recents, onPick);
-    appendGroup(listEl, recents.length ? tt("nuova_ux_other_places") : "", world, onPick);
+    if (recents.length && world.length) listEl.classList.add("w1-list--split");
+    appendPane(listEl, "yours", tt("nuova_ux_yours"), recents, onPick);
+    appendPane(listEl, "world", tt("nuova_ux_other_places"), world, onPick);
     listEl.hidden = false;
   }
 
@@ -401,6 +412,7 @@
     let waitingWind = false;
     let waitHintTimer = null;
     let searchAbort = null;
+    let listHeldClosed = false;
 
     setStage(root, "idle");
 
@@ -497,6 +509,10 @@
     }
 
     function paintList() {
+      if (listHeldClosed) {
+        listEl.hidden = true;
+        return;
+      }
       renderPicker(listEl, groupsFor(lastTyped, lastCandidates), onPick, waitingPlaces);
       const idle = root.querySelector("[data-w1-idle]");
       if (idle && !idle.hidden) {
@@ -551,7 +567,9 @@
       const seq = (windSeq += 1);
       setWaitingPlaces(false);
       if (searchAbort) searchAbort.abort();
+      listHeldClosed = true;
       listEl.hidden = true;
+      input.blur();
       const msg = root.querySelector('[data-w1="msg"]');
       if (msg) msg.textContent = "";
       waitingWind = true;
@@ -589,12 +607,14 @@
     }
 
     input.addEventListener("focus", function () {
+      listHeldClosed = false;
       lastTyped = input.value;
       paintList();
       if (String(input.value || "").trim()) searchTyped(input.value);
     });
 
     input.addEventListener("input", function () {
+      listHeldClosed = false;
       const typed = input.value;
       lastTyped = typed;
       paintList();

@@ -416,6 +416,7 @@
       const locInput = $('[data-w2="location"]', root);
       if (locInput && loc != null) locInput.value = loc;
       if (detail.openSession) openForCompile(root);
+      validate(root);
     });
 
     const locInput = $('[data-w2="location"]', root);
