@@ -74,25 +74,85 @@ body::before {
 .nuova-ux-shell__mark { font-size: 0.75rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
 .nuova-ux-shell__title { margin: 0.2rem 0 0; font-size: var(--font-size-title); }
 .nuova-ux-lang {
+  position: relative;
+  z-index: 8;
   display: flex;
   flex-direction: column;
+  align-items: flex-end;
   gap: 0.2rem;
   font-size: 0.8rem;
   color: var(--muted);
 }
-.nuova-ux-lang select {
+html[dir="rtl"] .nuova-ux-lang { align-items: flex-start; }
+.nuova-ux-lang__box { position: relative; }
+.nuova-ux-lang__native {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+  padding: 0;
+}
+.nuova-ux-lang__btn,
+.nuova-ux-lang__opt {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
   font: inherit;
+  color: var(--ink);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  cursor: pointer;
+}
+.nuova-ux-lang__btn {
   min-width: 5.6rem;
   padding: 0.35rem 0.55rem;
-  border: 1px solid var(--line);
   border-radius: var(--radius-sm);
-  background: var(--panel);
-  color: var(--ink);
   -webkit-backdrop-filter: blur(var(--panel-blur));
   backdrop-filter: blur(var(--panel-blur));
 }
-.nuova-ux-lang option {
-  font-size: 1rem;
+.nuova-ux-lang__list {
+  position: absolute;
+  inset-inline-end: 0;
+  top: calc(100% + 0.2rem);
+  margin: 0;
+  padding: 0.2rem;
+  list-style: none;
+  min-width: 100%;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(var(--panel-blur));
+  backdrop-filter: blur(var(--panel-blur));
+}
+.nuova-ux-lang__opt {
+  width: 100%;
+  padding: 0.35rem 0.5rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background: transparent;
+  text-align: start;
+}
+.nuova-ux-lang__opt[aria-selected="true"] { font-weight: 600; }
+.nuova-ux-lang__flag {
+  display: inline-block;
+  width: 1.2em;
+  height: 0.82em;
+  object-fit: cover;
+  border-radius: 1px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.55);
+  background: #0b8a3e;
+}
+.nuova-ux-lang__flag--emoji {
+  width: auto;
+  height: 1em;
+  font-size: 1em;
+  line-height: 1;
 }
 .nuova-ux-slot {
   width: 100%;
