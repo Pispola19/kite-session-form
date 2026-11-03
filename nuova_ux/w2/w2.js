@@ -438,6 +438,10 @@
     document.addEventListener("nuova-ux-lang", function () {
       const apply = i18nApply();
       if (!apply) return;
+      root.querySelectorAll(".w2-combo-list").forEach(function (list) {
+        list.hidden = true;
+        list.innerHTML = "";
+      });
       root.querySelectorAll("[data-w2][data-canonical][data-option-cat]").forEach(function (el) {
         el.value = apply.optionLabel(el.getAttribute("data-option-cat"), el.getAttribute("data-canonical"));
       });
