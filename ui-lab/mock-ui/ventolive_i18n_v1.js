@@ -5,7 +5,7 @@
   "use strict";
 
   const DEFAULT_LANG = "en";
-  const SUPPORTED = Object.freeze(["en", "it", "de", "es", "fr", "pl"]);
+  const SUPPORTED = Object.freeze(["en", "it", "de", "es", "fr", "pl", "ar"]);
 
   function normalizeLang(lang) {
     const lc = String(lang || DEFAULT_LANG).trim().toLowerCase();

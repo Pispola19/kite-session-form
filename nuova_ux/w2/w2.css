@@ -62,7 +62,7 @@
 .w2-combo-list button {
   display: block;
   width: 100%;
-  text-align: left;
+  text-align: start;
   font: inherit;
   border: 0;
   background: transparent;

@@ -18,6 +18,9 @@ body {
   font-family: var(--font);
   font-size: var(--font-size);
 }
+html[dir="rtl"] body {
+  font-family: "Segoe UI", Tahoma, "Geeza Pro", "Noto Naskh Arabic", "Noto Sans Arabic", system-ui, sans-serif;
+}
 body::before {
   content: "";
   position: fixed;
@@ -105,14 +108,14 @@ body::before {
   cursor: pointer;
   list-style: none;
 }
-.nuova-ux-slot--appear[open] > .nuova-ux-slot__summary { cursor: default; padding-right: 4.5rem; }
+.nuova-ux-slot--appear[open] > .nuova-ux-slot__summary { cursor: default; padding-inline-end: 4.5rem; }
 .nuova-ux-slot__summary::-webkit-details-marker { display: none; }
 .nuova-ux-slot--appear:not([open]) .nuova-ux-slot__name { margin-bottom: 0; }
 .nuova-ux-slot__close {
   display: none;
   position: absolute;
   top: 0.7rem;
-  right: 0.8rem;
+  inset-inline-end: 0.8rem;
   font: inherit;
   font-size: 0.8rem;
   color: var(--muted);

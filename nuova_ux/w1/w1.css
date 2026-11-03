@@ -75,11 +75,11 @@
 }
 .w1-list__pane--yours {
   background: rgba(31, 78, 121, 0.1);
-  box-shadow: inset 3px 0 0 var(--accent);
+  border-inline-start: 3px solid var(--accent);
 }
 .w1-list__pane--world {
   background: rgba(255, 255, 255, 0.22);
-  box-shadow: inset 3px 0 0 rgba(26, 26, 26, 0.22);
+  border-inline-start: 3px solid rgba(26, 26, 26, 0.22);
 }
 .w1-list__rows {
   list-style: none;
@@ -112,7 +112,7 @@
   align-items: flex-start;
   gap: 0.1rem;
   width: 100%;
-  text-align: left;
+  text-align: start;
   font: inherit;
   background: transparent;
   border: 0;
@@ -262,7 +262,7 @@
 .w1-tz__list button {
   display: block;
   width: 100%;
-  text-align: left;
+  text-align: start;
   font: inherit;
   background: transparent;
   border: 0;

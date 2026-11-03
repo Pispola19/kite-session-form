@@ -45,7 +45,7 @@
 
   function supported() {
     const i18n = engine();
-    return (i18n && i18n.SUPPORTED) || ["en", "it", "de", "es", "fr", "pl"];
+    return (i18n && i18n.SUPPORTED) || ["en", "it", "de", "es", "fr", "pl", "ar"];
   }
 
   function normalizeLang(lang) {
@@ -130,8 +130,11 @@
     const doc = root || global.document;
     if (!doc) return;
     const html = doc.documentElement;
-    if (html) html.setAttribute("lang", currentLang());
     const lang = currentLang();
+    if (html) {
+      html.setAttribute("lang", lang);
+      html.setAttribute("dir", lang === "ar" ? "rtl" : "ltr");
+    }
     doc.querySelectorAll("[data-i18n]").forEach(function (el) {
       const key = el.getAttribute("data-i18n");
       if (!key) return;
