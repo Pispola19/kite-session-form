@@ -82,13 +82,17 @@ body::before {
 }
 .nuova-ux-lang select {
   font: inherit;
-  padding: 0.35rem 0.5rem;
+  min-width: 5.6rem;
+  padding: 0.35rem 0.55rem;
   border: 1px solid var(--line);
   border-radius: var(--radius-sm);
   background: var(--panel);
   color: var(--ink);
   -webkit-backdrop-filter: blur(var(--panel-blur));
   backdrop-filter: blur(var(--panel-blur));
+}
+.nuova-ux-lang option {
+  font-size: 1rem;
 }
 .nuova-ux-slot {
   width: 100%;
