@@ -45,7 +45,7 @@
 
   function supported() {
     const i18n = engine();
-    return (i18n && i18n.SUPPORTED) || ["en", "it", "de", "es", "fr", "pl", "ar"];
+    return (i18n && i18n.SUPPORTED) || ["en", "it", "de", "es", "fr", "pl", "ar", "th", "ms"];
   }
 
   function normalizeLang(lang) {

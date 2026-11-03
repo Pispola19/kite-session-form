@@ -651,7 +651,12 @@
       }
       paintConsults(root, lastConsults);
       if (waitingPlaces) paintSearching(true);
-      if (!listEl.hidden) paintList();
+      if (listHeldClosed) {
+        listEl.hidden = true;
+        listEl.innerHTML = "";
+      } else {
+        paintList();
+      }
     });
   }
 
