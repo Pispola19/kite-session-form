@@ -19,6 +19,11 @@
 }
 .w2-field { display: flex; flex-direction: column; gap: 0.25rem; position: relative; min-width: 0; }
 .w2-field[hidden] { display: none; }
+.w2-field input[data-w2-closed],
+.w2-field input[readonly] {
+  cursor: pointer;
+  caret-color: transparent;
+}
 .w2-field input,
 .w2-field textarea {
   width: 100%;

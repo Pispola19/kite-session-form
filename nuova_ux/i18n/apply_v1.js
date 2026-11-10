@@ -13,8 +13,8 @@
       advanced: "opt_level_advanced"
     }),
     gender: Object.freeze({
-      M: "opt_gender_male",
-      F: "opt_gender_female"
+      Male: "opt_gender_male",
+      Female: "opt_gender_female"
     }),
     board: Object.freeze({
       twintip: "opt_board_twintip",
@@ -126,6 +126,16 @@
     return raw;
   }
 
+  function genderCanonical(value) {
+    const raw = String(value == null ? "" : value).trim();
+    if (!raw) return "";
+    if (raw === "Male" || raw === "M") return "Male";
+    if (raw === "Female" || raw === "F") return "Female";
+    const mapped = optionCanonical("gender", raw);
+    if (mapped === "Male" || mapped === "Female") return mapped;
+    return "";
+  }
+
   function apply(root) {
     const doc = root || global.document;
     if (!doc) return;
@@ -193,6 +203,7 @@
     t,
     optionLabel,
     optionCanonical,
+    genderCanonical,
     apply,
     setLang,
     boot

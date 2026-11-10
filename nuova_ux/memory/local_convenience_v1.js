@@ -247,7 +247,12 @@
     const src = raw && typeof raw === "object" ? raw : {};
     const out = {};
     KIT_FIELDS.forEach(function (key) {
-      const value = src[key] == null ? "" : String(src[key]).trim();
+      let value = src[key] == null ? "" : String(src[key]).trim();
+      if (key === "gender") {
+        if (value === "M") value = "Male";
+        else if (value === "F") value = "Female";
+        if (value !== "Male" && value !== "Female") return;
+      }
       if (value) out[key] = value;
     });
     return out;

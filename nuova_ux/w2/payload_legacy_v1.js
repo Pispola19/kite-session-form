@@ -42,6 +42,15 @@
     return String(value == null ? "" : value).trim();
   }
 
+  function normalizeGender(value) {
+    if (value === null || value === undefined) return null;
+    const raw = String(value).trim();
+    if (!raw) return "";
+    if (raw === "Male" || raw === "M") return "Male";
+    if (raw === "Female" || raw === "F") return "Female";
+    return null;
+  }
+
   function buildOtherTextFields(selectValue, otherText) {
     const selected = normalizeOptionalString(selectValue);
     const other = normalizeOptionalString(otherText);
@@ -136,7 +145,7 @@
       event_ts: normalizeOptionalString(fm.event_ts),
       src: normalizeOptionalString(fm.src) || "form_v1",
       weight: normalizeNumericString(rider.weight),
-      gender: rider.gender === null || rider.gender === undefined ? null : normalizeOptionalString(rider.gender),
+      gender: normalizeGender(rider.gender),
       board: normalizeOptionalString(board.board),
       boardSize: normalizeOptionalString(board.boardSize),
       level: normalizeOptionalString(rider.level),

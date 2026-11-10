@@ -30,8 +30,8 @@ window.MOCK_DATA = Object.freeze({
       foil: "Foil"
     },
     gender: {
-      M: "Male",
-      F: "Female"
+      Male: "Male",
+      Female: "Female"
     }
   },
 

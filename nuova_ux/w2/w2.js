@@ -78,14 +78,27 @@
     });
   }
 
+  function genderCanon(value) {
+    const apply = i18nApply();
+    if (apply && typeof apply.genderCanonical === "function") {
+      return apply.genderCanonical(value);
+    }
+    const raw = String(value == null ? "" : value).trim();
+    if (raw === "Male" || raw === "M") return "Male";
+    if (raw === "Female" || raw === "F") return "Female";
+    return "";
+  }
+
   function comboVal(root, name, category) {
     const el = root.querySelector('[data-w2="' + name + '"]');
     if (!el) return "";
     const stored = el.getAttribute("data-canonical");
-    if (stored) return stored;
     const apply = i18nApply();
-    if (category && apply) return apply.optionCanonical(category, el.value);
-    return el.value;
+    let canonical = stored || "";
+    if (!canonical && category && apply) canonical = apply.optionCanonical(category, el.value);
+    if (!canonical) canonical = el.value;
+    if (category === "gender") return genderCanon(canonical);
+    return canonical;
   }
 
   function setAppear(root, key, on) {
@@ -109,33 +122,48 @@
 
   function attachCombo(input, listEl, getValues, category, onCommit) {
     const filterApi = fromA();
+    const closed = category === "gender";
     function hideOthers() {
-      const slot = listEl.closest("[data-slot=\"w2\"]") || document;
+      const slot = listEl.closest("[data-slot=\"w2\"]") || global.document;
       slot.querySelectorAll(".w2-combo-list").forEach(function (other) {
         if (other !== listEl) other.hidden = true;
       });
     }
+    function snapClosed() {
+      if (!closed) return;
+      const stored = genderCanon(input.getAttribute("data-canonical"));
+      const apply = i18nApply();
+      if (stored) {
+        input.setAttribute("data-canonical", stored);
+        input.value = apply ? apply.optionLabel(category, stored) : stored;
+        return;
+      }
+      input.value = "";
+      input.removeAttribute("data-canonical");
+    }
     function paint(typed) {
       hideOthers();
       const items = labeledItems(getValues(), category);
-      const filtered = filterApi
-        ? filterApi.prefixFilter(items, typed)
-        : items.filter(function (c) {
-            const q = String(typed || "").trim().toLowerCase();
-            if (!q) return true;
-            return (
-              String(c.label).toLowerCase().indexOf(q) === 0 ||
-              String(c.name).toLowerCase().indexOf(q) === 0
-            );
-          });
+      const filtered = closed
+        ? items
+        : filterApi
+          ? filterApi.prefixFilter(items, typed)
+          : items.filter(function (c) {
+              const q = String(typed || "").trim().toLowerCase();
+              if (!q) return true;
+              return (
+                String(c.label).toLowerCase().indexOf(q) === 0 ||
+                String(c.name).toLowerCase().indexOf(q) === 0
+              );
+            });
       listEl.innerHTML = "";
       if (!filtered.length) {
         listEl.hidden = true;
         return;
       }
       filtered.forEach(function (c) {
-        const li = document.createElement("li");
-        const btn = document.createElement("button");
+        const li = global.document.createElement("li");
+        const btn = global.document.createElement("button");
         btn.type = "button";
         btn.textContent = c.label;
         btn.addEventListener("mousedown", function (ev) {
@@ -152,19 +180,54 @@
       });
       listEl.hidden = false;
     }
+    if (closed) {
+      input.readOnly = true;
+      input.setAttribute("inputmode", "none");
+      input.setAttribute("spellcheck", "false");
+      input.setAttribute("aria-haspopup", "listbox");
+      input.setAttribute("data-w2-closed", "");
+    }
     input.addEventListener("input", function () {
+      if (closed) {
+        snapClosed();
+        paint("");
+        return;
+      }
       input.removeAttribute("data-canonical");
       paint(input.value);
     });
     input.addEventListener("focus", function () {
-      paint(input.value);
+      paint(closed ? "" : input.value);
     });
     input.addEventListener("click", function () {
-      paint(input.value);
+      paint(closed ? "" : input.value);
+    });
+    input.addEventListener("keydown", function (ev) {
+      if (!closed) return;
+      const key = ev.key;
+      if (key === "Backspace" || key === "Delete") {
+        ev.preventDefault();
+        input.value = "";
+        input.removeAttribute("data-canonical");
+        const slot = input.closest("[data-slot=\"w2\"]");
+        if (slot) validate(slot);
+        paint("");
+        return;
+      }
+      if (key === "Escape") {
+        listEl.hidden = true;
+        snapClosed();
+        return;
+      }
+      if (key === "Tab") return;
+      if (key.length === 1) ev.preventDefault();
     });
     input.addEventListener("blur", function () {
       window.setTimeout(function () {
         listEl.hidden = true;
+        snapClosed();
+        const slot = input.closest("[data-slot=\"w2\"]");
+        if (slot) validate(slot);
       }, 120);
     });
   }
@@ -227,6 +290,7 @@
   function paintStoredField(root, name, category, value) {
     const el = root.querySelector('[data-w2="' + name + '"]');
     if (!el || value == null || String(value).trim() === "") return;
+    if (category === "gender" && !genderCanon(value)) return;
     const apply = i18nApply();
     if (category) {
       el.setAttribute("data-canonical", String(value));
@@ -329,6 +393,8 @@
   function boot(root) {
     const api = payloadApi();
     if (!root || !api) return;
+    if (root.getAttribute("data-w2-booted")) return;
+    root.setAttribute("data-w2-booted", "1");
 
     root.classList.remove("nuova-ux-slot--dormant");
     const errEl = $("[data-w2-err]", root);
@@ -409,7 +475,7 @@
       });
     });
 
-    document.addEventListener("nuova-ux-spot", function (ev) {
+    global.document.addEventListener("nuova-ux-spot", function (ev) {
       const detail = ev && ev.detail;
       if (!detail || detail.from === "w2") return;
       const loc = detail.location;
@@ -423,7 +489,7 @@
     if (locInput) {
       locInput.addEventListener("input", function () {
         if (typeof global.CustomEvent !== "function") return;
-        document.dispatchEvent(
+        global.document.dispatchEvent(
           new global.CustomEvent("nuova-ux-spot", {
             detail: {
               location: locInput.value,
@@ -435,7 +501,7 @@
       });
     }
 
-    document.addEventListener("nuova-ux-lang", function () {
+    global.document.addEventListener("nuova-ux-lang", function () {
       const apply = i18nApply();
       if (!apply) return;
       root.querySelectorAll(".w2-combo-list").forEach(function (list) {
@@ -514,7 +580,7 @@
           saveKit(root);
           root.setAttribute("data-w2-last-session", legacy.session_id);
           if (typeof global.CustomEvent === "function") {
-            document.dispatchEvent(
+            global.document.dispatchEvent(
               new global.CustomEvent("nuova-ux-durable", {
                 detail: {
                   session_id: legacy.session_id,
