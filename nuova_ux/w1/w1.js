@@ -118,16 +118,32 @@
     return api && typeof api.phoneZone === "function" ? api.phoneZone() : "UTC";
   }
 
-  function tzValueLabel(id, phone) {
+  function tzOffset(id) {
     const api = tzApi();
-    if (!id || id === phone) return tt("nuova_ux_tz_phone");
-    if (api && typeof api.rowLabel === "function") return api.rowLabel(id);
+    if (api && typeof api.utcOffsetLabel === "function") return api.utcOffsetLabel(id) || "";
+    return "";
+  }
+
+  function tzCity(id) {
+    const api = tzApi();
     if (api && typeof api.cityOf === "function") return api.cityOf(id);
     return id;
   }
 
-  function tzRowLabel(id, phone) {
-    return tzValueLabel(id, phone);
+  function paintTzBits(el, offset, name) {
+    if (!el) return;
+    el.textContent = "";
+    if (offset) {
+      const off = global.document.createElement("span");
+      off.className = "w1-tz__off";
+      off.textContent = offset;
+      el.appendChild(off);
+    }
+    if (name) {
+      if (offset) el.appendChild(global.document.createTextNode(" · "));
+      el.appendChild(global.document.createTextNode(name));
+    }
+    if (!offset && !name) el.textContent = missingMark();
   }
 
   function paintUpdatedClock(root, exposed, display) {
@@ -151,10 +167,9 @@
     if (box) {
       box.hidden = false;
       const sum = box.querySelector("[data-w1-tz-summary]");
-      if (sum) {
-        // Sempre leggibile: "Fuso orario: …" (non sembra il paese dello spot).
-        sum.textContent = tt("nuova_ux_tz_label") + ": " + tzValueLabel(zone, phone);
-      }
+      const off = tzOffset(zone);
+      const chosen = zone && zone !== phone ? tzCity(zone) : "";
+      paintTzBits(sum, off, chosen);
     }
   }
 
@@ -457,7 +472,9 @@
           const li = global.document.createElement("li");
           const btn = global.document.createElement("button");
           btn.type = "button";
-          btn.textContent = tzRowLabel(id, searching ? "" : phone);
+          const off = tzOffset(id);
+          const name = !searching && id === phone ? tt("nuova_ux_tz_phone") : tzCity(id);
+          paintTzBits(btn, off, name);
           btn.addEventListener("click", function () {
             if (memory && typeof memory.writeStoredTz === "function") {
               memory.writeStoredTz(id === phone ? "" : id);
