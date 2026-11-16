@@ -1,19 +1,41 @@
 /**
  * NUOVA_UX W1 — dipinge display.updated_at.iso nel fuso scelto.
- * Senza ISO non converte "HH:MM". Niente geo, niente libreria.
+ * Default = fuso del telefono. Lista corta = ~24 fusi mondo (UTC−11…+12).
+ * Cerca: tutti gli IANA del browser. Senza geo, senza libreria.
  */
 (function initNuovaUxTimezoneFace(global) {
   "use strict";
 
-  const PIN = Object.freeze([
+  /** Un rappresentante per fascia oraria tipica (non i posti del viaggio). */
+  const WORLD_24 = Object.freeze([
+    "Pacific/Pago_Pago",
+    "Pacific/Honolulu",
+    "America/Anchorage",
+    "America/Los_Angeles",
+    "America/Denver",
+    "America/Chicago",
+    "America/New_York",
+    "America/Halifax",
+    "America/Sao_Paulo",
+    "Atlantic/South_Georgia",
+    "Atlantic/Azores",
+    "UTC",
     "Europe/Rome",
-    "Atlantic/Canary",
-    "Europe/Lisbon",
-    "Europe/Madrid",
-    "Africa/Casablanca",
+    "Europe/Athens",
+    "Europe/Moscow",
     "Asia/Dubai",
-    "Asia/Manila"
+    "Asia/Karachi",
+    "Asia/Dhaka",
+    "Asia/Bangkok",
+    "Asia/Shanghai",
+    "Asia/Tokyo",
+    "Australia/Sydney",
+    "Pacific/Noumea",
+    "Pacific/Auckland"
   ]);
+
+  /** Alias legacy: PIN = stessa lista mondo (test / chiamate vecchie). */
+  const PIN = WORLD_24;
 
   function looksLikeIso(value) {
     const s = String(value || "").trim();
@@ -56,22 +78,82 @@
 
   function cityOf(id) {
     const raw = String(id || "");
+    if (raw === "UTC" || raw === "Etc/UTC") return "UTC";
     const last = raw.split("/").pop() || raw;
     return last.replace(/_/g, " ");
   }
 
+  function utcOffsetLabel(id, atMs) {
+    const zone = isIana(id) ? id : "UTC";
+    const ms = typeof atMs === "number" && !Number.isNaN(atMs) ? atMs : Date.now();
+    try {
+      const parts = new Intl.DateTimeFormat("en", {
+        timeZone: zone,
+        timeZoneName: "shortOffset",
+        hour: "2-digit"
+      }).formatToParts(new Date(ms));
+      let i;
+      for (i = 0; i < parts.length; i += 1) {
+        if (parts[i].type === "timeZoneName") {
+          const raw = String(parts[i].value || "").replace("GMT", "UTC");
+          return raw === "UTC" ? "UTC+0" : raw;
+        }
+      }
+    } catch (_e) {
+      /* fall through */
+    }
+    return "";
+  }
+
+  function rowLabel(id, atMs) {
+    const off = utcOffsetLabel(id, atMs);
+    const city = cityOf(id);
+    return off ? off + " · " + city : city;
+  }
+
   const SEARCH_ALIAS = {
-    "Europe/Rome": "roma rome",
+    "Pacific/Pago_Pago": "samoa pago",
+    "Pacific/Honolulu": "hawaii honolulu",
+    "America/Anchorage": "alaska anchorage",
+    "America/Los_Angeles": "los angeles pacific la california",
+    "America/Denver": "denver mountain",
+    "America/Chicago": "chicago central",
+    "America/New_York": "new york eastern nyc",
+    "America/Halifax": "halifax atlantic",
+    "America/Sao_Paulo": "sao paulo brasil brazil",
+    "Atlantic/South_Georgia": "south georgia",
+    "Atlantic/Azores": "azores",
+    UTC: "utc gmt greenwich",
+    "Europe/Rome": "roma rome italy italia",
+    "Europe/Athens": "athens greece",
+    "Europe/Moscow": "moscow russia",
+    "Asia/Dubai": "dubai uae",
+    "Asia/Karachi": "karachi pakistan",
+    "Asia/Dhaka": "dhaka bangladesh",
+    "Asia/Bangkok": "bangkok thailand",
+    "Asia/Shanghai": "shanghai china beijing",
+    "Asia/Tokyo": "tokyo japan",
+    "Australia/Sydney": "sydney australia",
+    "Pacific/Noumea": "noumea new caledonia",
+    "Pacific/Auckland": "auckland new zealand",
     "Atlantic/Canary": "canarie canary islands las palmas tenerife",
     "Europe/Lisbon": "lisbona lisboa",
     "Europe/Madrid": "madrid",
     "Africa/Casablanca": "casablanca",
-    "Asia/Dubai": "dubai",
-    "Asia/Manila": "manila"
+    "Asia/Manila": "manila",
+    "Indian/Mauritius": "mauritius bel ombre"
   };
 
   function hayOf(id) {
-    return (String(id || "") + " " + cityOf(id) + " " + (SEARCH_ALIAS[id] || ""))
+    return (
+      String(id || "") +
+      " " +
+      cityOf(id) +
+      " " +
+      utcOffsetLabel(id) +
+      " " +
+      (SEARCH_ALIAS[id] || "")
+    )
       .toLowerCase()
       .replace(/_/g, " ");
   }
@@ -82,9 +164,9 @@
         return Intl.supportedValuesOf("timeZone");
       }
     } catch (_e) {
-      /* keep PIN */
+      /* keep WORLD_24 */
     }
-    return PIN.slice();
+    return WORLD_24.slice();
   }
 
   function suggestions(query, phone) {
@@ -104,7 +186,7 @@
 
     if (!q) {
       push(phone || phoneZone());
-      PIN.forEach(push);
+      WORLD_24.forEach(push);
       return out;
     }
 
@@ -132,11 +214,14 @@
 
   global.NuovaUxTimezoneFaceV1 = Object.freeze({
     PIN,
+    WORLD_24,
     looksLikeIso,
     instantFromUpdated,
     isIana,
     phoneZone,
     cityOf,
+    utcOffsetLabel,
+    rowLabel,
     suggestions,
     paintClock
   });

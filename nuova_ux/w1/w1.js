@@ -16,14 +16,24 @@
     return global.NuovaUxI18nApplyV1;
   }
 
+  const TT_FALLBACK = {
+    nuova_ux_tz_label: "Fuso orario",
+    nuova_ux_tz_phone: "telefono",
+    live_spot_mock_last_update: "Ultimo aggiornamento"
+  };
+
   function tt(key) {
     const api = i18n();
-    if (api && typeof api.t === "function") return api.t(key);
+    if (api && typeof api.t === "function") {
+      const hit = api.t(key);
+      if (hit && hit !== key) return hit;
+    }
     const engine = global.VentoLiveI18nV1;
     if (engine && typeof engine.t === "function") {
-      return engine.t(key, global.__ventoLiveUiLang);
+      const hit = engine.t(key, global.__ventoLiveUiLang);
+      if (hit && hit !== key) return hit;
     }
-    return key;
+    return TT_FALLBACK[key] || key;
   }
 
   function missingMark() {
@@ -108,26 +118,16 @@
     return api && typeof api.phoneZone === "function" ? api.phoneZone() : "UTC";
   }
 
-  const TZ_CITY_KEYS = {
-    "Europe/Rome": "nuova_ux_tz_rome",
-    "Atlantic/Canary": "nuova_ux_tz_canary",
-    "Europe/Lisbon": "nuova_ux_tz_lisbon",
-    "Europe/Madrid": "nuova_ux_tz_madrid",
-    "Africa/Casablanca": "nuova_ux_tz_casablanca",
-    "Asia/Dubai": "nuova_ux_tz_dubai",
-    "Asia/Manila": "nuova_ux_tz_manila"
-  };
-
-  function tzCityLabel(id) {
-    const key = TZ_CITY_KEYS[id];
-    if (key) return tt(key);
+  function tzValueLabel(id, phone) {
     const api = tzApi();
-    return api && typeof api.cityOf === "function" ? api.cityOf(id) : id;
+    if (!id || id === phone) return tt("nuova_ux_tz_phone");
+    if (api && typeof api.rowLabel === "function") return api.rowLabel(id);
+    if (api && typeof api.cityOf === "function") return api.cityOf(id);
+    return id;
   }
 
   function tzRowLabel(id, phone) {
-    if (!id || id === phone) return tt("nuova_ux_tz_phone");
-    return tzCityLabel(id);
+    return tzValueLabel(id, phone);
   }
 
   function paintUpdatedClock(root, exposed, display) {
@@ -136,6 +136,7 @@
     const label = root.querySelector("[data-w1-updated-label]");
     const box = root.querySelector("[data-w1-tz]");
     const zone = chosenZone();
+    const phone = api && typeof api.phoneZone === "function" ? api.phoneZone() : "UTC";
     const field = display && display.updated_at;
     const fallback = exposed && exposed.updated_at;
     const painted =
@@ -144,15 +145,15 @@
         : { text: fallback || "", hasInstant: false, zone: zone };
     setText(el, painted.text);
     if (label) {
-      const key = painted.hasInstant ? "live_spot_mock_last_update" : "live_spot_mock_last_update_rome";
-      label.setAttribute("data-i18n", key);
-      label.textContent = tt(key);
+      label.setAttribute("data-i18n", "live_spot_mock_last_update");
+      label.textContent = tt("live_spot_mock_last_update");
     }
     if (box) {
       box.hidden = false;
       const sum = box.querySelector("[data-w1-tz-summary]");
       if (sum) {
-        sum.textContent = tzCityLabel(zone);
+        // Sempre leggibile: "Fuso orario: …" (non sembra il paese dello spot).
+        sum.textContent = tt("nuova_ux_tz_label") + ": " + tzValueLabel(zone, phone);
       }
     }
   }
